@@ -15,7 +15,7 @@ Route::get('/contact', [StudentsController::class, 'contact'])->middleware(['aut
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}', [StudentsController::class, 'show'])->name('students.show');
+    Route::get('/{student}', [StudentsController::class, 'show'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');

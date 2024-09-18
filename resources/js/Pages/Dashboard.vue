@@ -86,14 +86,16 @@ const DeleteStudent = (id) => {
                         <td class="py-2 px-4 border">{{ student.name }}, {{ student.sex }}</td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
                         <td class="py-2 px-4 border">{{ student.grade }}</td>
-                        <td class="py-2 px-4 border">{{ student.email }}</td>
-                        <td>
+                        <td class="py-2 px-4 border">
                             <Link 
-                                :href="route('students.show', student.id)" 
-                                class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded me-2 inline-block"
-                                >
-                                Show
+                                :href="route('students.show_email', student.id)" 
+                                 class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded me-2 inline-block"
+                            >
+                                {{ student.email }}
                             </Link>
+                        </td>
+
+                        <td>
                             <Link 
                                 :href="route('students.edit', student.id)" 
                                 class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block"

@@ -29,16 +29,36 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
-                                </NavLink>
-                                <NavLink :href="route('aboutus')" :active="route().current('aboutus')">
-                                    About Us
-                                </NavLink>
-                                <NavLink :href="route('contactus')" :active="route().current('contactus')">
-                                    Contact Us
-                                </NavLink>
+
+                            <!-- Dashboard Link (for users with manage_students permission) -->
+                            <NavLink
+                                v-if="$page.props.user.permissions.includes('manage_students')"
+                                :href="route('dashboard')"
+                                :active="route().current('dashboard')"
+                            >
+                                Dashboard
+                            </NavLink>
+
+                            <!-- About Us Link (for users with manage_students permission) -->
+                            <NavLink
+                                v-if="$page.props.user.permissions.includes('manage_students')"
+                                :href="route('aboutus')"
+                                :active="route().current('aboutus')"
+                            >
+                                About Us
+                            </NavLink>
+
+                            <!-- Contact Us Link (for users with manage_standard permission) -->
+                            <NavLink
+                                v-if="$page.props.user.permissions.includes('manage_standard')"
+                                :href="route('contactus')"
+                                :active="route().current('contactus')"
+                            >
+                                Contact Us
+                            </NavLink>
+
                             </div>
+
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">

@@ -52,7 +52,7 @@ class StudentsController extends Controller
 
     public function show(Student $student)
     {
-        return Inertia::render('Student/Show',[
+        return Inertia::render('Student/ShowEmail',[
             'student' => $student
         ]);
     }
