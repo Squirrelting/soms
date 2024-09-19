@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('students', function (Blueprint $table) {
+        Schema::create('minor_offenses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lrn')->unique(); 
-            $table->string('name'); 
-            
-            $table->string('sex');
-            $table->string('grade');
-            $table->string('email');
+            $table->string('minor_offenses');
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('students');
+        Schema::dropIfExists('minor_offenses');
     }
 };

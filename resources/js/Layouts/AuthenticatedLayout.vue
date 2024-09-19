@@ -51,10 +51,10 @@ const showingNavigationDropdown = ref(false);
                             <!-- Contact Us Link (for users with manage_standard permission) -->
                             <NavLink
                                 v-if="$page.props.user.permissions.includes('manage_standard')"
-                                :href="route('contactus')"
+                                :href="route('adminpage')"
                                 :active="route().current('contactus')"
                             >
-                                Contact Us
+                                Admin Page
                             </NavLink>
 
                             </div>

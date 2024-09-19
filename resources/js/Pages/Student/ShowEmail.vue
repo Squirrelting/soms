@@ -26,7 +26,7 @@ defineProps({
                     <div class="mb-3">
                         <label>Student ID</label>
                         <p>
-                            {{ student.student_id }}
+                            {{ student.lrn }}
                         </p>
                     </div>
                     <div class="mb-3">
