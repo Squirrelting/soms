@@ -25,8 +25,8 @@ class StudentsController extends Controller
        ]);
    }
 
-   public function contact(){
-       return Inertia::render('Contact');
+   public function adminpage(){
+       return Inertia::render('AdminPage');
    }
 
    
@@ -53,7 +53,7 @@ class StudentsController extends Controller
     public function show(Student $student)
     {
         return Inertia::render('Student/ShowEmail',[
-            'student' => $student
+            'student' => $student,
         ]);
     }
 

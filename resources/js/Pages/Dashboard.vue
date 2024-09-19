@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import CustomModal from '@/Components/CustomModal.vue';
 import Pagination from '@/Components/Pagination.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia'; // Use this to directly call Inertia actions
 
 
@@ -28,12 +28,12 @@ function openModal(id){
 }
 
 const DeleteStudent = (id) => {
-    Inertia.delete(route('students.destroy', id), {
+    router.delete(route('students.destroy', id), {
+        preserveState: true,
+        preserveScroll: true,
         onSuccess: () => {
-            Inertia.visit(window.location.href, {
-                preserveState: true,
-                preserveScroll: true,
-            });
+            showModal.value = false;
+            alert('success');
         },
         onError: () => console.error('Failed to delete student'),
     });
@@ -70,22 +70,29 @@ const DeleteStudent = (id) => {
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 text-left border">Id</th>
-                        <th class="py-2 px-4 text-left border">Student ID</th>
+                        <th class="py-2 px-4 text-left border">LRN</th>
                         <th class="py-2 px-4 text-left border">Name</th>
                         <th class="py-2 px-4 text-left border">Sex</th>
                         <th class="py-2 px-4 text-left border">Grade</th>
+                        <th class="py-2 px-4 text-left border">Offenses and Penalties</th>
                         <th class="py-2 px-4 text-left border">Parent's Email</th>
                         <th class="py-2 px-4 text-left border">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="student in students.data" :key="student.id">
-                        <td class="py-2 px-4 border">{{ student.id }}</td>
-                        <td class="py-2 px-4 border">{{ student.student_id }}</td>
+                        <td class="py-2 px-4 border">{{ student.lrn }}</td>
                         <td class="py-2 px-4 border">{{ student.name }}, {{ student.sex }}</td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
-                        <td class="py-2 px-4 border">{{ student.grade }}</td>
+                        <td class="py-2 px-4 border">Grade {{ student.grade }}</td>
+                        <td class="py-2 px-4 border">
+                            <Link 
+                                :href="route('minor.offenses', student.id)" 
+                                 class="px-2 py-1 text-sm bg-yellow-300 text-dark p-3 rounded me-2 inline-block"
+                            >
+                                Minor
+                            </Link>
+                        </td>
                         <td class="py-2 px-4 border">
                             <Link 
                                 :href="route('students.show_email', student.id)" 

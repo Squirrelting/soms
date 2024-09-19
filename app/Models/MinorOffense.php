@@ -6,23 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Student extends Model
+class MinorOffense extends Model
 {
     use HasFactory;
 
-    protected $table = 'students';
+    protected $table = 'minor_offenses';
 
     protected $fillable = [
-        'lrn',
-        'name',
-        'sex',
-        'grade',
-        'email'
+        'minor_offenses'
     ];
 
     public function submittedMinorOffenses(): HasMany
     {
-        return $this->hasMany(SubmittedMinorOffenses::class, 'lrn', 'lrn');
+        return $this->hasMany(SubmittedMinorOffenses::class, 'minor_offense_id', 'id');
     }
 
 }

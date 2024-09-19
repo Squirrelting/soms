@@ -1,7 +1,7 @@
 <template lang="">
     <AuthenticatedLayout>
         <Head title=" Contact Page" />
-        <h1> This is Contact US</h1>
+        <h1> Admin Page</h1>
     </AuthenticatedLayout>
 </template>
 

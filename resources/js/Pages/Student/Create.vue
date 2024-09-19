@@ -7,7 +7,7 @@ defineProps({
 });
 
 const form = useForm({
-    student_id: '',
+    lrn: '',
     name:'',
     sex: '',
     grade:'',
@@ -15,8 +15,13 @@ const form = useForm({
 });
 
 const saveStudent = () => {
-    
-    const res = form.post(route('students.store'));
+    const res = form.post(route('students.store'), {
+        onSuccess: () => {
+            alert('success');
+        },
+        onError: () => console.error('Failed to Save student'),
+    });
+
     if(res){
         form.reset();
     }
@@ -40,8 +45,8 @@ const saveStudent = () => {
                 <div class="col-span-12">
                     <div class="mb-3">
                         <label>Student ID</label>
-                        <input type="text" v-model="form.student_id" class="py-1 w-full" />
-                        <div v-if="errors.student_id" class="text-red-500">{{ errors.student_id }}</div>
+                        <input type="text" v-model="form.lrn" class="py-1 w-full" />
+                        <div v-if="errors.lrn" class="text-red-500">{{ errors.lrn }}</div>
                     </div>
 
                     <div class="mb-3">
