@@ -52,13 +52,19 @@ const showingNavigationDropdown = ref(false);
                             <NavLink
                                 v-if="$page.props.user.permissions.includes('manage_standard')"
                                 :href="route('adminpage')"
-                                :active="route().current('contactus')"
+                                :active="route().current('adminpage')"
                             >
                                 Admin Page
                             </NavLink>
-
+                            
+                            <NavLink
+                                v-if="$page.props.user.permissions.includes('manage_students')"
+                                :href="route('signatorypage')"
+                                :active="route().current('signatorypage')"
+                            >
+                                Signatory Page
+                            </NavLink>
                             </div>
-
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">

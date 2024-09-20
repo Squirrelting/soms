@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Student;
+use App\Models\Signatory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\StudentDetailRequest;
@@ -29,6 +30,14 @@ class StudentsController extends Controller
        return Inertia::render('AdminPage');
    }
 
+   public function signatorypage(){
+    $signatory = Signatory::get();
+
+    return Inertia::render('SignatoryPage',[
+        'signatory'=> $signatory
+    ]);
+
+}
    
     /**
      * Show the form for creating a new resource.
@@ -62,6 +71,14 @@ class StudentsController extends Controller
     {
         return Inertia::render('Student/Edit',[
             'student' => $student
+        ]);
+    }
+
+    public function print(Student $student, Signatory $signatory)
+    {
+        return Inertia::render('Student/Print',[
+            'student' => $student,
+            'signatory'=> $signatory
         ]);
     }
 

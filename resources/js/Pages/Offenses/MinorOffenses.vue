@@ -2,6 +2,7 @@
 import CustomModal from '@/Components/CustomModal.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'; 
+import Swal from 'sweetalert2'; 
 
 const props = defineProps({ 
     errors: Object,
@@ -19,15 +20,65 @@ const form = useForm({
 });
 
  // Function to save a minor offense
-const saveMinorOffense = () => {
-    form.post(route('minor.store'), {
-        onSuccess: () => {
-            alert('Offense added successfully');
-            form.reset();
-        },
-        onError: () => console.error('Failed to Save Minor Offense'),
+ const saveMinorOffense = () => {
+    if(form.minor_offense_id === ''){
+        form.post(route('minor.store'), {
+                onSuccess: () => {
+                    Swal.fire(
+                        'Saved!',
+                        'The offense has been added successfully.',
+                        'success'
+                    );
+                    form.reset(); // Optionally reset the form after success
+                },
+                onError: () => {
+                    Swal.fire(
+                        'Error!',
+                        'There was a problem saving the offense.',
+                        'error'
+                    );
+                },
+            });
+    } else {
+        Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to save this minor offense?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If user confirms, proceed with form submission
+            form.post(route('minor.store'), {
+                onSuccess: () => {
+                    Swal.fire(
+                        'Saved!',
+                        'The offense has been added successfully.',
+                        'success'
+                    );
+                    form.reset(); // Optionally reset the form after success
+                },
+                onError: () => {
+                    Swal.fire(
+                        'Error!',
+                        'There was a problem saving the offense.',
+                        'error'
+                    );
+                },
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // If user cancels
+            Swal.fire(
+                'Cancelled',
+                'The offense was not saved.',
+                'error'
+            );
+        }
     });
-
+    }
 };
 </script>
 

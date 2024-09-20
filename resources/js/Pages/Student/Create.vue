@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'; 
+import Swal from 'sweetalert2'; 
 
 defineProps({ 
     errors: Object 

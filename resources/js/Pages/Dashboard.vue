@@ -109,6 +109,12 @@ const DeleteStudent = (id) => {
                                 >
                                 Edit
                             </Link>
+                            <Link 
+                                :href="route('students.print', student.id)" 
+                                class="px-2 py-1 text-sm bg-blue-500 text-white p-3 rounded me-2 inline-block"
+                                >
+                                Print
+                            </Link>
                             <button 
                                 @click="openModal(student.id)"
                                 class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block"

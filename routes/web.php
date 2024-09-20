@@ -6,21 +6,36 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OffensesController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\SignatoryController;
 
 Route::get('/', [LoginController::class, 'index']);
 
 Route::get('/dashboard', [StudentsController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/about', [StudentsController::class, 'about'])->middleware(['auth', 'verified'])->name('aboutus');
 Route::get('/admin', [StudentsController::class, 'adminpage'])->middleware(['auth', 'verified'])->name('adminpage');
+Route::get('/signatory', [StudentsController::class, 'signatorypage'])->middleware(['auth', 'verified'])->name('signatorypage');
 
+//students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
     Route::get('/{student}', [StudentsController::class, 'show'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
+    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
 });
+
+//signatoy
+Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
+    Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
+    Route::get('/{signatory}/edit', [SignatoryController::class, 'edit'])->name('signatory.edit');
+    Route::get('/{signatory}/print', [SignatoryController::class, 'print'])->name('signatory.print');
+    Route::put('/{signatory}', [SignatoryController::class, 'update'])->name('signatory.update');
+    Route::delete('/{signatory}', [SignatoryController::class, 'destroy'])->name('signatory.destroy');
+});
+
     //Offenses
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/minor', [OffensesController::class, 'minor'])->name('minor.offenses');
