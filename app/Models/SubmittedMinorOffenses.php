@@ -18,6 +18,8 @@ class SubmittedMinorOffenses extends Model
         'student_name',
         'student_grade',
         'minor_offense_id',
+        'minor_penalty_id', // Include the penalty in the fillable fields
+
     ];
 
     public function student(): BelongsTo
@@ -32,5 +34,9 @@ class SubmittedMinorOffenses extends Model
     {
         return $this->belongsTo(MinorOffense::class, 'minor_offense_id', 'id');
     }
-    
+
+    public function minorPenalty(): BelongsTo
+    {
+        return $this->belongsTo(MinorPenalty::class);
+    }
 }

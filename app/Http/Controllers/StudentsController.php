@@ -20,12 +20,6 @@ class StudentsController extends Controller
        ]);
    }
 
-   public function about(){
-       return Inertia::render('About', [
-           'title' => 'About Us Page'
-       ]);
-   }
-
    public function adminpage(){
        return Inertia::render('AdminPage');
    }

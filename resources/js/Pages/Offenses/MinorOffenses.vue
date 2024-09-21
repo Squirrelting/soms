@@ -112,12 +112,12 @@ const form = useForm({
             <div class="mt-4 mx-4">
                 <div class="flex justify-between">
                     <h5 class="m-4">Minor Offense</h5>
-                    <Link :href="route('students.create')" class="bg-blue-500 text-white p-3 rounded mb-4">Add Student</Link>
                 </div>
                 <table class="w-full bg-white border border-gray-200 shadow">
                     <thead>
                         <tr>
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
+                            <th class="py-2 px-4 text-left border">Penalty</th>
                             <th class="py-2 px-4 text-left border">Date Committed</th>
                             <th class="py-2 px-4 text-left border">Actions</th>
                         </tr>
@@ -125,23 +125,9 @@ const form = useForm({
                     <tbody>
                         <tr v-for="offense in submittedminorOffenses" :key="offense.id">
                             <td class="py-2 px-4 border">{{ offense.minor_offense.minor_offenses }}</td>
+                            <td class="py-2 px-4 border">{{ offense.minor_penalty.minor_penalties }}</td>
                             <td class="py-2 px-4 border">{{ offense.created_at }}</td>
                             <td class="py-2 px-4 border">
-                                <button 
-                                @click="openModal(student.id)"
-                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block"
-                                >
-                                Delete
-                            </button>
-                            <CustomModal v-if="showModal" @close="showModal=false">
-                                <p class="text-gray-800">
-                                     Are you sure you want to delete all this Student data? This action cannot be undone.
-                                </p>
-                                <div class="text-right mt-4">
-                                    <button @click="showModal = false" class="px-4 py-2 text-sm text-black-800 focus:outline-none hover:underline">Cancel</button>
-                                    <button @click="DeleteStudent(passId)" class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500">Delete</button>
-                                </div>
-                            </CustomModal>
                             </td>
                         </tr>
                     </tbody>

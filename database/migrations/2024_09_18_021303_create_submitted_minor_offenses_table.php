@@ -22,6 +22,9 @@ return new class extends Migration
             $table->unsignedBigInteger('minor_offense_id');
             $table->foreign('minor_offense_id')->references('id')->on('minor_offenses');
 
+            $table->unsignedBigInteger('minor_penalty_id');
+            $table->foreign('minor_penalty_id')->references('id')->on('minor_penalties');
+
             $table->timestamps();
         });
     }

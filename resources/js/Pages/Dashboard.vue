@@ -92,6 +92,12 @@ const DeleteStudent = (id) => {
                             >
                                 Minor
                             </Link>
+                            <Link 
+                                :href="route('minor.offenses', student.id)" 
+                                 class="px-2 py-1 text-sm bg-red-300 text-dark p-3 rounded me-2 inline-block"
+                            >
+                                Major
+                            </Link>
                         </td>
                         <td class="py-2 px-4 border">
                             <Link 
