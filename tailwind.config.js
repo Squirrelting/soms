@@ -15,8 +15,27 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                // Ensure text color is strong (black)
+                black: '#000000',
+            },
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms, 
+        require('daisyui'),
+    ],
+
+    // DaisyUI settings
+    daisyui: {
+        themes: [
+            {
+                mytheme: {
+                    'primary': '#000000',
+                    'text': '#000000', // Default text color set to black
+                }
+            }
+        ],
+    },
 };

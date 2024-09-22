@@ -6,6 +6,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import backgroundImage from '@/Pages/Images/SCNHS-Background.jpg';
+
 
 defineProps({
     canResetPassword: {
@@ -23,13 +25,23 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post(route('authenticateUser'), {
         onFinish: () => form.reset('password'),
     });
 };
 </script>
 
 <template>
+            <!-- Background image with dark overlay -->
+        <div class="absolute inset-0 z-0">
+            <img
+                id="background"
+                class="w-full h-full object-cover opacity-40"
+                :src="backgroundImage" 
+                alt="Background"
+            />
+            <div class="absolute z-0"></div>
+        </div>
     <GuestLayout>
         <Head title="Log in" />
 
@@ -49,6 +61,7 @@ const submit = () => {
                     required
                     autofocus
                     autocomplete="username"
+                    
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
