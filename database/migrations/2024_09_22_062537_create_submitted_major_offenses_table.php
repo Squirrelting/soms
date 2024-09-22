@@ -1,4 +1,4 @@
-<?php
+major_offense_id<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('submitted_minor_offenses', function (Blueprint $table) {
+        Schema::create('submitted_major_offenses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lrn');
             $table->foreign('lrn')->references('lrn')->on('students');
@@ -19,12 +19,11 @@ return new class extends Migration
             $table->string('student_name');
             $table->string('student_grade');
 
-            $table->unsignedBigInteger('minor_offense_id');
-            $table->foreign('minor_offense_id')->references('id')->on('minor_offenses');
+            $table->unsignedBigInteger('major_offense_id');
+            $table->foreign('major_offense_id')->references('id')->on('major_offenses');
 
-            $table->unsignedBigInteger('minor_penalty_id');
-            $table->foreign('minor_penalty_id')->references('id')->on('minor_penalties');
-
+            $table->unsignedBigInteger('major_penalty_id');
+            $table->foreign('major_penalty_id')->references('id')->on('major_penalties');
             $table->timestamps();
         });
     }
@@ -34,7 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('submitted_minor_offenses');
+        Schema::dropIfExists('submitted_major_offenses');
     }
 };
-

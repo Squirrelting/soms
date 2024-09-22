@@ -6,22 +6,22 @@ import Swal from 'sweetalert2';
 const props = defineProps({ 
     errors: Object,
     student: Object,
-    minorOffenses: Array,
-    submittedminorOffenses: Array,
+    majorOffenses: Array,
+    submittedmajorOffenses: Array,
  });
 
 // Initialize the form object
 const form = useForm({
-    minor_offense_id: '',
+    major_offense_id: '',
     lrn: props.student.lrn, 
     student_name: props.student.name, 
     student_grade: props.student.grade 
 });
 
- // Function to save a minor offense
- const saveMinorOffense = () => {
-    if(form.minor_offense_id === ''){
-        form.post(route('minor.store'), {
+ // Function to save a major offense
+ const saveMajorOffense = () => {
+    if(form.major_offense_id === ''){
+        form.post(route('major.store'), {
                 onSuccess: () => {
                     Swal.fire(
                         'Saved!',
@@ -41,7 +41,7 @@ const form = useForm({
     } else {
         Swal.fire({
         title: 'Are you sure?',
-        text: "Do you want to save this minor offense?",
+        text: "Do you want to save this major offense?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -51,7 +51,7 @@ const form = useForm({
     }).then((result) => {
         if (result.isConfirmed) {
             // If user confirms, proceed with form submission
-            form.post(route('minor.store'), {
+            form.post(route('major.store'), {
                 onSuccess: () => {
                     Swal.fire(
                         'Saved!',
@@ -110,7 +110,7 @@ const form = useForm({
 
             <div class="mt-4 mx-4">
                 <div class="flex justify-between">
-                    <h5 class="m-4">Minor Offense</h5>
+                    <h5 class="m-4">Major Offense</h5>
                 </div>
                 <table class="w-full bg-white border border-gray-200 shadow">
                     <thead>
@@ -121,9 +121,9 @@ const form = useForm({
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="offense in submittedminorOffenses" :key="offense.id">
-                            <td class="py-2 px-4 border">{{ offense.minor_offense.minor_offenses }}</td>
-                            <td class="py-2 px-4 border">{{ offense.minor_penalty.minor_penalties }}</td>
+                        <tr v-for="offense in submittedmajorOffenses" :key="offense.id">
+                            <td class="py-2 px-4 border">{{ offense.major_offense.major_offenses }}</td>
+                            <td class="py-2 px-4 border">{{ offense.major_penalty.major_penalties }}</td>
                             <td class="py-2 px-4 border">{{ offense.created_at }}</td>
                             <td class="py-2 px-4 border">
                             </td>
@@ -132,19 +132,19 @@ const form = useForm({
                 </table>
             </div>
 
-            <form @submit.prevent="saveMinorOffense()">
+            <form @submit.prevent="saveMajorOffense()">
                 <div class="grid grid-cols-12 gap-4">
                     <div class="col-span-12">
                         <div class="mb-3">
-                            <label>Select Minor Offenses</label>
-                            <select v-model="form.minor_offense_id" class="py-1 w-full">
-                                <option value="">Select Minor Offense</option>
-                                <!-- Loop through the minorOffenses prop to populate the select -->
-                                <option v-for="offense in minorOffenses" :key="offense.id" :value="offense.id">
-                                    {{ offense.minor_offenses }}
+                            <label>Select Major Offenses</label>
+                            <select v-model="form.major_offense_id" class="py-1 w-full">
+                                <option value="">Select Major Offense</option>
+                                <!-- Loop through the majorOffenses prop to populate the select -->
+                                <option v-for="offense in majorOffenses" :key="offense.id" :value="offense.id">
+                                    {{ offense.major_offenses }}
                                 </option>
                             </select>
-                            <div v-if="errors.minor_offense_id" class="text-red-500">{{ errors.minor_offense_id }}</div>
+                            <div v-if="errors.major_offense_id" class="text-red-500">{{ errors.major_offense_id }}</div>
                         </div>
                         <div class="mb-3">
                             <button

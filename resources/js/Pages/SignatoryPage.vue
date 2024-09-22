@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import CustomModal from '@/Components/CustomModal.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 
@@ -12,21 +11,17 @@ const props = defineProps({
 
 const form = useForm({});
 
-//Modal
-const showModal = ref(false);
-const passId = ref(null);
+const signatoryId = ref('');
+const getId = (id) => {
+    sisnatoryId.value = id;
+};
 
-function openModal(id){
-    passId.value = id;
-    showModal.value = true;
-}
 
 const DeleteSignatory = (id) => {
     router.delete(route('signatory.destroy', id), {
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
-            showModal.value = false;
             alert('success');
         },
         onError: () => console.error('Failed to delete signatory'),
@@ -41,18 +36,29 @@ const DeleteSignatory = (id) => {
 
     <AuthenticatedLayout>
         <!-- message from SignatoryController-->
-        <div v-if="$page.props.flash.message" class="alert bg-green-200 mt-4 mx-5 px-4 py-2">
-        {{ $page.props.flash.message }}
-      </div>
+        <div
+        v-if="$page.props.flash.message"
+        role="alert"
+        class="alert alert-info mt-4 mx-5 px-4 py-2"
+    >
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+    </svg>
+    <span>{{ $page.props.flash.message }}</span>
+    </div>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Signatory Page</h2>
         </template>
-
-            <!-- <div class="max-w-7xl mx-auto sm:px-3 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">You're logged in!</div>
-                </div>
-            </div> -->
 
 
         <!-- Student List Table -->
@@ -80,25 +86,39 @@ const DeleteSignatory = (id) => {
                                 >
                                 Edit
                             </Link>
-                            <button 
-                                @click="openModal(signatory.id)"
+                            <button
+                                @click="getId(signatory.id)"
+                                onclick="my_modal_1.showModal()"
                                 class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block"
-                                >
+                            >
                                 Delete
                             </button>
-                            <CustomModal v-if="showModal" @close="showModal=false">
-                                <p class="text-gray-800">
-                                     Are you sure you want to delete all this signatory data? This action cannot be undone.
-                                </p>
-                                <div class="text-right mt-4">
-                                    <button @click="showModal = false" class="px-4 py-2 text-sm text-black-800 focus:outline-none hover:underline">Cancel</button>
-                                    <button @click="DeleteSignatory(passId)" class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500">Delete</button>
-                                </div>
-                            </CustomModal>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <dialog id="my_modal_1" class="modal">
+                                <div class="modal-box">
+                                    <h3 class="text-lg font-bold">Hello!</h3>
+                                    <p class="py-4">
+                                        Are you sure you want to delete all this
+                                        Signatory data? This action cannot be
+                                        undone.
+                                    </p>
+                                    <div class="modal-action">
+                                        <form method="dialog">
+                                            <!-- if there is a button in form, it will close the modal -->
+                                            <button class="btn">Cancel</button>
+                                            <button
+                                                @click="DeleteSignatory(signatoryId)"
+                                                class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500"
+                                            >
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </dialog>
     </AuthenticatedLayout>
 </template>

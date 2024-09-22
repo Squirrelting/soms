@@ -1,25 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\OffensesController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\MajorOffensesController;
+use App\Http\Controllers\MinorOffensesController;    
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/dashboard', [StudentsController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/admin', [StudentsController::class, 'adminpage'])->middleware(['auth', 'verified'])->name('adminpage');
 Route::get('/signatory', [StudentsController::class, 'signatorypage'])->middleware(['auth', 'verified'])->name('signatorypage');
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}', [StudentsController::class, 'show'])->name('students.show_email');
+    Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
@@ -36,10 +34,16 @@ Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () 
     Route::delete('/{signatory}', [SignatoryController::class, 'destroy'])->name('signatory.destroy');
 });
 
-    //Offenses
+    //Minor Offenses
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/{student}/minor', [OffensesController::class, 'minor'])->name('minor.offenses');
-    Route::post('/', [OffensesController::class, 'store'])->name('minor.store');
+    Route::get('/{student}/minor', [MinorOffensesController::class, 'minor'])->name('minor.offenses');
+    Route::post('/', [MinorOffensesController::class, 'store'])->name('minor.store');
+});
+
+//Major Offenses
+Route::prefix('major')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
+    Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
 });
 
 Route::middleware('auth')->group(function () {

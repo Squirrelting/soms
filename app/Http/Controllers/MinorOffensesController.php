@@ -10,10 +10,10 @@ use App\Models\MinorPenalty;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMinorOffenses;
 use Illuminate\Support\Facades\Redirect;
-use App\Http\Requests\OffenseDetailRequest;
+use App\Http\Requests\MinorOffenseDetailRequest;
 use App\Http\Requests\StudentDetailRequest;
 
-class OffensesController extends Controller
+class MinorOffensesController extends Controller
 {
     public function minor(Student $student)
     {
@@ -32,7 +32,7 @@ class OffensesController extends Controller
     }
     
 
-    public function store(OffenseDetailRequest $request)
+    public function store(MinorOffenseDetailRequest $request)
     {
         // Validate the form input
         $validated = $request->validated();

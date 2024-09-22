@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OffenseDetailRequest extends FormRequest
+class MajorOffenseDetailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class OffenseDetailRequest extends FormRequest
             'lrn' => 'required',
             'student_name' => 'required',
             'student_grade' => 'required',
-            'minor_offense_id' => 'required|exists:minor_offenses,id',
+            'major_offense_id' => 'required|exists:major_offenses,id',
         ];
     }
 }
