@@ -3,13 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OffensesController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SignatoryController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-
-// Route::get('/', [HomeController::class, 'home']);
 
 Route::get('/dashboard', [StudentsController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/admin', [StudentsController::class, 'adminpage'])->middleware(['auth', 'verified'])->name('adminpage');
@@ -53,6 +53,27 @@ Route::middleware('auth')->prefix('user')->group(function () {
     ->name('register');
 
 Route::post('register', [RegisteredUserController::class, 'store']);
+});
+
+Route::group(['prefix' => 'roles-and-permissions'], function () {
+    Route::group(['prefix' => 'roles', 'middleware' => 'can:Manage Roles'], function () {
+        Route::get('/', [RoleController::class, 'index'])->name('users.roles-permissions.roles.index');
+        Route::get('/add', [RoleController::class, 'add'])->name('users.roles-permissions.roles.add');
+        Route::post('/store', [RoleController::class, 'store'])->name('users.roles-permissions.roles.store');
+        Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('users.roles-permissions.roles.edit');
+        Route::put('/update/{id}', [RoleController::class, 'update'])->name('users.roles-permissions.roles.update');
+        Route::delete('delete/{id}', [RoleController::class, 'destroy'])->name('users.roles-permissions.roles.delete');
+        Route::post('/assignPermission/{id}', [RoleController::class, 'assignPermission'])->name('users.roles-permissions.roles.assignPermission');
+    });
+
+    Route::group(['prefix' => 'permissions', 'middleware' => 'can:Manage Permissions'], function () {
+        Route::get('/', [PermissionController::class, 'index'])->name('users.roles-permissions.permissions.index');
+        Route::get('/add', [PermissionController::class, 'add'])->name('users.roles-permissions.permissions.add');
+        Route::post('/store', [PermissionController::class, 'store'])->name('users.roles-permissions.permissions.store');
+        Route::get('/edit/{id}', [PermissionController::class, 'edit'])->name('users.roles-permissions.permissions.edit');
+        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('users.roles-permissions.permissions.update');
+        Route::delete('delete/{id}', [PermissionController::class, 'destroy'])->name('users.roles-permissions.permissions.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

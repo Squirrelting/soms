@@ -18,9 +18,11 @@ class RoleSeeder extends Seeder
     // Permissions
     Permission::create(['name' => 'manage_students']);
     Permission::create(['name' => 'manage_standard']);
+    Permission::create(['name' => 'Manage Roles']);
+    Permission::create(['name' => 'Manage Permissions']);
 
     // Create roles and assign permissions
-    Role::create(['name' => 'admin'])->givePermissionTo(['manage_students', 'manage_standard']);
+    Role::create(['name' => 'admin'])->givePermissionTo(['manage_students', 'manage_standard', 'Manage Roles', 'Manage Permissions']);
     Role::create(['name' => 'standard'])->givePermissionTo(['manage_students']);
 
       
