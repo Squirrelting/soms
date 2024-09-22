@@ -66,7 +66,7 @@ const deleteRole = (id: number) => {
     <AuthenticatedLayout>
         <template #mobileMenuName> Roles </template>
 
-        <div class="card shadow p-5 rounded-sm bg-white dark:bg-slate-800">
+        <div class="card shadow p-5 rounded-sm bg-white">
             <div class="flex flex-col mb-2">
                 <div class="flex justify-start">
                     <h1 class="text-xl mb-2">Roles list</h1>

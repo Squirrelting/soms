@@ -20,9 +20,6 @@ class StudentsController extends Controller
        ]);
    }
 
-   public function adminpage(){
-       return Inertia::render('AdminPage');
-   }
 
    public function signatorypage(){
     $signatory = Signatory::get();
@@ -53,7 +50,7 @@ class StudentsController extends Controller
     
 
 
-    public function show(Student $student)
+    public function email(Student $student)
     {
         return Inertia::render('Student/ShowEmail',[
             'student' => $student,

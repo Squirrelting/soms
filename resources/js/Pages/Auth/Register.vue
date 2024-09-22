@@ -24,7 +24,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <Head title="Register" />
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <form @submit.prevent="submit">
+            <form @submit.prevent="submit" class="w-full max-w-lg px-6 py-4 bg-white shadow-md rounded-lg">
             <div>
                 <InputLabel for="name" value="Name" />
 

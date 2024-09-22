@@ -25,4 +25,10 @@ class Student extends Model
         return $this->hasMany(SubmittedMinorOffenses::class, 'lrn', 'lrn');
     }
 
+    public function submittedMajorOffenses(): HasMany
+    {
+        return $this->hasMany(SubmittedMajorOffenses::class, 'lrn', 'lrn');
+    }
+
+
 }

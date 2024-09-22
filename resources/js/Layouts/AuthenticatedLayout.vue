@@ -73,6 +73,7 @@ const logOut = () => {
                                 </div>
                             <MenuItem label="Dashboard" pattern="dashboard" route="dashboard"/>
                             <MenuItem label="Register" pattern="register" route="register"/>
+                            <MenuItem label="Signatory" pattern="signatory" route="signatorypage"/>
                             <MenuItem label="Roles" pattern="roles.index" route="users.roles-permissions.roles.index"/>
                             <MenuItem label="Permissions" pattern="permissions.index" route="users.roles-permissions.permissions.index"/>
                         </ul>
@@ -81,7 +82,7 @@ const logOut = () => {
             </nav>
             <section class="w-full">
                 <div
-                    class="mt-5 md:mt-20 lg:mt-10 flex-1 p-5"
+                    class="mt-5 md:mt-20 lg:mt-10 flex-1 pt-5"
                 >
                     <slot />
                 </div>
