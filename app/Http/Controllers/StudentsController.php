@@ -52,8 +52,13 @@ class StudentsController extends Controller
 
     public function email(Student $student)
     {
+        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
+        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
+
         return Inertia::render('Student/ShowEmail',[
             'student' => $student,
+            'submittedminorOffenses' => $submittedminorOffenses,
+            'submittedmajorOffenses' => $submittedmajorOffenses,
         ]);
     }
 

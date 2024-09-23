@@ -17,6 +17,6 @@ class MinorPenalty extends Model
     ];
     public function submittedMinorPenalties(): HasMany
     {
-        return $this->hasMany(SubmittedMinorOffenses::class, 'minor_penalty_id', 'id');
+        return $this->hasMany(SubmittedMinorOffense::class, 'minor_penalty_id', 'id');
     }
 }

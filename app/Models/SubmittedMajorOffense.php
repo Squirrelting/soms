@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SubmittedMajorOffenses extends Model
+class SubmittedMajorOffense extends Model
 {
     use HasFactory;
 
@@ -35,6 +35,6 @@ class SubmittedMajorOffenses extends Model
 
     public function majorPenalty(): BelongsTo
     {
-        return $this->belongsTo(MajorPenalty::class);
+        return $this->belongsTo(MajorPenalty::class, 'major_penalty_id', 'id');
     }
 }

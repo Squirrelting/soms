@@ -1,6 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'; 
+
+defineProps({
+    errors: Object,
+    student: Object,
+});
+
+const form = useForm({
+    minor_offense_id: '',
+});
+
 </script>
 
 <template lang="">

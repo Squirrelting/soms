@@ -8,7 +8,7 @@ use App\Models\Student;
 use App\Models\MajorOffense;
 use App\Models\MajorPenalty;
 use Illuminate\Http\Request;
-use App\Models\SubmittedMajorOffenses;
+use App\Models\SubmittedMajorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\MajorOffenseDetailRequest;
 use App\Http\Requests\StudentDetailRequest;
@@ -21,7 +21,7 @@ class MajorOffensesController extends Controller
         $majorOffenses = MajorOffense::all();
     
         // Fetch submitted major offenses related to the student
-        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('MajorOffense', 'MajorPenalty')->get();
+        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
         
         // Pass the student, major offenses, and submitted major offenses to the view
         return Inertia::render('Offenses/MajorOffenses', [
@@ -38,7 +38,7 @@ class MajorOffensesController extends Controller
         $validated = $request->validated();
     
         // Fetch the student's offenses
-        $existingOffenses = SubmittedMajorOffenses::where('lrn', $validated['lrn'])->count();
+        $existingOffenses = SubmittedMajorOffense::where('lrn', $validated['lrn'])->count();
     
         // Determine the penalty based on the number of offenses
         $penaltyId = 1; // Default to the first penalty
@@ -50,7 +50,7 @@ class MajorOffensesController extends Controller
         }
     
         // Include the penalty in the data to be saved
-        SubmittedMajorOffenses::create([
+        SubmittedMajorOffense::create([
             'lrn' => $validated['lrn'],
             'student_name' => $validated['student_name'],
             'student_grade' => $validated['student_grade'],

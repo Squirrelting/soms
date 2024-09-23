@@ -18,6 +18,6 @@ class MajorPenalty extends Model
 
     public function submittedMajorOffenses(): HasMany
     {
-        return $this->hasMany(SubmittedMajorOffenses::class, 'major_penalty_id', 'id');
+        return $this->hasMany(SubmittedMajorOffense::class, 'major_penalty_id', 'id');
     }
 }
