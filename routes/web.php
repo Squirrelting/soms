@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SignatoryController;
@@ -20,8 +21,15 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+    
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
+    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+    
+    //send email
+    Route::get('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+
+
 });
 
 //signatoy

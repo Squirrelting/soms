@@ -8,7 +8,7 @@ use App\Models\Student;
 use App\Models\MinorOffense;
 use App\Models\MinorPenalty;
 use Illuminate\Http\Request;
-use App\Models\SubmittedMinorOffenses;
+use App\Models\SubmittedMinorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\MinorOffenseDetailRequest;
 use App\Http\Requests\StudentDetailRequest;
@@ -21,7 +21,7 @@ class MinorOffensesController extends Controller
         $minorOffenses = MinorOffense::all();
     
         // Fetch submitted minor offenses related to the student
-        $submittedminorOffenses = $student->submittedMinorOffenses()->with('MinorOffense', 'MinorPenalty')->get();
+        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
         
         // Pass the student, minor offenses, and submitted minor offenses to the view
         return Inertia::render('Offenses/MinorOffenses', [
@@ -38,7 +38,7 @@ class MinorOffensesController extends Controller
         $validated = $request->validated();
     
         // Fetch the student's offenses
-        $existingOffenses = SubmittedMinorOffenses::where('lrn', $validated['lrn'])->count();
+        $existingOffenses = SubmittedMinorOffense::where('lrn', $validated['lrn'])->count();
     
         // Determine the penalty based on the number of offenses
         $penaltyId = 1; // Default to the first penalty
@@ -50,7 +50,7 @@ class MinorOffensesController extends Controller
         }
     
         // Include the penalty in the data to be saved
-        SubmittedMinorOffenses::create([
+        SubmittedMinorOffense::create([
             'lrn' => $validated['lrn'],
             'student_name' => $validated['student_name'],
             'student_grade' => $validated['student_grade'],

@@ -18,7 +18,7 @@ class MinorOffense extends Model
 
     public function submittedMinorOffenses(): HasMany
     {
-        return $this->hasMany(SubmittedMinorOffenses::class, 'minor_offense_id', 'id');
+        return $this->hasMany(SubmittedMinorOffense::class, 'minor_offense_id', 'id');
     }
 
 }
