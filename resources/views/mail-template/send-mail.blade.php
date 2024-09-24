@@ -9,9 +9,14 @@
 <body>
 
     <h4>{{ $subject }}</h4>
-    <p>{{ $mailMessage }}</p>
+    <p>{{ $messageContent }}</p>
+    <center><img src="{{ $message->embed(public_path('images/SCNHS-Logo.png')) }}" alt="Logo" width="100"> </center>
 
+    <p>LRN: {{ $student->lrn }}</p>
+    <p>Name: {{ $student->name }}</p>
+    <p>Grade: {{ $student->grade }}</p>
     <h5>Major Offenses:</h5>
+    
     <ul>
         @foreach ($submittedmajorOffenses as $majorOffense)
             <li>

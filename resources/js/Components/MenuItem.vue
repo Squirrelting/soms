@@ -17,10 +17,6 @@ const redirectRoute = () => {
 onMounted(() => {
     const currentRouteName = usePage().props.currentRouteName as string;
     isActive.value = currentRouteName.includes(props.pattern);
-    console.log(isActive.value);
-    console.log('label: ' + props.label);
-    console.log('pattern: ' + props.pattern);
-    console.log('current route name: ' + currentRouteName);
 });
 </script>
 
