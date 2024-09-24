@@ -13,7 +13,7 @@ const form = useForm({});
 
 const signatoryId = ref('');
 const getId = (id) => {
-    sisnatoryId.value = id;
+    signatoryId.value = id;
 };
 
 

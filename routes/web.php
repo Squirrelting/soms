@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\SignatoryController;
@@ -28,6 +29,8 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     
     //send email
     Route::get('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+    //print cgm
+    Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 
 
 });

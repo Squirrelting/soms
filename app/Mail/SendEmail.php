@@ -14,21 +14,21 @@ class SendEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailMessage;
+    public $messageContent;
     public $subject;
-
-    public  $submittedmajorOffenses;
-
     public $submittedminorOffenses;
+    public $submittedmajorOffenses;
+    public $student;
     /**
      * Create a new message instance.
      */
-    public function __construct($message, $subject, $submittedminorOffenses, $submittedmajorOffenses)
+    public function __construct($messageContent, $subject, $submittedminorOffenses, $submittedmajorOffenses, $student)
     {
-        $this->mailMessage = $message;
+        $this->messageContent = $messageContent;
         $this->subject = $subject;
         $this->submittedminorOffenses = $submittedminorOffenses;
         $this->submittedmajorOffenses = $submittedmajorOffenses;
+        $this->student = $student;
     }
 
     /**

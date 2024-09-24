@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import MenuItem from "@/Components/MenuItem.vue";
 import { Link, router } from '@inertiajs/vue3';
-import Logo from '@/Pages/Images/SCNHS-Logo.png';
 
  
 const showingNavigationDropdown = ref(false);
@@ -69,7 +68,7 @@ const logOut = () => {
                             class="list-reset flex flex-row md:flex-col pt-3 md:py-3 px-1 md:px-2 text-center md:text-left"
                         >
                             <div class="flex justify-center items-center">
-                                <img class="w-20 h-20 rounded-full" :src="Logo" alt="logo here">
+                                <img class="w-20 h-20 rounded-full" src="/Images/SCNHS-Logo.png" alt="logo here">
                                 </div>
                             <MenuItem label="Dashboard" pattern="dashboard" route="dashboard"/>
                             <MenuItem label="Register" pattern="register" route="register"/>

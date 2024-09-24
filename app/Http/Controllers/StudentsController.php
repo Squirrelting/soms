@@ -13,7 +13,7 @@ class StudentsController extends Controller
 {
     public function dashboard()   
     {
-       $students = Student::paginate(2);
+       $students = Student::paginate(5);
 
        return Inertia::render('Dashboard', [
            'students'=> $students
@@ -66,12 +66,15 @@ class StudentsController extends Controller
     public function edit(Student $student)
     {
         return Inertia::render('Student/Edit',[
-            'student' => $student
+            'student' => $student,
         ]);
     }
 
-    public function print(Student $student, Signatory $signatory)
+    public function print(Student $student)
     {
+        // Fetch all major signatories
+        $signatory = Signatory::all();
+
         return Inertia::render('Student/Print',[
             'student' => $student,
             'signatory'=> $signatory
