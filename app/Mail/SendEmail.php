@@ -14,7 +14,6 @@ class SendEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $messageContent;
     public $subject;
     public $submittedminorOffenses;
     public $submittedmajorOffenses;
@@ -22,9 +21,8 @@ class SendEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($messageContent, $subject, $submittedminorOffenses, $submittedmajorOffenses, $student)
+    public function __construct($subject, $submittedminorOffenses, $submittedmajorOffenses, $student)
     {
-        $this->messageContent = $messageContent;
         $this->subject = $subject;
         $this->submittedminorOffenses = $submittedminorOffenses;
         $this->submittedmajorOffenses = $submittedmajorOffenses;
@@ -37,9 +35,9 @@ class SendEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('samplecode42069@gmail.com', 'Sample'),
+            from: new Address('samplecode42069@gmail.com', 'Santiago City National High School'),
             replyTo: [
-                new Address('christiansalvador1906@gmail.com', 'Yanong'),
+                new Address('christiansalvador1906@gmail.com', 'Bossing'),
             ],
 
             subject: $this->subject,

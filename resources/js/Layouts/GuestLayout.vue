@@ -1,5 +1,4 @@
 <script setup>
-import Logo from '@/Pages/Images/SCNHS-Logo.png';
 import { Link } from '@inertiajs/vue3';
 </script>
 
@@ -12,7 +11,7 @@ import { Link } from '@inertiajs/vue3';
         >
         <div class="mb-6 flex flex-center items-center w-full flex-col">
             <Link href="/">
-                <img :src="Logo" alt="SCNHS Logo" class="w-20 h-20" />
+                <img class="w-20 h-20 rounded-full" src="/Images/SCNHS-Logo.png" alt="logo here">
             </Link>
         </div>
             <slot />

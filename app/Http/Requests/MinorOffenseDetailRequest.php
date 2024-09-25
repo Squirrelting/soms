@@ -25,6 +25,7 @@ class MinorOffenseDetailRequest extends FormRequest
             'lrn' => 'required',
             'student_name' => 'required',
             'student_grade' => 'required',
+            'student_sex' => 'required',
             'minor_offense_id' => 'required|exists:minor_offenses,id',
         ];
     }

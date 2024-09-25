@@ -1,174 +1,102 @@
 <script setup>
-import { ref } from "vue";
-import Pagination from "@/Components/Pagination.vue";
+import { onMounted, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
+import PieChart from '@/Components/PieChart.vue';
+import axios from 'axios';
 
-const props = defineProps({
-    students: {
-        type: Object,
-    },
+// Get current year
+const currentYear = new Date().getFullYear();
+const selectedYear = ref(currentYear);  // Default to current year
+
+// Reactive offense data
+const offenseData = ref({
+  male: 0,
+  female: 0
 });
 
-const form = useForm({});
+// Reactive chart data
+const pieData = ref({
+  labels: ['Male', 'Female'],
+  datasets: [
+    {
+      label: 'Offenders by Sex',
+      data: [0, 0], // Initialize with zero data
+      backgroundColor: [
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+      ],
+      borderColor: [
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+      ],
+      borderWidth: 1,
+    },
+  ],
+});
 
-//pagination
-const paginationData = ref(props.students);
+// Function to fetch and update chart data based on year
+const fetchChartData = (year) => {
+  axios.get(`/get-chart-data/${year}`)
+    .then((response) => {
+      const data = response.data;
 
+      // Update offenseData and pieData
+      offenseData.value.male = data.male;
+      offenseData.value.female = data.female;
 
-const studentId = ref('');
-const getId = (id) => {
-    studentId.value = id;
-};
-
-const DeleteStudent = (id) => {
-    router.delete(route("students.destroy", id), {
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            alert("success");
-        },
-        onError: () => console.error("Failed to delete student"),
+      // Update pie chart data
+      pieData.value.datasets[0].data = [data.male, data.female];
+    })
+    .catch((error) => {
+      console.error('Error fetching chart data:', error);
     });
 };
+
+// Function to handle year change
+const changeYear = (event) => {
+  selectedYear.value = event.target.value;
+  fetchChartData(selectedYear.value);
+};
+
+// Fetch data when component is mounted
+onMounted(() => {
+  fetchChartData(selectedYear.value);  // Load data for the current year by default
+});
 </script>
 
 <template>
-    <Head title="Dashboard" />
+  <Head title="Dashboard" />
 
-    <AuthenticatedLayout>
-        <!-- message from StudentsController-->
-        <div
-        v-if="$page.props.flash.message"
-        role="alert"
-        class="alert alert-info mt-4 mx-5 px-4 py-2"
-    >
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-    >
-        <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-    </svg>
-    <span>{{ $page.props.flash.message }}</span>
-    </div>
+  <AuthenticatedLayout>
+    <section class="w-full lg:w-1/2 mx-4 my-8">
+      <!-- Year Selection Dropdown -->
+      <div class="mb-4">
+        <label for="yearSelect" class="mr-2">Select Year:</label>
+        <select id="yearSelect" @change="changeYear" class="form-select" v-model="selectedYear">
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+        </select>
+      </div>
 
-        <!-- Student List Table -->
-        <div class="mt-4 mx-4">
-            <div class="flex justify-between">
-                <h5 class="m-4">Student List</h5>
-                <Link
-                    :href="route('students.create')"
-                    class="bg-blue-500 text-white p-3 rounded mb-4"
-                    >Add Student</Link
-                >
-            </div>
-            <table class="w-full bg-white border border-gray-200 shadow">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 text-left border">LRN</th>
-                        <th class="py-2 px-4 text-left border">Name</th>
-                        <th class="py-2 px-4 text-left border">Sex</th>
-                        <th class="py-2 px-4 text-left border">Grade</th>
-                        <th class="py-2 px-4 text-left border">
-                            Offenses and Penalties
-                        </th>
-                        <th class="py-2 px-4 text-left border">
-                            Parent's Email
-                        </th>
-                        <th class="py-2 px-4 text-left border">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="student in students.data" :key="student.id">
-                        <td class="py-2 px-4 border">{{ student.lrn }}</td>
-                        <td class="py-2 px-4 border">
-                            {{ student.name }}, {{ student.sex }}
-                        </td>
-                        <td class="py-2 px-4 border">{{ student.sex }}</td>
-                        <td class="py-2 px-4 border">
-                            Grade {{ student.grade }}
-                        </td>
-                        <td class="py-2 px-4 border">
-                            <Link
-                                :href="route('minor.offenses', student.id)"
-                                class="px-2 py-1 text-sm bg-yellow-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                Minor
-                            </Link>
-                            <Link
-                                :href="route('major.offenses', student.id)"
-                                class="px-2 py-1 text-sm bg-red-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                Major
-                            </Link>
-                        </td>
-                        <td class="py-2 px-4 border">
-                            <Link
-                                :href="route('students.show_email', student.id)"
-                                class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                {{ student.email }}
-                            </Link>
-                        </td>
-
-                        <td>
-                            <Link
-                                :href="route('students.edit', student.id)"
-                                class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block"
-                            >
-                                Edit
-                            </Link>
-                            <Link
-                                :href="route('students.print', student.id)"
-                                class="px-2 py-1 text-sm bg-blue-500 text-white p-3 rounded me-2 inline-block"
-                            >
-                                Print
-                            </Link>
-                            <button
-                                @click="getId(student.id)"
-                                onclick="my_modal_1.showModal()"
-                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block"
-                            >
-                                Delete
-                            </button>
-
-                            <!-- Open the modal using ID.showModal() method -->
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+      <!-- Card -->
+      <div class="card bg-gray-100 text-gray-800 shadow-xl border border-gray-200 rounded-lg">
+        <!-- Card header with solid blue color -->
+        <div class="card-header bg-blue-600 text-white p-4 rounded-t-lg">
+          <h3 class="card-title text-xl font-bold flex items-center">
+            <i class="fas fa-map-marker-alt mr-2"></i> Pie Chart for Sex Offenders in {{ selectedYear }}
+          </h3>
         </div>
-        <Pagination :pagination="paginationData" />
-
-        <dialog id="my_modal_1" class="modal">
-                                <div class="modal-box">
-                                    <h3 class="text-lg font-bold">Hello!</h3>
-                                    <p class="py-4">
-                                        Are you sure you want to delete all this
-                                        Student data? This action cannot be
-                                        undone.
-                                    </p>
-                                    <div class="modal-action">
-                                        <form method="dialog">
-                                            <!-- if there is a button in form, it will close the modal -->
-                                            <button class="btn">Cancel</button>
-                                            <button
-                                                @click="DeleteStudent(studentId)"
-                                                class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500"
-                                            >
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </dialog>
-    </AuthenticatedLayout>
+        <!-- Card body with white background -->
+        <div class="card-body p-6 bg-white rounded-b-lg">
+          <!-- PieChart component -->
+          <div class="flex justify-center items-center">
+            <PieChart :chartData="pieData" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </AuthenticatedLayout>
 </template>

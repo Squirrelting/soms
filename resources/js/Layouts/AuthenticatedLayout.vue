@@ -70,11 +70,12 @@ const logOut = () => {
                             <div class="flex justify-center items-center">
                                 <img class="w-20 h-20 rounded-full" src="/Images/SCNHS-Logo.png" alt="logo here">
                                 </div>
-                            <MenuItem label="Dashboard" pattern="dashboard" route="dashboard"/>
-                            <MenuItem label="Register" pattern="register" route="register"/>
-                            <MenuItem label="Signatory" pattern="signatory" route="signatorypage"/>
-                            <MenuItem label="Roles" pattern="roles.index" route="users.roles-permissions.roles.index"/>
-                            <MenuItem label="Permissions" pattern="permissions.index" route="users.roles-permissions.permissions.index"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Students')"label="Dashboard" pattern="dashboard" route="dashboard"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Students')"label="Students" pattern="students.index" route="students.index"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Standard Users')"label="Register" pattern="register" route="register"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Students')"label="Signatory" pattern="signatory.index" route="signatory.index"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Standard Users')"label="Roles" pattern="roles.index" route="users.roles-permissions.roles.index"/>
+                            <MenuItem v-if="$page.props.user.permissions.includes('Manage Standard Users')"label="Permissions" pattern="permissions.index" route="users.roles-permissions.permissions.index"/>
                         </ul>
                     </div>
                 </div>

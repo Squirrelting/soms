@@ -6,7 +6,6 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import backgroundImage from '@/Pages/Images/SCNHS-Background.jpg';
 
 
 defineProps({
@@ -37,7 +36,7 @@ const submit = () => {
             <img
                 id="background"
                 class="w-full h-full object-cover opacity-40"
-                :src="backgroundImage" 
+                src="/Images/SCNHS-Background.jpg"
                 alt="Background"
             />
             <div class="absolute z-0"></div>
