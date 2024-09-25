@@ -17,6 +17,7 @@ class SubmittedMinorOffense extends Model
         'lrn',
         'student_name',
         'student_grade',
+        'student_sex',
         'minor_offense_id',
         'minor_penalty_id', // Include the penalty in the fillable fields
 

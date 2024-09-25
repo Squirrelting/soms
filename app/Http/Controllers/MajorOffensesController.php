@@ -54,6 +54,7 @@ class MajorOffensesController extends Controller
             'lrn' => $validated['lrn'],
             'student_name' => $validated['student_name'],
             'student_grade' => $validated['student_grade'],
+            'student_sex' => $validated['student_sex'],
             'major_offense_id' => $validated['major_offense_id'],
             'major_penalty_id' => $penaltyId, // Save the penalty based on the number of offenses
         ]);

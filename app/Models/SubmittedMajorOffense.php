@@ -16,6 +16,7 @@ class SubmittedMajorOffense extends Model
         'lrn',
         'student_name',
         'student_grade',
+        'student_sex',
         'major_offense_id',
         'major_penalty_id', // Include the penalty in the fillable fields
     ];

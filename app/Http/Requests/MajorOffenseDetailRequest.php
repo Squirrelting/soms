@@ -25,6 +25,7 @@ class MajorOffenseDetailRequest extends FormRequest
             'lrn' => 'required',
             'student_name' => 'required',
             'student_grade' => 'required',
+            'student_sex' => 'required',
             'major_offense_id' => 'required|exists:major_offenses,id',
         ];
     }

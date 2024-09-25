@@ -6,17 +6,19 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\MinorOffensesController;    
 use App\Http\Controllers\Auth\RegisteredUserController;
 
-Route::get('/dashboard', [StudentsController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/signatory', [StudentsController::class, 'signatorypage'])->middleware(['auth', 'verified'])->name('signatorypage');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/get-chart-data/{year}', [DashboardController::class,'getChartData'])->name('get.chart.data');
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
     Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
@@ -37,6 +39,7 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
 
 //signatoy
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [SignatoryController::class, 'index'])->name('signatory.index');
     Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
     Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
     Route::get('/{signatory}/edit', [SignatoryController::class, 'edit'])->name('signatory.edit');

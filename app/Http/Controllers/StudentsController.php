@@ -11,24 +11,14 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
-    public function dashboard()   
+    public function index()   
     {
        $students = Student::paginate(5);
 
-       return Inertia::render('Dashboard', [
+       return Inertia::render('Student/Index', [
            'students'=> $students
        ]);
    }
-
-
-   public function signatorypage(){
-    $signatory = Signatory::get();
-
-    return Inertia::render('SignatoryPage',[
-        'signatory'=> $signatory
-    ]);
-
-}
    
     /**
      * Show the form for creating a new resource.
@@ -45,7 +35,7 @@ class StudentsController extends Controller
     
         Student::create($validated);
     
-        return redirect()->route('dashboard')->with('message', 'Student added successfully');
+        return redirect()->route('students.index')->with('message', 'Student added successfully');
     }
     
 

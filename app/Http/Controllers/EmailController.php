@@ -10,8 +10,7 @@ class EmailController extends Controller
 {
     public function sendemail(Student $student)
     {
-        $message = "Confidentiality message"; 
-        $subject = "Student Offense Committed";
+        $subject = "Notice to your Child";
 
         // Fetch submitted minor offenses related to the student
         $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
@@ -20,7 +19,7 @@ class EmailController extends Controller
         $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
 
         // Send email to the student's email
-        Mail::to($student->email)->send(new SendEmail($message, $subject, $submittedminorOffenses, $submittedmajorOffenses, $student));
+        Mail::to($student->email)->send(new SendEmail($subject, $submittedminorOffenses, $submittedmajorOffenses, $student));
     }
 }
 

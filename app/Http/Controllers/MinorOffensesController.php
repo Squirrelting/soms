@@ -55,6 +55,7 @@ class MinorOffensesController extends Controller
             'student_name' => $validated['student_name'],
             'student_grade' => $validated['student_grade'],
             'minor_offense_id' => $validated['minor_offense_id'],
+            'student_sex' => $validated['student_sex'],
             'minor_penalty_id' => $penaltyId, // Save the penalty based on the number of offenses
         ]);
     
