@@ -34,7 +34,7 @@ const DeleteStudent = (id) => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Student" />
 
     <AuthenticatedLayout>
         <!-- message from StudentsController-->

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\MinorOffensesController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/get-chart-data/{year}', [DashboardController::class,'getChartData'])->name('get.chart.data');
+Route::get('/get-pie-data', [PieController::class, 'getPieData'])->name('get.pie.data');
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
