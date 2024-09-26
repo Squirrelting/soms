@@ -100,7 +100,7 @@ const createChart = () => {
           },
           formatter: (value, ctx) => {
             const total = ctx.chart.data.datasets[0].data.reduce((sum, val) => sum + val, 0); // Calculate the total
-            const percentage = total > 0 ? (value / total * 100).toFixed(2) : 0; // Calculate percentage
+            const percentage = total > 0 ? (value / total * 100).toFixed(0) : 0; // Calculate percentage
             return `${percentage}%`; // Display the percentage
           },
         },
