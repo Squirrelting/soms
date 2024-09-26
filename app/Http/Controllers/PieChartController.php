@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
-class PieController extends Controller
+class PieChartController extends Controller
 {
    public function getPieData(Request $request) 
    {

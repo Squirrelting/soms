@@ -1,21 +1,25 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PieChartController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\MinorOffensesController;    
 use App\Http\Controllers\Auth\RegisteredUserController;
 
+//Dashboard Graphs
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/get-pie-data', [PieController::class, 'getPieData'])->name('get.pie.data');
+Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
+Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');
+
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
