@@ -4,6 +4,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue'; 
+import BarGraph from '@/Components/BarGraph.vue'; 
+
 
 // Default date values
 const today = new Date();
@@ -38,6 +40,17 @@ watch([startDate, endDate], () => {
         <div>
           <label for="endDate" class="mr-2">End Date:</label>
           <input type="date" id="endDate" v-model="endDate" class="form-input" />
+        </div>
+      </div>
+
+      <div class="card bg-gray-100 text-gray-800 shadow-xl border border-gray-200 rounded-lg">
+        <div class="card-header bg-orange-600 text-white p-4 rounded-t-lg">
+          <h3 class="card-title text-xl font-bold flex items-center">
+            <i class="fas fa-chart-line mr-2"></i> Bar Graph for Top 5 Committed Offenses
+          </h3>
+        </div>
+        <div class="card-body p-6 bg-white rounded-b-lg">
+          <BarGraph :start-date="startDate" :end-date="endDate" />
         </div>
       </div>
 
