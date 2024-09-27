@@ -50,6 +50,4 @@ class LineChartController extends Controller
 
         return response()->json($data);
     }
-
-
 }

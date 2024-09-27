@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarGraphController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
 Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');
+Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('get.bar.data');
+
 
 
 //students
