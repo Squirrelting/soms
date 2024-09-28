@@ -6,7 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-
+import Swal from 'sweetalert2';
 
 defineProps({
     canResetPassword: {
@@ -24,8 +24,35 @@ const form = useForm({
 });
 
 const submit = () => {
+    // Show loading indicator
+    Swal.fire({
+        title: 'Logging in...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     form.post(route('authenticateUser'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => {
+            form.reset('password');
+        },
+        onSuccess: () => {
+            // Close the loading indicator and show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Logged in!',
+                text: 'You have been logged in successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        },
+        onError: () => {
+            // Close the loading indicator if there's an error
+            Swal.close();
+        }
     });
 };
 </script>
