@@ -11,21 +11,23 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
-    public function index()   
+    public function index(Request $request)
     {
-       $students = Student::paginate(5);
+        $search = $request->input('search');
+        
+        $students = Student::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('lrn', 'like', "%{$search}%")
+                      ->orWhere('grade', 'like', "%{$search}%");
+            })
+            ->paginate(5)
+            ->appends(['search' => $search]);
 
-       return Inertia::render('Student/Index', [
-           'students'=> $students
-       ]);
-   }
-   
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return Inertia::render('Student/Create');
+        return Inertia::render('Student/Index', [
+            'students' => $students,
+            'search' => $search,
+        ]);
     }
 
 
@@ -77,7 +79,7 @@ class StudentsController extends Controller
     
         $student->update($validated);
     
-        return redirect()->route('dashboard')->with('message', 'Student updated successfully');
+        return redirect()->route('students.index')->with('message', 'Student updated successfully');
     }
 
     public function destroy(Student $student)
