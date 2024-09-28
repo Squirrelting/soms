@@ -2,6 +2,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, router } from "@inertiajs/vue3";
 import { ref } from "vue";
+import Swal from 'sweetalert2';
 
 defineProps({
     errors: Object,
@@ -16,13 +17,28 @@ const getId = (id) => {
 };
 
 const SendEmail = (id) => {
-    router.get(route("send.email", id), {
-        onSuccess: () => {
-            alert("success");
-        },
-        onError: () => console.error("Failed to send email"),
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to send this data to the parent's email?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Sending...",
+                text: "Please wait while we send the email.",
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+            router.get(route("send.email", id));
+        }
     });
 };
+
 </script>
 
 <template>
@@ -33,7 +49,7 @@ const SendEmail = (id) => {
             <div class="flex justify-between">
                 <h5 class="m-4">Student</h5>
                 <Link
-                    :href="route('dashboard')"
+                    :href="route('students.index')"
                     class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
                 >
                     Back
@@ -125,33 +141,11 @@ const SendEmail = (id) => {
             </div>
 
             <button
-                @click="getId(student.id)"
-                onclick="my_modal_1.showModal()"
-                class="px-2 py-1 text-sm bg-blue-600 text-white p-3 rounded me-2 inline-block"
-            >
+                @click="SendEmail(student.id)"
+                class="bg-blue-500 text-white py-2 px-5 rounded m-4"
+                >
                 Send Email
             </button>
         </div>
-
-        <dialog id="my_modal_1" class="modal">
-            <div class="modal-box">
-                <h3 class="text-lg font-bold">Hello!</h3>
-                <p class="py-4">
-                    Are you sure you want to send this data to parents Email?.
-                </p>
-                <div class="modal-action">
-                    <form method="dialog">
-                        <!-- if there is a button in form, it will close the modal -->
-                        <button class="btn">Cancel</button>
-                        <button
-                            @click="SendEmail(studentId)"
-                            class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500"
-                        >
-                            Send Email
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </dialog>
     </AuthenticatedLayout>
 </template>

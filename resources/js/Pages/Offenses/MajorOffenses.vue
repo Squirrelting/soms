@@ -22,23 +22,7 @@ const form = useForm({
  // Function to save a major offense
  const saveMajorOffense = () => {
     if(form.major_offense_id === ''){
-        form.post(route('major.store'), {
-                onSuccess: () => {
-                    Swal.fire(
-                        'Saved!',
-                        'The offense has been added successfully.',
-                        'success'
-                    );
-                    form.reset(); // Optionally reset the form after success
-                },
-                onError: () => {
-                    Swal.fire(
-                        'Error!',
-                        'There was a problem saving the offense.',
-                        'error'
-                    );
-                },
-            });
+        form.post(route('major.store'));
     } else {
         Swal.fire({
         title: 'Are you sure?',
