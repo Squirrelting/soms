@@ -22,7 +22,13 @@ class Student extends Model
 
     public function submittedMinorOffenses(): HasMany
     {
-        return $this->hasMany(SubmittedMinorOffenses::class, 'lrn', 'lrn');
+        return $this->hasMany(SubmittedMinorOffense::class, 'lrn', 'lrn');
     }
+
+    public function submittedMajorOffenses(): HasMany
+    {
+        return $this->hasMany(SubmittedMajorOffense::class, 'lrn', 'lrn');
+    }
+
 
 }

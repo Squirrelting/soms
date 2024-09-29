@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('lrn')->unique(); 
             $table->string('name'); 
             
-            $table->string('sex');
+            $table->string('sex')->nullable();
             $table->string('grade');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

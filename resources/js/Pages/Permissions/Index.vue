@@ -1,0 +1,185 @@
+<script setup lang="ts">
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Head, Link, router } from "@inertiajs/vue3";
+import Pagination from "@/Components/Pagination.vue";
+import { ref, defineProps } from "vue";
+import {
+    TrashIcon,
+    PencilSquareIcon,
+    ShieldExclamationIcon,
+    ShieldCheckIcon,
+} from "@heroicons/vue/24/solid";
+import DangerButton from "@/Components/DangerButton.vue";
+
+const props = defineProps<{
+    permissions: {
+        data: Array<{
+            id: number;
+            name: string;
+            number: number;
+        }>;
+    };
+}>();
+
+const searchTerm = ref("");
+
+const search = () => {
+    router.get(
+        route("users.roles-permissions.permissions.index"),
+        {
+            searchTerm: searchTerm.value,
+        },
+        {
+            preserveScroll: true,
+            preserveState: true,
+        }
+    );
+};
+
+const selectedPermissionName = ref("");
+const selectedPermissionId = ref(0);
+
+const deleteModal = (id: number, name: string) => {
+    selectedPermissionName.value = name;
+    selectedPermissionId.value = id;
+};
+
+const deletepermmision = (id: number) => {
+    router.delete(route("users.roles-permissions.permissions.destroy", { id: id }), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => {
+            alert("deleted successfully");
+            selectedPermissionId.value = 0;
+            selectedPermissionName.value = "";
+        },
+        onError: () => {
+            alert("Somthing went wrong");
+            selectedPermissionId.value = 0;
+            selectedPermissionName.value = "";
+        },
+    });
+};
+</script>
+<template>
+    <Head title="permissions" />
+    <AuthenticatedLayout>
+        <template #mobileMenuName> permissions </template>
+
+        <div class="card shadow p-5 rounded-sm bg-white">
+            <div class="flex flex-col mb-2">
+                <div class="flex justify-start">
+                    <h1 class="text-xl mb-2">Permissions list</h1>
+                </div>
+
+                <div class="flex flex-row gap-2 justify-end mb-2">
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            class="input input-bordered w-full max-w-xs"
+                            @keyup="search"
+                            v-model="searchTerm"
+                        />
+                    </div>
+                    <div>
+                        <Link
+                            class="disabled:text-gray-500 inline-flex hover:border-transparent items-center px-4 py-3 btn bg-kwikweb-400 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-kwikweb dark:hover:bg-white focus:bg-kwikweb-200 dark:focus:bg-white active:bg-kwikweb-900 dark:active:bg-gray-300 focus:outline-none focus:ring-offset-2 transition ease-in-out duration-150"
+                            :href="route('users.roles-permissions.permissions.add')"
+                        >
+                            <ShieldCheckIcon class="h-5" />new permission
+                        </Link>
+                    </div>
+                </div>
+            </div>
+            <div v-if="permissions.data.length > 0" class="w-full">
+                <table class="w-full bg-white border border-gray-200 shadow">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 text-left border">No.</th>
+                            <th class="py-2 px-4 text-left border">permmision name</th>
+                            <th class="py-2 px-4 text-left border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(permmision, index) in permissions.data"
+                            :key="permmision.id"
+                        >
+                            <td class="py-2 px-4 border">{{ permmision.number }}</td>
+                            <td class="py-2 px-4 border">{{ permmision.name }}</td>
+                            <td class="py-2 px-4 border">
+                                <Link
+                                    class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
+                                    :href="
+                                        route(
+                                            'users.roles-permissions.permissions.edit',
+                                            { id: permmision.id }
+                                        )
+                                    "
+                                >
+                                    <PencilSquareIcon class="h-5 w-5" />
+                                </Link>
+                                <button
+                                    class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-red-500 dark:text-red-500 uppercase tracking-widest hover:text-red-900 dark:hover:text-red-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
+                                    onclick="deleteModal.showModal()"
+                                    @click="
+                                        deleteModal(
+                                            permmision.id,
+                                            permmision.name
+                                        )
+                                    "
+                                >
+                                    <TrashIcon class="h-5 w-5"></TrashIcon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <Pagination :pagination="permissions"/>
+            </div>
+            <div v-else class="w-full">
+                <div
+                    class="justify-between mb-6 rounded-lg bg-white p-6 sm:flex sm:justify-start dark:bg-gray-800"
+                >
+                    <ShieldExclamationIcon class="h-10" />
+                    <div class="sm:ml-4 sm:flex sm:w-full sm:justify-between">
+                        <div class="mt-5 sm:mt-0">
+                            <h2
+                                class="text-lg font-bold text-gray-900 dark:text-white"
+                            >
+                                No permissions found
+                            </h2>
+                        </div>
+                        <div
+                            class="mt-4 flex-col justify-center sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <dialog id="deleteModal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">
+                    Are you sure you want to delete this permmision?
+                </h3>
+                <p class="py-4">
+                    You are about to delete this role "{{
+                        selectedPermissionName
+                    }}"
+                </p>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn">Cancel</button>
+                        <DangerButton
+                            @click="deletepermmision(selectedPermissionId)"
+                            class="ml-2"
+                            >Yes, Delete it
+                        </DangerButton>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+    </AuthenticatedLayout>
+</template>

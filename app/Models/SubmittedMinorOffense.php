@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
-class SubmittedMinorOffenses extends Model
+class SubmittedMinorOffense extends Model
 {
     use HasFactory;
 
@@ -17,6 +17,7 @@ class SubmittedMinorOffenses extends Model
         'lrn',
         'student_name',
         'student_grade',
+        'student_sex',
         'minor_offense_id',
         'minor_penalty_id', // Include the penalty in the fillable fields
 
@@ -37,6 +38,6 @@ class SubmittedMinorOffenses extends Model
 
     public function minorPenalty(): BelongsTo
     {
-        return $this->belongsTo(MinorPenalty::class);
+        return $this->belongsTo(MinorPenalty::class, 'minor_penalty_id', 'id');
     }
 }

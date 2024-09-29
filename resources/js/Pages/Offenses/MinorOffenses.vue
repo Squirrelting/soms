@@ -1,5 +1,4 @@
 <script setup>
-import CustomModal from '@/Components/CustomModal.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'; 
 import Swal from 'sweetalert2'; 
@@ -15,30 +14,15 @@ const props = defineProps({
 const form = useForm({
     minor_offense_id: '',
     lrn: props.student.lrn, 
-    student_name: props.student.name, 
+    student_name: props.student.name,
+    student_sex: props.student.sex, 
     student_grade: props.student.grade 
 });
 
  // Function to save a minor offense
  const saveMinorOffense = () => {
     if(form.minor_offense_id === ''){
-        form.post(route('minor.store'), {
-                onSuccess: () => {
-                    Swal.fire(
-                        'Saved!',
-                        'The offense has been added successfully.',
-                        'success'
-                    );
-                    form.reset(); // Optionally reset the form after success
-                },
-                onError: () => {
-                    Swal.fire(
-                        'Error!',
-                        'There was a problem saving the offense.',
-                        'error'
-                    );
-                },
-            });
+        form.post(route('minor.store'));
     } else {
         Swal.fire({
         title: 'Are you sure?',
@@ -96,7 +80,7 @@ const form = useForm({
         <div class="mt-4 mx-4">
             <div class="flex justify-between">
                 <h5 class="m-4">Student</h5>
-                <Link :href="route('dashboard')" class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4">Back</Link>
+                <Link :href="route('students.index')" class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4">Back</Link>
             </div>
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12">
@@ -119,7 +103,6 @@ const form = useForm({
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
                             <th class="py-2 px-4 text-left border">Penalty</th>
                             <th class="py-2 px-4 text-left border">Date Committed</th>
-                            <th class="py-2 px-4 text-left border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

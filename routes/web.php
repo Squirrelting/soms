@@ -1,33 +1,53 @@
 <?php
 
+use App\Http\Controllers\BarGraphController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\OffensesController;
+use App\Http\Controllers\PieChartController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\MajorOffensesController;
+use App\Http\Controllers\MinorOffensesController;    
 use App\Http\Controllers\Auth\RegisteredUserController;
 
-// Route::get('/', [HomeController::class, 'home']);
+//Dashboard Graphs
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
+Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');
+Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('get.bar.data');
 
-Route::get('/dashboard', [StudentsController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/admin', [StudentsController::class, 'adminpage'])->middleware(['auth', 'verified'])->name('adminpage');
-Route::get('/signatory', [StudentsController::class, 'signatorypage'])->middleware(['auth', 'verified'])->name('signatorypage');
+
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}', [StudentsController::class, 'show'])->name('students.show_email');
+    Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+    
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
+    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+    
+    //send email
+    Route::get('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+    //print cgm
+    Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
+
+
 });
 
 //signatoy
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [SignatoryController::class, 'index'])->name('signatory.index');
     Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
     Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
     Route::get('/{signatory}/edit', [SignatoryController::class, 'edit'])->name('signatory.edit');
@@ -36,10 +56,16 @@ Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () 
     Route::delete('/{signatory}', [SignatoryController::class, 'destroy'])->name('signatory.destroy');
 });
 
-    //Offenses
+    //Minor Offenses
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/{student}/minor', [OffensesController::class, 'minor'])->name('minor.offenses');
-    Route::post('/', [OffensesController::class, 'store'])->name('minor.store');
+    Route::get('/{student}/minor', [MinorOffensesController::class, 'minor'])->name('minor.offenses');
+    Route::post('/', [MinorOffensesController::class, 'store'])->name('minor.store');
+});
+
+//Major Offenses
+Route::prefix('major')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
+    Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -53,6 +79,27 @@ Route::middleware('auth')->prefix('user')->group(function () {
     ->name('register');
 
 Route::post('register', [RegisteredUserController::class, 'store']);
+});
+
+Route::group(['prefix' => 'roles-and-permissions'], function () {
+    Route::group(['prefix' => 'roles', 'middleware' => 'can:Manage Roles'], function () {
+        Route::get('/', [RoleController::class, 'index'])->name('users.roles-permissions.roles.index');
+        Route::get('/add', [RoleController::class, 'add'])->name('users.roles-permissions.roles.add');
+        Route::post('/store', [RoleController::class, 'store'])->name('users.roles-permissions.roles.store');
+        Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('users.roles-permissions.roles.edit');
+        Route::put('/update/{id}', [RoleController::class, 'update'])->name('users.roles-permissions.roles.update');
+        Route::delete('delete/{id}', [RoleController::class, 'destroy'])->name('users.roles-permissions.roles.delete');
+        Route::post('/assignPermission/{id}', [RoleController::class, 'assignPermission'])->name('users.roles-permissions.roles.assignPermission');
+    });
+
+    Route::group(['prefix' => 'permissions', 'middleware' => 'can:Manage Permissions'], function () {
+        Route::get('/', [PermissionController::class, 'index'])->name('users.roles-permissions.permissions.index');
+        Route::get('/add', [PermissionController::class, 'add'])->name('users.roles-permissions.permissions.add');
+        Route::post('/store', [PermissionController::class, 'store'])->name('users.roles-permissions.permissions.store');
+        Route::get('/edit/{id}', [PermissionController::class, 'edit'])->name('users.roles-permissions.permissions.edit');
+        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('users.roles-permissions.permissions.update');
+        Route::delete('delete/{id}', [PermissionController::class, 'destroy'])->name('users.roles-permissions.permissions.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

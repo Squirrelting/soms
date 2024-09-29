@@ -1,146 +1,98 @@
 <script setup>
-import { ref } from 'vue';
-import CustomModal from '@/Components/CustomModal.vue';
-import Pagination from '@/Components/Pagination.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { Inertia } from '@inertiajs/inertia'; // Use this to directly call Inertia actions
+import { ref, watch } from "vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Head } from "@inertiajs/vue3";
+import PieChart from '@/Components/PieChart.vue';
+import LineChart from '@/Components/LineChart.vue'; 
+import BarGraph from '@/Components/BarGraph.vue'; 
 
 
-const props = defineProps({
-    students: {
-        type:Object,
-    }
+// Default date values
+const today = new Date();
+const lastMonth = new Date();
+lastMonth.setMonth(today.getMonth() - 1);
+
+// Reactive start and end dates
+const startDate = ref(lastMonth.toISOString().split('T')[0]);
+const endDate = ref(today.toISOString().split('T')[0]);
+
+// Function to fetch line data based on the current dates
+function fetchLineData() {
+    console.log(`Fetching data from ${startDate.value} to ${endDate.value}`);
+    // API logic can be added here later if necessary
+}
+
+// Watch for changes in startDate and endDate
+watch([startDate, endDate], () => {
+    fetchLineData(); // Fetch data whenever the dates change
 });
-
-const form = useForm({});
-
-//pagination
-const paginationData = ref(props.students);
-
-//Modal
-const showModal = ref(false);
-const passId = ref(null);
-
-function openModal(id){
-    passId.value = id;
-    showModal.value = true;
-}
-
-const DeleteStudent = (id) => {
-    router.delete(route('students.destroy', id), {
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            showModal.value = false;
-            alert('success');
-        },
-        onError: () => console.error('Failed to delete student'),
-    });
-}
-
-
 </script>
 
 <template>
-    <Head title="Dashboard" />
-
-    <AuthenticatedLayout>
-        <!-- message from StudentsController-->
-        <div v-if="$page.props.flash.message" class="alert bg-green-200 mt-4 mx-5 px-4 py-2">
-        {{ $page.props.flash.message }}
+  <Head title="Dashboard" />
+  <AuthenticatedLayout>
+    <div class="m-4 flex space-x-4">
+      <div>
+        <label for="startDate" class="mr-2">Start Date:</label>
+        <input type="date" id="startDate" v-model="startDate" class="form-input" />
       </div>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-        </template>
+      <div>
+        <label for="endDate" class="mr-2">End Date:</label>
+        <input type="date" id="endDate" v-model="endDate" class="form-input" />
+      </div>
+    </div>
 
-            <!-- <div class="max-w-7xl mx-auto sm:px-3 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">You're logged in!</div>
-                </div>
-            </div> -->
+    <section class="w-full mx-4 my-8">
+      <div class="lg:flex lg:space-x-4 mb-4">
+        <div class="flex flex-col lg:flex-column lg:space-x-4 mb-4 w-1/2 mx-auto">
 
-
-        <!-- Student List Table -->
-        <div class="mt-4 mx-4">
-            <div class="flex justify-between">
-                <h5 class="m-4">Student List</h5>
-                <Link :href="route('students.create')" class="bg-blue-500 text-white p-3 rounded mb-4">Add Student</Link>
-            </div>
-            <table class="w-full bg-white border border-gray-200 shadow">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 text-left border">LRN</th>
-                        <th class="py-2 px-4 text-left border">Name</th>
-                        <th class="py-2 px-4 text-left border">Sex</th>
-                        <th class="py-2 px-4 text-left border">Grade</th>
-                        <th class="py-2 px-4 text-left border">Offenses and Penalties</th>
-                        <th class="py-2 px-4 text-left border">Parent's Email</th>
-                        <th class="py-2 px-4 text-left border">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="student in students.data" :key="student.id">
-                        <td class="py-2 px-4 border">{{ student.lrn }}</td>
-                        <td class="py-2 px-4 border">{{ student.name }}, {{ student.sex }}</td>
-                        <td class="py-2 px-4 border">{{ student.sex }}</td>
-                        <td class="py-2 px-4 border">Grade {{ student.grade }}</td>
-                        <td class="py-2 px-4 border">
-                            <Link 
-                                :href="route('minor.offenses', student.id)" 
-                                 class="px-2 py-1 text-sm bg-yellow-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                Minor
-                            </Link>
-                            <Link 
-                                :href="route('minor.offenses', student.id)" 
-                                 class="px-2 py-1 text-sm bg-red-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                Major
-                            </Link>
-                        </td>
-                        <td class="py-2 px-4 border">
-                            <Link 
-                                :href="route('students.show_email', student.id)" 
-                                 class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded me-2 inline-block"
-                            >
-                                {{ student.email }}
-                            </Link>
-                        </td>
-
-                        <td>
-                            <Link 
-                                :href="route('students.edit', student.id)" 
-                                class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block"
-                                >
-                                Edit
-                            </Link>
-                            <Link 
-                                :href="route('students.print', student.id)" 
-                                class="px-2 py-1 text-sm bg-blue-500 text-white p-3 rounded me-2 inline-block"
-                                >
-                                Print
-                            </Link>
-                            <button 
-                                @click="openModal(student.id)"
-                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block"
-                                >
-                                Delete
-                            </button>
-                            <CustomModal v-if="showModal" @close="showModal=false">
-                                <p class="text-gray-800">
-                                     Are you sure you want to delete all this Student data? This action cannot be undone.
-                                </p>
-                                <div class="text-right mt-4">
-                                    <button @click="showModal = false" class="px-4 py-2 text-sm text-black-800 focus:outline-none hover:underline">Cancel</button>
-                                    <button @click="DeleteStudent(passId)" class="mr-2 px-4 py-2 text-sm rounded text-white bg-red-600 focus:outline-none hover:bg-red-500">Delete</button>
-                                </div>
-                            </CustomModal>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Bar Graph -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg mb-4 lg:mb-0 lg:flex-1">
+          <div class="bg-orange-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-bar mr-2"></i> Bar Graph for Top 5 Committed Offenses
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg chart-container">
+            <BarGraph :start-date="startDate" :end-date="endDate" />
+          </div>
         </div>
-        <Pagination :pagination="paginationData"/>
-    </AuthenticatedLayout>
+
+        <!-- Line Chart -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg mt-8 lg:mb-0 lg:flex-1">
+          <div class="bg-green-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-line mr-2"></i> Line Chart for Trends
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg chart-container">
+            <LineChart :start-date="startDate" :end-date="endDate" />
+          </div>
+        </div>
+      </div>
+
+        <!-- Pie Chart -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg lg:flex-1">
+          <div class="bg-blue-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-pie mr-2"></i> Pie Chart for Sex Offenders
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg">
+            <PieChart :start-date="startDate" :end-date="endDate" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.chart-container {
+  height: 300px; /* Set a consistent height for both graphs */
+}
+</style>
+
+
+
+

@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             MinorOffenseSeeder::class,
             StudentSeeder::class,
             MinorPenaltySeeder::class,
-
+            MajorOffenseSeeder::class,
+            MajorPenaltySeeder::class,
         ]);
     }
 }

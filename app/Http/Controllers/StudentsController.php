@@ -11,34 +11,23 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
-    public function dashboard()   
+    public function index(Request $request)
     {
-       $students = Student::paginate(2);
+        $search = $request->input('search');
+        
+        $students = Student::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('lrn', 'like', "%{$search}%")
+                      ->orWhere('grade', 'like', "%{$search}%");
+            })
+            ->paginate(5)
+            ->appends(['search' => $search]);
 
-       return Inertia::render('Dashboard', [
-           'students'=> $students
-       ]);
-   }
-
-   public function adminpage(){
-       return Inertia::render('AdminPage');
-   }
-
-   public function signatorypage(){
-    $signatory = Signatory::get();
-
-    return Inertia::render('SignatoryPage',[
-        'signatory'=> $signatory
-    ]);
-
-}
-   
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return Inertia::render('Student/Create');
+        return Inertia::render('Student/Index', [
+            'students' => $students,
+            'search' => $search,
+        ]);
     }
 
 
@@ -48,15 +37,20 @@ class StudentsController extends Controller
     
         Student::create($validated);
     
-        return redirect()->route('dashboard')->with('message', 'Student added successfully');
+        return redirect()->route('students.index')->with('message', 'Student added successfully');
     }
     
 
 
-    public function show(Student $student)
+    public function email(Student $student)
     {
+        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
+        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
+
         return Inertia::render('Student/ShowEmail',[
             'student' => $student,
+            'submittedminorOffenses' => $submittedminorOffenses,
+            'submittedmajorOffenses' => $submittedmajorOffenses,
         ]);
     }
 
@@ -64,12 +58,15 @@ class StudentsController extends Controller
     public function edit(Student $student)
     {
         return Inertia::render('Student/Edit',[
-            'student' => $student
+            'student' => $student,
         ]);
     }
 
-    public function print(Student $student, Signatory $signatory)
+    public function print(Student $student)
     {
+        // Fetch all major signatories
+        $signatory = Signatory::all();
+
         return Inertia::render('Student/Print',[
             'student' => $student,
             'signatory'=> $signatory
@@ -82,7 +79,7 @@ class StudentsController extends Controller
     
         $student->update($validated);
     
-        return redirect()->route('dashboard')->with('message', 'Student updated successfully');
+        return redirect()->route('students.index')->with('message', 'Student updated successfully');
     }
 
     public function destroy(Student $student)

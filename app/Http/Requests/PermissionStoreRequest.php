@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OffenseDetailRequest extends FormRequest
+class PermissionStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class OffenseDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lrn' => 'required',
-            'student_name' => 'required',
-            'student_grade' => 'required',
-            'minor_offense_id' => 'required|exists:minor_offenses,id',
+            'name' => 'required',
+
         ];
     }
 }
