@@ -6,30 +6,35 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\MinorOffense;
-use App\Models\MinorPenalty;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMinorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\MinorOffenseDetailRequest;
-use App\Http\Requests\StudentDetailRequest;
 
 class MinorOffensesController extends Controller
 {
     public function minor(Student $student)
-    {
-        // Fetch all minor offenses
-        $minorOffenses = MinorOffense::all();
-    
-        // Fetch submitted minor offenses related to the student
-        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
-        
-        // Pass the student, minor offenses, and submitted minor offenses to the view
-        return Inertia::render('Offenses/MinorOffenses', [
-            'student' => $student,
-            'minorOffenses' => $minorOffenses,
-            'submittedminorOffenses' => $submittedminorOffenses,
-        ]);
-    }
+{
+    // Fetch all minor offenses
+    $minorOffenses = MinorOffense::all();
+
+    // Fetch submitted minor offenses related to the student
+    $submittedminorOffenses = $student->submittedMinorOffenses()
+        ->with('minorOffense', 'minorPenalty')
+        ->get()
+        ->map(function($offense) {
+            // Format the created_at date to "Month Day, Year"
+            $offense->formatted_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            return $offense;
+        });
+
+    // Pass the student, minor offenses, and submitted minor offenses to the view
+    return Inertia::render('Offenses/MinorOffenses', [
+        'student' => $student,
+        'minorOffenses' => $minorOffenses,
+        'submittedminorOffenses' => $submittedminorOffenses,
+    ]);
+}
     
 
     public function store(MinorOffenseDetailRequest $request)
@@ -60,6 +65,18 @@ class MinorOffensesController extends Controller
         ]);
     
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');
+    }
+    
+    public function sanction(SubmittedMinorOffense $offense)
+    {
+        // Update the sanction field to 1
+        $offense->sanction = 1;
+        $offense->save();
+    
+        return response()->json([
+            'message' => 'Sanction updated to Acted',
+            'sanction' => $offense->sanction,
+        ]);
     }
     
 

@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'; 
 import Swal from 'sweetalert2'; 
+import axios from 'axios';
 
 const props = defineProps({ 
     errors: Object,
@@ -18,6 +19,43 @@ const form = useForm({
     student_sex: props.student.sex, 
     student_grade: props.student.grade 
 });
+
+// Function to update the sanction field via AJAX
+const Cleanse = (id) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to mark this offense as acted?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, cleanse it!',
+        cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post(route('minor.sanction', id))
+                .then(response => {
+                    Swal.fire(
+                        'Updated!',
+                        'The offense has been marked as acted.',
+                        'success'
+                    );
+                    // Update the local data to reflect the change
+                    const offenseIndex = props.submittedminorOffenses.findIndex(offense => offense.id === id);
+                    if (offenseIndex !== -1) {
+                        props.submittedminorOffenses[offenseIndex].sanction = 1;
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error!',
+                        'There was a problem updating the offense.',
+                        'error'
+                    );
+                });
+        }
+    });
+};
 
  // Function to save a minor offense
  const saveMinorOffense = () => {
@@ -103,14 +141,29 @@ const form = useForm({
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
                             <th class="py-2 px-4 text-left border">Penalty</th>
                             <th class="py-2 px-4 text-left border">Date Committed</th>
+                            <th class="py-2 px-4 text-left border">Sanction</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="offense in submittedminorOffenses" :key="offense.id">
                             <td class="py-2 px-4 border">{{ offense.minor_offense.minor_offenses }}</td>
                             <td class="py-2 px-4 border">{{ offense.minor_penalty.minor_penalties }}</td>
-                            <td class="py-2 px-4 border">{{ offense.created_at }}</td>
+                            <td class="py-2 px-4 border">{{ offense.formatted_date }}</td>
                             <td class="py-2 px-4 border">
+                                <button
+                                v-if="offense.sanction === 0"
+                                @click="Cleanse(offense.id)"
+                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded"
+                            >
+                                Cleanse
+                            </button>
+                            <button
+                                v-else
+                                class="px-2 py-1 text-sm bg-green-600 text-white p-3 rounded"
+                                disabled
+                            >
+                                Acted
+                            </button>
                             </td>
                         </tr>
                     </tbody>

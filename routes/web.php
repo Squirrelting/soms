@@ -60,12 +60,15 @@ Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () 
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/minor', [MinorOffensesController::class, 'minor'])->name('minor.offenses');
     Route::post('/', [MinorOffensesController::class, 'store'])->name('minor.store');
+    Route::post('/{offense}/sanction', [MinorOffensesController::class, 'sanction'])->name('minor.sanction');
 });
 
 //Major Offenses
 Route::prefix('major')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
     Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
+    Route::post('/{offense}/sanction', [MajorOffensesController::class, 'sanction'])->name('major.sanction');
+
 });
 
 Route::middleware('auth')->group(function () {
