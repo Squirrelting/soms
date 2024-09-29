@@ -93,12 +93,12 @@ const deletepermmision = (id: number) => {
                 </div>
             </div>
             <div v-if="permissions.data.length > 0" class="w-full">
-                <table class="table">
+                <table class="w-full bg-white border border-gray-200 shadow">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>permmision name</th>
-                            <th>Actions</th>
+                            <th class="py-2 px-4 text-left border">No.</th>
+                            <th class="py-2 px-4 text-left border">permmision name</th>
+                            <th class="py-2 px-4 text-left border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,17 +106,9 @@ const deletepermmision = (id: number) => {
                             v-for="(permmision, index) in permissions.data"
                             :key="permmision.id"
                         >
-                            <th>{{ permmision.number }}</th>
-                            <td>{{ permmision.name }}</td>
-                            <td>
-                                <!-- <Link
-                                    class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
-                                    :href="
-                                        route('plans.web.view', { id: web.id })
-                                    "
-                                >
-                                    <EyeIcon class="h-5 w-5" />
-                                </Link> --->
+                            <td class="py-2 px-4 border">{{ permmision.number }}</td>
+                            <td class="py-2 px-4 border">{{ permmision.name }}</td>
+                            <td class="py-2 px-4 border">
                                 <Link
                                     class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
                                     :href="

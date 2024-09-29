@@ -31,50 +31,68 @@ watch([startDate, endDate], () => {
 <template>
   <Head title="Dashboard" />
   <AuthenticatedLayout>
-    <section class="w-full lg:w-1/2 mx-4 my-8">
-      <div class="mb-4 flex">
-        <div class="mr-4">
-          <label for="startDate" class="mr-2">Start Date:</label>
-          <input type="date" id="startDate" v-model="startDate" class="form-input" />
+    <div class="m-4 flex space-x-4">
+      <div>
+        <label for="startDate" class="mr-2">Start Date:</label>
+        <input type="date" id="startDate" v-model="startDate" class="form-input" />
+      </div>
+      <div>
+        <label for="endDate" class="mr-2">End Date:</label>
+        <input type="date" id="endDate" v-model="endDate" class="form-input" />
+      </div>
+    </div>
+
+    <section class="w-full mx-4 my-8">
+      <div class="lg:flex lg:space-x-4 mb-4">
+        <div class="flex flex-col lg:flex-column lg:space-x-4 mb-4 w-1/2 mx-auto">
+
+        <!-- Bar Graph -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg mb-4 lg:mb-0 lg:flex-1">
+          <div class="bg-orange-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-bar mr-2"></i> Bar Graph for Top 5 Committed Offenses
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg chart-container">
+            <BarGraph :start-date="startDate" :end-date="endDate" />
+          </div>
         </div>
-        <div>
-          <label for="endDate" class="mr-2">End Date:</label>
-          <input type="date" id="endDate" v-model="endDate" class="form-input" />
+
+        <!-- Line Chart -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg mt-8 lg:mb-0 lg:flex-1">
+          <div class="bg-green-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-line mr-2"></i> Line Chart for Trends
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg chart-container">
+            <LineChart :start-date="startDate" :end-date="endDate" />
+          </div>
         </div>
       </div>
 
-      <div class="card bg-gray-100 text-gray-800 shadow-xl border border-gray-200 rounded-lg">
-        <div class="card-header bg-orange-600 text-white p-4 rounded-t-lg">
-          <h3 class="card-title text-xl font-bold flex items-center">
-            <i class="fas fa-chart-line mr-2"></i> Bar Graph for Top 5 Committed Offenses
-          </h3>
-        </div>
-        <div class="card-body p-6 bg-white rounded-b-lg">
-          <BarGraph :start-date="startDate" :end-date="endDate" />
-        </div>
-      </div>
-
-      <div class="card bg-gray-100 text-gray-800 shadow-xl border border-gray-200 rounded-lg">
-        <div class="card-header bg-green-600 text-white p-4 rounded-t-lg">
-          <h3 class="card-title text-xl font-bold flex items-center">
-            <i class="fas fa-chart-line mr-2"></i> Line Chart for Trends
-          </h3>
-        </div>
-        <div class="card-body p-6 bg-white rounded-b-lg">
-          <LineChart :start-date="startDate" :end-date="endDate" />
-        </div>
-      </div>
-
-      <div class="card bg-gray-100 text-gray-800 shadow-xl border border-gray-200 rounded-lg mb-4">
-        <div class="card-header bg-blue-600 text-white p-4 rounded-t-lg">
-          <h3 class="card-title text-xl font-bold flex items-center">
-            <i class="fas fa-map-marker-alt mr-2"></i> Pie Chart for Sex Offenders
-          </h3>
-        </div>
-        <div class="card-body p-6 bg-white rounded-b-lg">
-          <PieChart :start-date="startDate" :end-date="endDate" />
+        <!-- Pie Chart -->
+        <div class="card bg-gray-100 text-gray-800 shadow-md border rounded-lg lg:flex-1">
+          <div class="bg-blue-600 text-white p-4 rounded-t-lg">
+            <h3 class="text-xl font-bold flex items-center">
+              <i class="fas fa-chart-pie mr-2"></i> Pie Chart for Sex Offenders
+            </h3>
+          </div>
+          <div class="p-6 bg-white rounded-b-lg">
+            <PieChart :start-date="startDate" :end-date="endDate" />
+          </div>
         </div>
       </div>
     </section>
   </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.chart-container {
+  height: 300px; /* Set a consistent height for both graphs */
+}
+</style>
+
+
+
+

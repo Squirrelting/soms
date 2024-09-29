@@ -39,7 +39,7 @@ const updatePermission = (id: number) => {
     <AuthenticatedLayout>
         <template #mobileMenuName> Edii Permissions </template>
 
-        <div class="card shadow p-5 rounded-sm bg-white dark:bg-slate-800">
+        <div class="card shadow p-5 rounded-sm bg-white dark:bg-slate-400">
             <div class="flex justify-start ml-5">
                 <span class="font-bold text-xl">EDIT PERMISSIONS</span>
             </div>

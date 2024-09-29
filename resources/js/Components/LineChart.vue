@@ -126,6 +126,12 @@ const createChart = () => {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : null; // Show whole numbers only
+                        },
+                        stepSize: 1, // Set step size to 1 to force whole numbers
+                    },
                 },
             },
         },
