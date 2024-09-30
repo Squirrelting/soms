@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, router } from "@inertiajs/vue3";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 import Swal from 'sweetalert2';
 
@@ -11,12 +11,12 @@ defineProps({
     submittedmajorOffenses: Array,
 });
 
-const studentId = ref("");
-const getId = (id) => {
-    studentId.value = id;
-};
+const email = useForm({
+    id: ''
+});
 
 const SendEmail = (id) => {
+    email.id = id;
     Swal.fire({
         title: 'Are you sure?',
         text: "Do you want to send this data to the parent's email?",
@@ -34,7 +34,28 @@ const SendEmail = (id) => {
                     Swal.showLoading();
                 },
             });
-            router.get(route("send.email", id));
+            email.post(route("send.email", id), {
+                onFinish: () => {
+                    Swal.close(); // Close the loading alert once the request finishes
+
+                    // Show a success message
+                    Swal.fire(
+                        'Saved!',
+                        'The offense has been marked as acted successfully.',
+                        'success'
+                    );
+                },
+                onError: () => {
+                    Swal.close(); // Close the loading alert if an error occurs
+
+                    // Show an error message
+                    Swal.fire(
+                        'Error!',
+                        'There was a problem marking the offense as acted.',
+                        'error'
+                    );
+                }
+            });
         }
     });
 };
@@ -95,7 +116,7 @@ const SendEmail = (id) => {
                                 {{ offense.minor_penalty.minor_penalties }}
                             </td>
                             <td class="py-2 px-4 border">
-                                {{ offense.created_at }}
+                                {{ offense.offense_date }}
                             </td>
                             <td class="py-2 px-4 border"></td>
                         </tr>
@@ -132,7 +153,7 @@ const SendEmail = (id) => {
                                 {{ offense.major_penalty.major_penalties }}
                             </td>
                             <td class="py-2 px-4 border">
-                                {{ offense.created_at }}
+                                {{ offense.offense_date }}
                             </td>
                             <td class="py-2 px-4 border"></td>
                         </tr>

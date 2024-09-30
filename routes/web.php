@@ -38,7 +38,7 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
     
     //send email
-    Route::get('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
     //print cgm
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 

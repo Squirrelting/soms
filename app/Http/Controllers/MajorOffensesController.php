@@ -24,7 +24,15 @@ class MajorOffensesController extends Controller
             ->get()
             ->map(function($offense) {
                 // Format the created_at date to "Month Day, Year"
-                $offense->formatted_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                
+                // Format the sanction_date if it exists
+                if ($offense->cleansed_date) {
+                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
+                } else {
+                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                }
+
                 return $offense;
             });
         
@@ -69,14 +77,13 @@ class MajorOffensesController extends Controller
     
     public function sanction(SubmittedMajorOffense $offense)
     {
-        // Update the sanction field to 1
+        // Update the sanction field to 1 and set the cleansed_date to the current timestamp
         $offense->sanction = 1;
+        $offense->cleansed_date = Carbon::now();
         $offense->save();
+        $student = Student::where('lrn', $offense->lrn)->first();
     
-        return response()->json([
-            'message' => 'Sanction updated to Acted',
-            'sanction' => $offense->sanction,
-        ]);
+        return Redirect::route('major.offenses', ['student' => $student->id]);
     }
     
 
