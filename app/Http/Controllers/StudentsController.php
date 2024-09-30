@@ -12,32 +12,35 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $grade = $request->input('grade'); // Get the selected grade
+    
+        $students = Student::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('lrn', 'like', "%{$search}%");
+            })
+            ->when($grade, function ($query, $grade) {
+                $query->where('grade', $grade); // Filter by grade
+            })
+            ->paginate(2)
+            ->appends(['search' => $search, 'grade' => $grade]); // Keep search and grade in pagination
+    
+        return Inertia::render('Student/Index', [
+            'students' => $students,
+            'search' => $search,
+            'grade' => $grade, // Pass the selected grade back
+        ]);
+    }
+    
+
 
     public function create()
     {
         return inertia::render('Student/Create');
     }
-
-    
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-        
-        $students = Student::query()
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('lrn', 'like', "%{$search}%")
-                      ->orWhere('grade', 'like', "%{$search}%");
-            })
-            ->paginate(5)
-            ->appends(['search' => $search]);
-
-        return Inertia::render('Student/Index', [
-            'students' => $students,
-            'search' => $search,
-        ]);
-    }
-
 
     public function store(StudentDetailRequest $request)
     {
