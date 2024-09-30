@@ -87,7 +87,7 @@ const DeleteStudent = (id) => {
                     />
                     <!-- Add Student Button -->
                     <Link
-                        href="{{ route('students.create') }}"
+                        :href="route('students.create')"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg ml-4 transition ease-in-out duration-150"
                     >
                         Add Student

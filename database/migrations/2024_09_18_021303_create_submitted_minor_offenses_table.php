@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('student_grade');
             $table->string('student_sex')->nullable();
             $table->tinyInteger('sanction')->default(0);
+            $table->timestamp('cleansed_date')->nullable();
 
             $table->unsignedBigInteger('minor_offense_id');
             $table->foreign('minor_offense_id')->references('id')->on('minor_offenses');
