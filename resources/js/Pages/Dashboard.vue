@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue";
+import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
 import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue'; 
 import BarGraph from '@/Components/BarGraph.vue'; 
@@ -15,16 +15,8 @@ lastMonth.setMonth(today.getMonth() - 1);
 const startDate = ref(lastMonth.toISOString().split('T')[0]);
 const endDate = ref(today.toISOString().split('T')[0]);
 
-// Function to fetch line data based on the current dates
-function fetchLineData() {
-    console.log(`Fetching data from ${startDate.value} to ${endDate.value}`);
-    // API logic can be added here later if necessary
-}
-
 // Watch for changes in startDate and endDate
-watch([startDate, endDate], () => {
-    fetchLineData(); // Fetch data whenever the dates change
-});
+watch([startDate, endDate]);
 </script>
 
 <template>
@@ -44,9 +36,12 @@ watch([startDate, endDate], () => {
         <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
           Committed Violations (soon)
         </button>
-        <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">
+        <Link 
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
+          :href="route('offenders.index')"
+          >
           Offenders Per sex (soon)
-        </button>
+        </Link>
       </div>
     </div>
 
