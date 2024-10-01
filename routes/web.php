@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\BarGraphController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BarGraphController;
 use App\Http\Controllers\PieChartController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
@@ -13,15 +13,20 @@ use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
+use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 //Dashboard Graphs
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
 Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');
 Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('get.bar.data');
 
+Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
+
+});
 
 
 //students
@@ -41,8 +46,6 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
     //print cgm
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
-
-
 });
 
 //signatoy
