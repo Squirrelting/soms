@@ -25,7 +25,7 @@ class StudentsController extends Controller
             ->when($grade, function ($query, $grade) {
                 $query->where('grade', $grade); // Filter by grade
             })
-            ->paginate(2)
+            ->paginate(10)
             ->appends(['search' => $search, 'grade' => $grade]); // Keep search and grade in pagination
     
         return Inertia::render('Student/Index', [

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watchEffect } from "vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PieChart from '@/Components/PieChart.vue';
@@ -16,7 +16,7 @@ const startDate = ref(lastMonth.toISOString().split('T')[0]);
 const endDate = ref(today.toISOString().split('T')[0]);
 
 // Watch for changes in startDate and endDate
-watch([startDate, endDate]);
+watchEffect([startDate, endDate]);
 </script>
 
 <template>
@@ -40,7 +40,7 @@ watch([startDate, endDate]);
           class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
           :href="route('offenders.index')"
           >
-          Offenders Per sex (soon)
+          Offenders Per sex 
         </Link>
       </div>
     </div>

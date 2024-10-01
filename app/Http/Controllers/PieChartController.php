@@ -11,8 +11,8 @@ class PieChartController extends Controller
    public function getPieData(Request $request) 
    {
     // Convert start date and end date to appropriate format with time range
-    $startDate = date('Y-m-d 00:00:00', strtotime($request->input('start_date')));
-    $endDate = date('Y-m-d 23:59:59', strtotime($request->input('end_date')));
+        $startDate = date('Y-m-d 00:00:00', strtotime($request->input('start_date')));
+        $endDate = date('Y-m-d 23:59:59', strtotime($request->input('end_date')));
 
        // Query offenses by sex for the given date range
        $maleOffendersMinor = Student::where('sex', 'Male')
