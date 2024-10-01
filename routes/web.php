@@ -25,6 +25,9 @@ Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('ge
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
+    //print offenders male/female
+    Route::get('/print-offenders', [OffendersPerSexController::class, 'printoffenders'])->name('printoffenders');
+
 
 });
 
