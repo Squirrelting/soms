@@ -34,7 +34,7 @@ watchEffect([startDate, endDate]);
       <!-- Buttons section -->
       <div class="flex space-x-2">
         <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
-          Committed Violations (soon)
+          Other button
         </button>
         <Link 
           class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
