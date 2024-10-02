@@ -36,10 +36,18 @@ onMounted(() => {
 
 <template>
   <header>
-    <nav class="bg-gray-300 pt-2 md:pt-1 pb-1 px-1 mt-0 h-auto fixed w-full z-20 top-0">
+    <!-- <nav class="bg-gray-400 pt-2 md:pt-1 pb-1 px-1 mt-0 h-auto fixed w-full z-20 top-0">
+      <button
+                  class="p-2 text-gray-700 bg-gray-500 absolute right-0 top-0 flex items-center justify-center"
+                  @click="toggleSidebar"
+                  :aria-expanded="isSidebarCollapsed"
+                >
+                  {{ isSidebarCollapsed ? '→' : '←' }}
+                </button>
       <div class="flex items-center justify-between">
         <div class="hidden md:block">
-          <!-- Collapse Button Removed From Here -->
+
+              
         </div>
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
@@ -55,7 +63,45 @@ onMounted(() => {
           </ul>
         </div>
       </div>
-    </nav>
+    </nav> -->
+
+    <div class="navbar fixed z-20 bg-gray-400" >
+  <div class="flex-none">
+    <button class="btn btn-square btn-ghost"
+    @click="toggleSidebar"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="inline-block h-5 w-5 stroke-current">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl">SOMS</a>
+  </div>
+  <div class="flex-none">
+    <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
+            Hi, {{ $page.props.auth.user.name }}
+          </div>
+          <ul tabindex="0" class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
+            <li>
+              <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200">Profile</Link>
+            </li>
+            <li>
+              <button @click="logOut()" class="text-gray-700 hover:bg-gray-200">Log out</button>
+            </li>
+          </ul>
+        </div>
+  </div>
+</div>
   </header>
 
   <main>
@@ -63,28 +109,23 @@ onMounted(() => {
       <nav aria-label="alternative nav">
         <div
           id="sidebar"
-          :class="[
+          :class="[ 
             'bg-gray-300 shadow-xl fixed bottom-0 mt-12 md:relative md:h-screen z-10 content-center transition-all duration-300',
             isSidebarCollapsed ? 'md:w-16' : 'md:w-36'
           ]"
         >
-
           <div class="md:mt-14 md:fixed md:left-0 md:top-0 content-center md:content-start text-left justify-between">
             <ul class="list-reset flex flex-row md:flex-col pt-3 md:py-3 px-1 md:px-2 text-center md:text-left">
-              <!-- Collapse Button Inside Sidebar -->
-              <li class="mb-4">
-                <button
-                class="p-2 text-gray-700 bg-gray-400 absolute right-0 top-0 flex items-center justify-center"
-                @click="toggleSidebar"
-                  :aria-expanded="isSidebarCollapsed"
-                >
-                  {{ isSidebarCollapsed ? '→' : '←' }}
-                </button>
-              </li>
+
 
               <!-- Logo and Menu Items -->
-              <div v-if="!isSidebarCollapsed" class="flex justify-center items-center mb-4">
-                <img class="w-20 h-20 rounded-full" src="/Images/SCNHS-Logo.png" alt="logo" />
+              <div class="flex justify-center items-center mt-4">
+                <img
+                  :class="[isSidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20']"
+                  class="rounded-full transition-all duration-300"
+                  src="/Images/SCNHS-Logo.png"
+                  alt="logo"
+                />
               </div>
 
               <MenuItem
