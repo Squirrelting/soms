@@ -5,18 +5,19 @@ import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Swal from "sweetalert2";
 
-const form = useForm({});
 const props = defineProps({
     students: Object,
     search: String,
+    grade: String, // Add grade prop
 });
 
 const searchQuery = ref(props.search || "");
+const gradeFilter = ref(props.grade || ""); // Bind grade filter
 const studentsData = ref(props.students);
 
-// Watch for changes in the search input and trigger the search action
-watch(searchQuery, (newSearch) => {
-    router.get(route("students.index"), { search: newSearch }, {
+// Watch for changes in the search input and grade filter
+watch([searchQuery, gradeFilter], ([newSearch, newGrade]) => {
+    router.get(route("students.index"), { search: newSearch, grade: newGrade }, {
         preserveState: true,
         preserveScroll: true,
         onSuccess: (page) => {
@@ -85,9 +86,14 @@ const DeleteStudent = (id) => {
                         placeholder="Search by name, LRN, or grade"
                         class="border border-gray-300 rounded-lg p-2 w-72 focus:outline-none focus:ring focus:border-blue-300"
                     />
+                        <!-- Grade Dropdown -->
+                        <select v-model="gradeFilter" class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300">
+                        <option value="">All Grades</option>
+                        <option v-for="grade in [7, 8, 9, 10, 11, 12]" :key="grade" :value="grade">Grade {{ grade }}</option>
+                    </select>
                     <!-- Add Student Button -->
                     <Link
-                        href="{{ route('students.create') }}"
+                        :href="route('students.create')"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg ml-4 transition ease-in-out duration-150"
                     >
                         Add Student

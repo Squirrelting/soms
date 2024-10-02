@@ -18,6 +18,8 @@ class SubmittedMinorOffense extends Model
         'student_name',
         'student_grade',
         'student_sex',
+        'sanction',
+        'cleansed_date',
         'minor_offense_id',
         'minor_penalty_id', // Include the penalty in the fillable fields
 

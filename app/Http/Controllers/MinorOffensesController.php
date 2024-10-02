@@ -6,12 +6,10 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\MinorOffense;
-use App\Models\MinorPenalty;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMinorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\MinorOffenseDetailRequest;
-use App\Http\Requests\StudentDetailRequest;
 
 class MinorOffensesController extends Controller
 {
@@ -19,10 +17,25 @@ class MinorOffensesController extends Controller
     {
         // Fetch all minor offenses
         $minorOffenses = MinorOffense::all();
-    
+
         // Fetch submitted minor offenses related to the student
-        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
-        
+        $submittedminorOffenses = $student->submittedMinorOffenses()
+            ->with('minorOffense', 'minorPenalty')
+            ->get()
+            ->map(function($offense) {
+                // Format the created_at date to "Month Day, Year"
+                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+
+                // Format the sanction_date if it exists
+                if ($offense->cleansed_date) {
+                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
+                } else {
+                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                }
+                
+                return $offense;
+            });
+
         // Pass the student, minor offenses, and submitted minor offenses to the view
         return Inertia::render('Offenses/MinorOffenses', [
             'student' => $student,
@@ -62,6 +75,15 @@ class MinorOffensesController extends Controller
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');
     }
     
-
+    public function sanction(SubmittedMinorOffense $offense)
+    {
+        // Update the sanction field to 1 and set the cleansed_date to the current timestamp
+        $offense->sanction = 1;
+        $offense->cleansed_date = Carbon::now();
+        $offense->save();
+        $student = Student::where('lrn', $offense->lrn)->first();
+    
+        return Redirect::route('minor.offenses', ['student' => $student->id]);
+    }
 
 }

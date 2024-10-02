@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\Signatory;
@@ -14,22 +15,32 @@ class StudentsController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        
+        $grade = $request->input('grade'); // Get the selected grade
+    
         $students = Student::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('lrn', 'like', "%{$search}%")
-                      ->orWhere('grade', 'like', "%{$search}%");
+                      ->orWhere('lrn', 'like', "%{$search}%");
             })
-            ->paginate(5)
-            ->appends(['search' => $search]);
-
+            ->when($grade, function ($query, $grade) {
+                $query->where('grade', $grade); // Filter by grade
+            })
+            ->paginate(10)
+            ->appends(['search' => $search, 'grade' => $grade]); // Keep search and grade in pagination
+    
         return Inertia::render('Student/Index', [
             'students' => $students,
             'search' => $search,
+            'grade' => $grade, // Pass the selected grade back
         ]);
     }
+    
 
+
+    public function create()
+    {
+        return inertia::render('Student/Create');
+    }
 
     public function store(StudentDetailRequest $request)
     {
@@ -44,9 +55,56 @@ class StudentsController extends Controller
 
     public function email(Student $student)
     {
-        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
-        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
+        $submittedminorOffenses = $student->submittedMinorOffenses()
+            ->with('minorOffense', 'minorPenalty')
+            ->get()
+            ->map(function($offense) {
+                // Format the created_at date to "Month Day, Year"
+                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
 
+                // Format the sanction_date if it exists
+                if ($offense->cleansed_date) {
+                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
+                } else {
+                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                }
+                
+                return $offense;
+            });   
+
+            $submittedmajorOffenses = $student->submittedMajorOffenses()
+            ->with('majorOffense', 'majorPenalty')
+            ->get()
+            ->map(function($offense) {
+                // Format the created_at date to "Month Day, Year"
+                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                
+                // Format the sanction_date if it exists
+                if ($offense->cleansed_date) {
+                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
+                } else {
+                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                }
+
+                return $offense;
+            });
+            
+            $submittedmajorOffenses = $student->submittedMajorOffenses()
+            ->with('majorOffense', 'majorPenalty')
+            ->get()
+            ->map(function($offense) {
+                // Format the created_at date to "Month Day, Year"
+                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                
+                // Format the sanction_date if it exists
+                if ($offense->cleansed_date) {
+                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
+                } else {
+                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                }
+
+                return $offense;
+            });
         return Inertia::render('Student/ShowEmail',[
             'student' => $student,
             'submittedminorOffenses' => $submittedminorOffenses,
