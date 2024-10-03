@@ -15,16 +15,14 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
 
-    // Permissions
-    Permission::create(['name' => 'Manage Students']);
-    Permission::create(['name' => 'Manage Standard Users']);
-    Permission::create(['name' => 'Manage Roles']);
-    Permission::create(['name' => 'Manage Permissions']);
+        // Permissions
+        Permission::create(['name' => 'Manage Students']);
+        Permission::create(['name' => 'Manage POD Users']);
+        Permission::create(['name' => 'Manage Roles']);  // Add Manage Roles permission
 
-    // Create roles and assign permissions
-    Role::create(['name' => 'admin'])->givePermissionTo(['Manage Students', 'Manage Standard Users', 'Manage Roles', 'Manage Permissions']);
-    Role::create(['name' => 'standard'])->givePermissionTo(['Manage Students']);
-
-      
+        // Create roles and assign permissions
+        Role::create(['name' => 'super-admin'])->givePermissionTo(['Manage Students', 'Manage POD Users', 'Manage Roles']);
+        Role::create(['name' => 'admin'])->givePermissionTo(['Manage Students', 'Manage POD Users', 'Manage Roles']);
+        Role::create(['name' => 'pod'])->givePermissionTo(['Manage Students']);
     }
 }

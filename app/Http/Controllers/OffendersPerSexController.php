@@ -70,9 +70,6 @@ class OffendersPerSexController extends Controller
             return $offense;
         });
 
-        $trimstartDate = trim($startDate);
-        $trimendDate = trim($endDate);
-
         $selectedDate = [
             'startDate' => $startDate ? Carbon::createFromFormat('Y-m-d H:i:s', $startDate) : null,
             'endDate' => $endDate ? Carbon::createFromFormat('Y-m-d H:i:s', $endDate) : null,
@@ -101,6 +98,7 @@ class OffendersPerSexController extends Controller
             'imagePath' => $imagePath,
             'date' => $date,
             'selectedDate' => $formattedSelectedDate,
+            'offenseFilter' => $offenseFilter,
         ]);
         
         return $pdf->stream('offenders-per-sex.pdf');
