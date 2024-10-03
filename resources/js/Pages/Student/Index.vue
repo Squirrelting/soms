@@ -91,6 +91,9 @@ const DeleteStudent = (id) => {
                         <option value="">All Grades</option>
                         <option v-for="grade in [7, 8, 9, 10, 11, 12]" :key="grade" :value="grade">Grade {{ grade }}</option>
                     </select>
+                    <button @click="ImportStudents()" class="px-2 py-1 text-sm bg-green-600 text-white p-3 rounded ml-4 ">
+                                Import
+                            </button>
                     <!-- Add Student Button -->
                     <Link
                         :href="route('students.create')"
@@ -119,13 +122,15 @@ const DeleteStudent = (id) => {
                         <td class="py-2 px-4 border">{{ student.name }}</td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
                         <td class="py-2 px-4 border">Grade {{ student.grade }}</td>
-                        <td class="py-2 px-4 border">
+                        <td>
+                            <div class="flex justify-center items-center gap-4">
                             <Link :href="route('minor.offenses', student.id)" class="px-2 py-1 text-sm bg-yellow-300 text-dark p-3 rounded">
                                 Minor
                             </Link>
                             <Link :href="route('major.offenses', student.id)" class="px-2 py-1 text-sm bg-red-300 text-dark p-3 rounded">
                                 Major
                             </Link>
+                        </div>
                         </td>
                         <td class="py-2 px-4 border">
                             <Link :href="route('students.show_email', student.id)" class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded">

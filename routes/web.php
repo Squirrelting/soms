@@ -15,7 +15,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\RegisteredUserController;
 
 //Dashboard Graphs
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
@@ -51,16 +51,26 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
 
-//signatoy
+//signatory
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [SignatoryController::class, 'index'])->name('signatory.index');
     Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
     Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
     Route::get('/{signatory}/edit', [SignatoryController::class, 'edit'])->name('signatory.edit');
-    Route::get('/{signatory}/print', [SignatoryController::class, 'print'])->name('signatory.print');
     Route::put('/{signatory}', [SignatoryController::class, 'update'])->name('signatory.update');
     Route::delete('/{signatory}', [SignatoryController::class, 'destroy'])->name('signatory.destroy');
 });
+
+// Registered User Routes
+Route::prefix('user')->middleware(['auth', 'verified', 'can:Manage POD Users'])->group(function () {
+    Route::get('/', [RegisteredUserController::class, 'index'])->name('user.index');
+    Route::get('/{user}/edit', [RegisteredUserController::class, 'edit'])->name('user.edit');
+    Route::put('/{user}', [RegisteredUserController::class, 'update'])->name('user.update');
+    Route::delete('/{user}', [RegisteredUserController::class, 'destroy'])->name('user.destroy');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('user.add');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('user.store');
+});
+
 
     //Minor Offenses
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
@@ -83,31 +93,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->prefix('user')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-    ->name('register');
-
-Route::post('register', [RegisteredUserController::class, 'store']);
-});
-
 Route::group(['prefix' => 'roles-and-permissions'], function () {
     Route::group(['prefix' => 'roles', 'middleware' => 'can:Manage Roles'], function () {
         Route::get('/', [RoleController::class, 'index'])->name('users.roles-permissions.roles.index');
-        Route::get('/add', [RoleController::class, 'add'])->name('users.roles-permissions.roles.add');
-        Route::post('/store', [RoleController::class, 'store'])->name('users.roles-permissions.roles.store');
         Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('users.roles-permissions.roles.edit');
-        Route::put('/update/{id}', [RoleController::class, 'update'])->name('users.roles-permissions.roles.update');
-        Route::delete('delete/{id}', [RoleController::class, 'destroy'])->name('users.roles-permissions.roles.delete');
         Route::post('/assignPermission/{id}', [RoleController::class, 'assignPermission'])->name('users.roles-permissions.roles.assignPermission');
-    });
-
-    Route::group(['prefix' => 'permissions', 'middleware' => 'can:Manage Permissions'], function () {
-        Route::get('/', [PermissionController::class, 'index'])->name('users.roles-permissions.permissions.index');
-        Route::get('/add', [PermissionController::class, 'add'])->name('users.roles-permissions.permissions.add');
-        Route::post('/store', [PermissionController::class, 'store'])->name('users.roles-permissions.permissions.store');
-        Route::get('/edit/{id}', [PermissionController::class, 'edit'])->name('users.roles-permissions.permissions.edit');
-        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('users.roles-permissions.permissions.update');
-        Route::delete('delete/{id}', [PermissionController::class, 'destroy'])->name('users.roles-permissions.permissions.destroy');
     });
 });
 

@@ -67,37 +67,37 @@ const printUrl = computed(() => {
                 </select>
 
                 <div class="ml-4">
-                        <label for="startDate" class="mr-2">Start Date:</label>
-                        <input
-                            @change="filter"
-                            type="date"
-                            id="startDate"
-                            v-model="startDate"
-                            class="form-input"
-                        />
-                    </div>
-                    <div class="ml-4">
-                        <label for="endDate" class="mr-2">End Date:</label>
-                        <input
-                            @change="filter"
-                            type="date"
-                            id="endDate"
-                            v-model="endDate"
-                            class="form-input"
-                        />
-                    </div>
-                    <a
-        :href="printUrl"
-        target="_blank"
-        class="bg-blue-500 text-white py-2 px-5 rounded mb-4"
-    >
-        Print
-    </a>
+                    <label for="startDate" class="mr-2">Start Date:</label>
+                    <input
+                        @change="filter"
+                        type="date"
+                        id="startDate"
+                        v-model="startDate"
+                        class="form-input"
+                    />
+                </div>
+                <div class="ml-4">
+                    <label for="endDate" class="mr-2">End Date:</label>
+                    <input
+                        @change="filter"
+                        type="date"
+                        id="endDate"
+                        v-model="endDate"
+                        class="form-input"
+                    />
+                </div>
+                <a
+                    :href="printUrl"
+                    target="_blank"
+                    class="bg-blue-500 text-white py-2 px-5 rounded"
+                >
+                    Print
+                </a>
                 <div class="flex items-center">
                     <Link
-                    :href="route('dashboard')"
-                    class="bg-red-600 text-white py-2 px-5 inline-block rounded"
-                    >Back
+                        :href="route('dashboard')"
+                        class="bg-red-600 text-white py-2 px-5 inline-block rounded"
+                        >Back
                     </Link>
                 </div>
             </div>
