@@ -27,8 +27,6 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
     //print offenders male/female
     Route::get('/print-offenders', [OffendersPerSexController::class, 'printoffenders'])->name('printoffenders');
-
-
 });
 
 
@@ -36,12 +34,15 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
+    Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
+    Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
+    // API route for fetching sections dynamically
+    Route::get('/sections', [StudentsController::class, 'getSections'])->name('students.sections');
+
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
     Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
-    Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
-    
-    Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
+
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
     

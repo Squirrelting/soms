@@ -8,21 +8,22 @@ const props = defineProps({
     student: Object,
     majorOffenses: Array,
     submittedmajorOffenses: Array,
- });
+});
 
 // Initialize the form object
 const form = useForm({
     major_offense_id: '',
     lrn: props.student.lrn, 
-    student_name: props.student.name,
-    student_sex: props.student.sex,  
-    student_grade: props.student.grade 
+    student_firstname: props.student.firstname,
+    student_lastname: props.student.lastname,
+    student_sex: props.student.sex, 
+    student_grade: props.student.grade.grade, // Directly from props
+    student_section: props.student.section.section, // Directly from props
 });
 
 const sanction = useForm({
     id: ''
 });
-
 
 const Cleanse = (id) => {
     sanction.id = id;
@@ -49,7 +50,7 @@ const Cleanse = (id) => {
             });
 
             // Post request to the server
-            form.post(route('major.sanction', { id: id }), {
+            sanction.post(route('major.sanction', { id: id }), {
                 onFinish: () => {
                     Swal.close(); // Close the loading alert once the request finishes
 
@@ -73,66 +74,71 @@ const Cleanse = (id) => {
             });
         }
     });
-};  
+};
 
- // Function to save a major offense
- const saveMajorOffense = () => {
-    if(form.major_offense_id === ''){
+// Function to save a major offense
+const saveMajorOffense = () => {
+    if (form.major_offense_id === '') {
         form.post(route('major.store'));
     } else {
         Swal.fire({
-        title: 'Are you sure?',
-        text: "Do you want to save this major offense?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save it!',
-        cancelButtonText: 'No, cancel!',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // If user confirms, proceed with form submission
-            form.post(route('major.store'), {
-                onSuccess: () => {
-                    Swal.fire(
-                        'Saved!',
-                        'The offense has been added successfully.',
-                        'success'
-                    );
-                    form.reset(); // Optionally reset the form after success
-                },
-                onError: () => {
-                    Swal.fire(
-                        'Error!',
-                        'There was a problem saving the offense.',
-                        'error'
-                    );
-                },
-            });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // If user cancels
-            Swal.fire(
-                'Cancelled',
-                'The offense was not saved.',
-                'error'
-            );
-        }
-    });
+            title: 'Are you sure?',
+            text: "Do you want to save this major offense?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading alert
+                const loadingAlert = Swal.fire({
+                    title: 'Saving...',
+                    text: 'Please wait while we save the major offense.',
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                });
+
+                // If user confirms, proceed with form submission
+                form.post(route('major.store'), {
+                    onSuccess: () => {
+                        // Close loading alert on success
+                        loadingAlert.close();
+                        Swal.fire(
+                            'Saved!',
+                            'The offense has been added successfully.',
+                            'success'
+                        );
+                        form.reset(); // Optionally reset the form after success
+                    },
+                    onError: () => {
+                        // Close loading alert on error
+                        loadingAlert.close();
+                        Swal.fire(
+                            'Error!',
+                            'There was a problem saving the offense.',
+                            'error'
+                        );
+                    },
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // If user cancels
+                Swal.fire(
+                    'Cancelled',
+                    'The offense was not saved.',
+                    'error'
+                );
+            }
+        });
     }
 };
 </script>
-
-    
-    <Head title="Show Student" />
-
-    <template>
-    <Head title="Show Student" />
-
+<template>
     <AuthenticatedLayout>
-     <!-- message from StudentsController-->
-    <div v-if="$page.props.flash.message" class="alert bg-green-200 mt-4 mx-5 px-4 py-2">
-        {{ $page.props.flash.message }}
-      </div>
         <div class="mt-4 mx-4">
             <div class="flex justify-between">
                 <h5 class="m-4">Student</h5>
@@ -142,13 +148,15 @@ const Cleanse = (id) => {
                 <div class="col-span-12">
                     <div class="mb-3">
                         {{ student.lrn }},
-                        {{ student.name }},
+                        {{ student.firstname }},
+                        {{ student.lastname }},
                         {{ student.sex }},
-                        {{ student.grade }}
+                        Grade {{ student.grade.grade }}, <!-- Auto-filled from props -->
+                        {{ student.section.section}} <!-- Auto-filled from props -->
                     </div>
                 </div>
             </div>
-
+            
             <div class="mt-4 mx-4">
                 <div class="flex justify-between">
                     <h5 class="m-4">Major Offense</h5>
@@ -222,5 +230,3 @@ const Cleanse = (id) => {
         </div>
     </AuthenticatedLayout>
 </template>
-
-
