@@ -15,8 +15,10 @@ class SubmittedMinorOffense extends Model
 
     protected $fillable = [
         'lrn',
-        'student_name',
+        'student_firstname',
+        'student_lastname',
         'student_grade',
+        'student_section',
         'student_sex',
         'sanction',
         'cleansed_date',

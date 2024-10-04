@@ -22,11 +22,13 @@ class MajorOffenseDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lrn' => 'required',
-            'student_name' => 'required',
-            'student_grade' => 'required',
-            'student_sex' => 'required',
-            'major_offense_id' => 'required|exists:major_offenses,id',
+            'lrn' => 'required|integer|digits_between:1,8|exists:students,lrn', // Ensure lrn exists in students table
+            'student_firstname' => 'required|string|max:255', // Required first name
+            'student_lastname' => 'required|string|max:255', // Required last name
+            'student_grade' => 'required|integer|between:1,12', // Validate student grade between 1 and 12
+            'student_section' => 'required|string|max:255', // Required section, expecting a string
+            'student_sex' => 'required|string|in:Male,Female', // Adjusted to validate sex
+            'major_offense_id' => 'required|exists:major_offenses,id', // Required major offense ID
         ];
     }
 }

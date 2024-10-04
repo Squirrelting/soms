@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\Grade;
+use App\Models\Section;
 use App\Models\Student;
 use App\Models\Signatory;
 use Illuminate\Http\Request;
@@ -15,43 +17,101 @@ class StudentsController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $grade = $request->input('grade'); // Get the selected grade
+        $grade = $request->input('grade');
+        $section = $request->input('section');
     
-        $students = Student::query()
+        // Fetch students with their grade and section relationships
+        $students = Student::with(['grade', 'section'])
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
+                $query->where('firstname', 'like', "%{$search}%")
+                      ->orWhere('lastname', 'like', "%{$search}%")
                       ->orWhere('lrn', 'like', "%{$search}%");
             })
             ->when($grade, function ($query, $grade) {
-                $query->where('grade', $grade); // Filter by grade
+                $query->where('grade_id', $grade);
+            })
+            ->when($section, function ($query, $section) {
+                $query->where('section_id', $section);
             })
             ->paginate(10)
-            ->appends(['search' => $search, 'grade' => $grade]); // Keep search and grade in pagination
+            ->appends(['search' => $search, 'grade' => $grade, 'section' => $section]);
+    
+        $sections = Section::all(); // Fetch available sections for the dropdown
     
         return Inertia::render('Student/Index', [
             'students' => $students,
             'search' => $search,
-            'grade' => $grade, // Pass the selected grade back
+            'grade' => $grade,
+            'section' => $section,
+            'sections' => $sections, // Pass sections for the dropdown
         ]);
     }
     
 
-
-    public function create()
+    
+    public function create(Request $request)
     {
-        return inertia::render('Student/Create');
+        // Fetch all grades
+        $grades = Grade::all();
+    
+        // Pass only the grades, sections are fetched dynamically
+        return Inertia::render('Student/Create', [
+            'grades' => $grades,
+        ]);
     }
+    public function edit(Student $student)
+    {
+        // Fetch all grades
+        $grades = Grade::all();
+    
+        // Fetch sections based on the student's current grade
+        $sections = Section::where('grade_id', $student->grade_id)->get();
+    
+        return Inertia::render('Student/Edit', [
+            'student' => $student,
+            'grades' => $grades,
+            'sections' => $sections, // Preload sections for student's grade
+        ]);
+    }
+    
+    public function getSections(Request $request)
+    {
+        $grade_id = $request->query('grade_id');
+    
+        // Fetch sections based on grade_id or return an empty array
+        $sections = $grade_id ? Section::where('grade_id', $grade_id)->get() : [];
+    
+        return response()->json(['sections' => $sections]);
+    }
+    public function update(StudentDetailRequest $request, Student $student)
+    {
+        // Update the student record with validated data from the request
+        $student->update($request->validated());
+    
+        // Redirect back to the student list with a success message
+        return redirect()->route('students.index')->with('message', 'Student updated successfully');
+    }
+    
 
+    
     public function store(StudentDetailRequest $request)
     {
-        $validated = $request->validated();
+        // Use the validated data from the request to create a student
+        Student::create($request->validated());
     
-        Student::create($validated);
-    
+        // Redirect back to the students index with a success message
         return redirect()->route('students.index')->with('message', 'Student added successfully');
     }
     
+    public function print(Student $student)
+    {
+        $signatory = Signatory::all();
 
+        return Inertia::render('Student/Print', [
+            'student' => $student,
+            'signatory' => $signatory,
+        ]);
+    }
 
     public function email(Student $student)
     {
@@ -59,90 +119,42 @@ class StudentsController extends Controller
             ->with('minorOffense', 'minorPenalty')
             ->get()
             ->map(function($offense) {
-                // Format the created_at date to "Month Day, Year"
                 $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
 
-                // Format the sanction_date if it exists
                 if ($offense->cleansed_date) {
                     $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
                 } else {
-                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                    $offense->cleansed_date = null;
                 }
                 
                 return $offense;
             });   
 
-            $submittedmajorOffenses = $student->submittedMajorOffenses()
+        $submittedmajorOffenses = $student->submittedMajorOffenses()
             ->with('majorOffense', 'majorPenalty')
             ->get()
             ->map(function($offense) {
-                // Format the created_at date to "Month Day, Year"
                 $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                
-                // Format the sanction_date if it exists
+
                 if ($offense->cleansed_date) {
                     $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
                 } else {
-                    $offense->cleansed_date = null; // Or you can set a default value if needed
+                    $offense->cleansed_date = null;
                 }
 
                 return $offense;
             });
             
-            $submittedmajorOffenses = $student->submittedMajorOffenses()
-            ->with('majorOffense', 'majorPenalty')
-            ->get()
-            ->map(function($offense) {
-                // Format the created_at date to "Month Day, Year"
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                
-                // Format the sanction_date if it exists
-                if ($offense->cleansed_date) {
-                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-                } else {
-                    $offense->cleansed_date = null; // Or you can set a default value if needed
-                }
-
-                return $offense;
-            });
-        return Inertia::render('Student/ShowEmail',[
+        return Inertia::render('Student/ShowEmail', [
             'student' => $student,
             'submittedminorOffenses' => $submittedminorOffenses,
             'submittedmajorOffenses' => $submittedmajorOffenses,
         ]);
     }
 
-
-    public function edit(Student $student)
-    {
-        return Inertia::render('Student/Edit',[
-            'student' => $student,
-        ]);
-    }
-
-    public function print(Student $student)
-    {
-        // Fetch all major signatories
-        $signatory = Signatory::all();
-
-        return Inertia::render('Student/Print',[
-            'student' => $student,
-            'signatory'=> $signatory
-        ]);
-    }
-
-    public function update(StudentDetailRequest $request, Student $student)
-    {
-        $validated = $request->validated();
-    
-        $student->update($validated);
-    
-        return redirect()->route('students.index')->with('message', 'Student updated successfully');
-    }
-
     public function destroy(Student $student)
     {
         $student->delete(); 
-        return Redirect::back()->with('message','Student Deleted Successfuly');
+        return Redirect::back()->with('message', 'Student Deleted Successfully');
     }
 }

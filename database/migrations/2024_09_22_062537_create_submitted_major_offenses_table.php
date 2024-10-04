@@ -16,8 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('lrn');
             $table->foreign('lrn')->references('lrn')->on('students');
             
-            $table->string('student_name');
+            $table->string('student_firstname');
+            $table->string('student_lastname');
             $table->string('student_grade');
+            $table->string('student_section');
             $table->string('student_sex')->nullable();
             $table->tinyInteger('sanction')->default(0);
             $table->timestamp('cleansed_date')->nullable();
