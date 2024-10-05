@@ -54,7 +54,114 @@ class SectionSeeder extends Seeder
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ],
-            // Add more sections as needed
+            [
+                'section' => 'Section G',
+                'grade_id' => 4,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section H',
+                'grade_id' => 4,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section I',
+                'grade_id' => 5,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section J',
+                'grade_id' => 5,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section K',
+                'grade_id' => 6,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section L',
+                'grade_id' => 6,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section M',
+                'grade_id' => 7,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section N',
+                'grade_id' => 7,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section O',
+                'grade_id' => 8,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section P',
+                'grade_id' => 8,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section Q',
+                'grade_id' => 9,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section R',
+                'grade_id' => 9,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section S',
+                'grade_id' => 10,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section T',
+                'grade_id' => 10,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section U',
+                'grade_id' => 11,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section V',
+                'grade_id' =>11,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section W',
+                'grade_id' => 12,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+            [
+                'section' => 'Section X',
+                'grade_id' => 12,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
         ]);
     }
 }

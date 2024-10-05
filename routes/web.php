@@ -13,9 +13,10 @@ use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
+use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\StudentsImportController;
 use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
-use App\Http\Controllers\RegisteredUserController;
 
 //Dashboard Graphs
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
@@ -32,25 +33,37 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
+    // API route for fetching sections dynamically
+    Route::get('/sections', [StudentsController::class, 'getSections'])->name('students.sections');
     Route::get('/', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
-    // API route for fetching sections dynamically
-    Route::get('/sections', [StudentsController::class, 'getSections'])->name('students.sections');
+
 
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
 
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
-    
-    //send email
-    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+
     //print cgm
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
+
+    //student Import
+Route::prefix('email')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/{student}', [EmailController::class, 'email'])->name('show.email');
+    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+});
+
+
+    //student Import
+Route::prefix('import')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [StudentsImportController::class, 'index'])->name('import.students');
+    Route::post('/store', [StudentsImportController::class, 'store'])->name('import.store');
+});
+
 
 //signatory
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {

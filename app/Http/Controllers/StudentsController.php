@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Grade;
 use App\Models\Section;
@@ -46,8 +45,15 @@ class StudentsController extends Controller
             'sections' => $sections, // Pass sections for the dropdown
         ]);
     }
+    public function getSections(Request $request)
+    {
+        $grade_id = $request->query('grade_id');
     
-
+        // Fetch sections based on grade_id or return an empty array
+        $sections = $grade_id ? Section::where('grade_id', $grade_id)->get() : [];
+    
+        return response()->json(['sections' => $sections]);
+    }
     
     public function create(Request $request)
     {
@@ -74,15 +80,6 @@ class StudentsController extends Controller
         ]);
     }
     
-    public function getSections(Request $request)
-    {
-        $grade_id = $request->query('grade_id');
-    
-        // Fetch sections based on grade_id or return an empty array
-        $sections = $grade_id ? Section::where('grade_id', $grade_id)->get() : [];
-    
-        return response()->json(['sections' => $sections]);
-    }
     public function update(StudentDetailRequest $request, Student $student)
     {
         // Update the student record with validated data from the request
@@ -110,45 +107,6 @@ class StudentsController extends Controller
         return Inertia::render('Student/Print', [
             'student' => $student,
             'signatory' => $signatory,
-        ]);
-    }
-
-    public function email(Student $student)
-    {
-        $submittedminorOffenses = $student->submittedMinorOffenses()
-            ->with('minorOffense', 'minorPenalty')
-            ->get()
-            ->map(function($offense) {
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-
-                if ($offense->cleansed_date) {
-                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-                } else {
-                    $offense->cleansed_date = null;
-                }
-                
-                return $offense;
-            });   
-
-        $submittedmajorOffenses = $student->submittedMajorOffenses()
-            ->with('majorOffense', 'majorPenalty')
-            ->get()
-            ->map(function($offense) {
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-
-                if ($offense->cleansed_date) {
-                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-                } else {
-                    $offense->cleansed_date = null;
-                }
-
-                return $offense;
-            });
-            
-        return Inertia::render('Student/ShowEmail', [
-            'student' => $student,
-            'submittedminorOffenses' => $submittedminorOffenses,
-            'submittedmajorOffenses' => $submittedmajorOffenses,
         ]);
     }
 
