@@ -12,8 +12,9 @@
     <center><img src="{{ $message->embed(public_path('images/SCNHS-Logo.png')) }}" alt="Logo" width="100"> </center>
 
     <p>LRN: {{ $student->lrn }}</p>
-    <p>Student Name: {{ $student->name }}</p>
-    <p>Grade: {{ $student->grade }}</p>
+    <p>Student Name: {{ $student->firstname }} {{ $student->lastname }}</p>
+    <p>Grade: {{ $student->grade->grade }}</p>
+    <p>Grade: {{ $student->section->section }}</p>
     <h5>Major Offenses:</h5>
     
     <ul>

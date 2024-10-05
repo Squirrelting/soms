@@ -4,6 +4,7 @@ import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Swal from "sweetalert2";
+import axios from "axios"; // Import axios for API calls
 
 const props = defineProps({
     students: Object,
@@ -11,15 +12,36 @@ const props = defineProps({
     grade: String,
     section: String,
     sections: {
-        type: Array,  // Keep this as Array if you expect it to be an array
-        default: () => []
-    }
+        type: Array,
+        default: () => [],
+    },
 });
 
 const searchQuery = ref(props.search || "");
-const gradeFilter = ref(props.grade || ""); // For grade FK filtering
-const sectionFilter = ref(props.section || ""); // For section FK filtering
+const gradeFilter = ref(props.grade || "");
+const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
+const sections = ref(props.sections); // This will be populated based on the selected grade
+
+// Fetch sections based on selected grade
+const fetchSections = async (gradeId) => {
+    try {
+        const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
+        sections.value = response.data.sections;  // Populate the sections dropdown
+        sectionFilter.value = "";  // Reset section filter when grade changes
+    } catch (error) {
+        console.error("Error fetching sections:", error);
+    }
+};
+
+// Watch for grade changes and fetch sections when the grade changes
+watch(gradeFilter, (newGrade) => {
+    if (newGrade) {
+        fetchSections(newGrade);  // Fetch sections based on the selected grade
+    } else {
+        sections.value = [];  // Clear sections if no grade is selected
+    }
+});
 
 // Watch for changes in the search input, grade, and section filters
 watch(
@@ -32,8 +54,8 @@ watch(
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
-                    studentsData.value = page.props.students; // Update the students data
-                },
+                    studentsData.value = page.props.students;
+                }
             }
         );
     }
@@ -61,8 +83,9 @@ const DeleteStudent = (id) => {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Remove the student from studentsData
-                    studentsData.value.data = studentsData.value.data.filter(student => student.id !== id);
+                    studentsData.value.data = studentsData.value.data.filter(
+                        (student) => student.id !== id
+                    );
 
                     Swal.fire({
                         icon: "success",
@@ -81,8 +104,8 @@ const DeleteStudent = (id) => {
         }
     });
 };
-
 </script>
+
 
 <template>
     <Head title="Student" />
@@ -118,11 +141,8 @@ const DeleteStudent = (id) => {
                         class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
                     >
                         <option value="">All Grades</option>
-                        <!-- Dynamically generated grade options (assuming grades are FK) -->
                         <option
-                            v-for="grade in [
-                                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                            ]"
+                            v-for="grade in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
                             :key="grade"
                             :value="grade"
                         >
@@ -130,6 +150,7 @@ const DeleteStudent = (id) => {
                         </option>
                     </select>
 
+                    <!-- Section Dropdown (filtered by selected grade) -->
                     <select
                         v-model="sectionFilter"
                         class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
@@ -143,6 +164,12 @@ const DeleteStudent = (id) => {
                             {{ section.section }}
                         </option>
                     </select>
+
+                    <Link
+                        :href="route('import.students')"
+                        class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded"
+                        >import
+                    </Link>
 
                     <!-- Add Student Button -->
                     <Link
@@ -202,7 +229,7 @@ const DeleteStudent = (id) => {
                         </td>
                         <td class="py-2 px-4 border">
                             <Link
-                                :href="route('students.show_email', student.id)"
+                                :href="route('show.email', student.id)"
                                 class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded"
                             >
                                 {{ student.email }}

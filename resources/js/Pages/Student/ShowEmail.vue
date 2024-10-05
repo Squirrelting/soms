@@ -41,7 +41,7 @@ const SendEmail = (id) => {
                     // Show a success message
                     Swal.fire(
                         'Saved!',
-                        'The offense has been marked as acted successfully.',
+                        'The offense has been sent to the Email successfully.',
                         'success'
                     );
                 },
@@ -51,7 +51,7 @@ const SendEmail = (id) => {
                     // Show an error message
                     Swal.fire(
                         'Error!',
-                        'There was a problem marking the offense as acted.',
+                        'There was a problem sending the offense to the parents email.',
                         'error'
                     );
                 }
@@ -80,9 +80,12 @@ const SendEmail = (id) => {
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12">
                     <div class="mb-3">
-                        {{ student.lrn }}, {{ student.name }},
+                        {{ student.lrn }}, 
+                        {{ student.firstname }},
+                        {{ student.lastname }},
                         {{ student.sex }},
-                        {{ student.grade }}
+                        Grade {{ student.grade.grade }},
+                        {{ student.section.section }}
                     </div>
                 </div>
             </div>
