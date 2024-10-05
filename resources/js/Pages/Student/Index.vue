@@ -228,12 +228,14 @@ const DeleteStudent = (id) => {
                             </div>
                         </td>
                         <td class="py-2 px-4 border">
+                            <div v-if="student.email">
                             <Link
                                 :href="route('show.email', student.id)"
                                 class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded"
                             >
                                 {{ student.email }}
                             </Link>
+                        </div>
                         </td>
                         <td>
                             <Link
