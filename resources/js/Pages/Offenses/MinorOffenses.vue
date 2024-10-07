@@ -17,8 +17,8 @@ const form = useForm({
     student_firstname: props.student.firstname,
     student_lastname: props.student.lastname,
     student_sex: props.student.sex, 
-    student_grade: props.student.grade.grade, // Directly from props
-    student_section: props.student.section.section, // Directly from props
+    student_grade: props.student.grade?.grade??'N/A', // Directly from props
+    student_section: props.student.section?.section??'N/A', // Directly from props
 });
 
 const sanction = useForm({
@@ -151,8 +151,8 @@ const saveMinorOffense = () => {
                         {{ student.firstname }},
                         {{ student.lastname }},
                         {{ student.sex }},
-                        Grade {{ student.grade.grade }}, <!-- Auto-filled from props -->
-                        {{ student.section.section}} <!-- Auto-filled from props -->
+                        Grade {{ student.grade?.grade??'N/A' }}, <!-- Auto-filled from props -->
+                        {{ student.section?.section??'N/A'}} <!-- Auto-filled from props -->
                     </div>
                 </div>
             </div>

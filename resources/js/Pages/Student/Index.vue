@@ -26,9 +26,11 @@ const sections = ref(props.sections); // This will be populated based on the sel
 // Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
     try {
-        const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
-        sections.value = response.data.sections;  // Populate the sections dropdown
-        sectionFilter.value = "";  // Reset section filter when grade changes
+        const response = await axios.get(
+            `/students/sections?grade_id=${gradeId}`
+        );
+        sections.value = response.data.sections; // Populate the sections dropdown
+        sectionFilter.value = ""; // Reset section filter when grade changes
     } catch (error) {
         console.error("Error fetching sections:", error);
     }
@@ -37,9 +39,9 @@ const fetchSections = async (gradeId) => {
 // Watch for grade changes and fetch sections when the grade changes
 watch(gradeFilter, (newGrade) => {
     if (newGrade) {
-        fetchSections(newGrade);  // Fetch sections based on the selected grade
+        fetchSections(newGrade); // Fetch sections based on the selected grade
     } else {
-        sections.value = [];  // Clear sections if no grade is selected
+        sections.value = []; // Clear sections if no grade is selected
     }
 });
 
@@ -55,7 +57,7 @@ watch(
                 preserveScroll: true,
                 onSuccess: (page) => {
                     studentsData.value = page.props.students;
-                }
+                },
             }
         );
     }
@@ -95,17 +97,17 @@ const DeleteStudent = (id) => {
                         showConfirmButton: false,
                     });
                 },
-                onError: () => Swal.fire({
-                    icon: "error",
-                    title: "Failed!",
-                    text: "There was a problem deleting the student. Please try again.",
-                }),
+                onError: () =>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed!",
+                        text: "There was a problem deleting the student. Please try again.",
+                    }),
             });
         }
     });
 };
 </script>
-
 
 <template>
     <Head title="Student" />
@@ -142,7 +144,9 @@ const DeleteStudent = (id) => {
                     >
                         <option value="">All Grades</option>
                         <option
-                            v-for="grade in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+                            v-for="grade in [
+                                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                            ]"
                             :key="grade"
                             :value="grade"
                         >
@@ -208,10 +212,10 @@ const DeleteStudent = (id) => {
                         <td class="py-2 px-4 border">{{ student.lastname }}</td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
                         <td class="py-2 px-4 border">
-                            {{ student.grade.grade }}
+                            {{ student.grade?.grade ?? "N/A" }}
                         </td>
                         <td class="py-2 px-4 border">
-                            {{ student.section.section }}
+                            {{ student.section?.section ?? "N/A" }}
                         </td>
                         <td>
                             <div class="flex justify-center items-center gap-4">
@@ -229,13 +233,13 @@ const DeleteStudent = (id) => {
                         </td>
                         <td class="py-2 px-4 border">
                             <div v-if="student.email">
-                            <Link
-                                :href="route('show.email', student.id)"
-                                class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded"
-                            >
-                                {{ student.email }}
-                            </Link>
-                        </div>
+                                <Link
+                                    :href="route('show.email', student.id)"
+                                    class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded"
+                                >
+                                    {{ student.email }}
+                                </Link>
+                            </div>
                         </td>
                         <td>
                             <Link
@@ -249,8 +253,12 @@ const DeleteStudent = (id) => {
                                 >Print</Link
                             >
                             <button
+                                v-if="
+                                    student.submitted_minor_offenses_count === 0 &&
+                                    student.submitted_minor_offenses_count === 0
+                                "
                                 @click="DeleteStudent(student.id)"
-                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded"
+                                class="px-2 py-1 text-sm bg-red-600 text-white rounded"
                             >
                                 Delete
                             </button>

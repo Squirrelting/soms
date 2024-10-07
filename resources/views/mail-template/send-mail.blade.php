@@ -13,8 +13,8 @@
 
     <p>LRN: {{ $student->lrn }}</p>
     <p>Student Name: {{ $student->firstname }} {{ $student->lastname }}</p>
-    <p>Grade: {{ $student->grade->grade }}</p>
-    <p>Grade: {{ $student->section->section }}</p>
+    <p>Grade: {{ $student->grade->grade??'N/A' }}</p>
+    <p>Grade: {{ $student->section->section??'N/A' }}</p>
     <h5>Major Offenses:</h5>
     
     <ul>

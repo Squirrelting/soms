@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('lastname');
             
             $table->string('sex')->nullable();
-            $table->unsignedBigInteger('grade_id');
-            $table->foreign('grade_id')->references('id')->on('grade');
-            $table->unsignedBigInteger('section_id');
-            $table->foreign('section_id')->references('id')->on('section');
+            $table->unsignedBigInteger('grade_id')->nullable();
+            $table->foreign('grade_id')->references('id')->on('grade')->onDelete('set null');
+            $table->unsignedBigInteger('section_id')->nullable();
+            $table->foreign('section_id')->references('id')->on('section')->onDelete('set null');
             $table->string('email')->nullable();
             $table->timestamps();
         });
