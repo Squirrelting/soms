@@ -7,11 +7,11 @@ use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarGraphController;
 use App\Http\Controllers\PieChartController;
+use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\StudentsImportController;
@@ -39,8 +39,6 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
-
-
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
 
@@ -64,6 +62,17 @@ Route::prefix('import')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/store', [StudentsImportController::class, 'store'])->name('import.store');
 });
 
+    //add section
+    Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
+        Route::get('/', [SectionsController::class, 'index'])->name('section.index');
+        Route::get('/create', [SectionsController::class, 'create'])->name('section.create');
+        Route::post('/store', [SectionsController::class, 'store'])->name('section.store');
+        Route::get('/{section}/edit', [SectionsController::class, 'edit'])->name('section.edit');
+        Route::put('/{section}', [SectionsController::class, 'update'])->name('section.update');
+        Route::delete('/{section}', [StudentsController::class, 'destroy'])->name('section.destroy');
+
+    });
+    
 
 //signatory
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
