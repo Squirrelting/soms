@@ -91,7 +91,7 @@ const DeleteUser = (id) => {
                         <td class="py-2 px-4 border">{{ user.email }}</td>
                         <td class="py-2 px-4 border">{{ user.name }}</td>
                         <td class="py-2 px-4 border">{{ user.roles[0].name }}</td>
-                        <td>
+                        <td class="py-2 px-4 border">
                             <div v-if="!['admin', 'super-admin'].includes(user.roles[0].name)">
                                 <Link :href="route('user.edit', user.id)" class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block">
                                 Edit

@@ -8,6 +8,7 @@ import {
   PencilIcon,
   UserPlusIcon,
   KeyIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/vue/24/solid";
 
 // Reactive state for sidebar collapsed/expanded
@@ -154,6 +155,15 @@ function hasPermission(input) {
                 route="users.roles-permissions.roles.index"
               >
                 <KeyIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage POD Users')"
+                :label="isSidebarCollapsed ? '' : 'Add Section'"
+                pattern="section.index"
+                route="section.index"
+              >
+                <ChatBubbleLeftEllipsisIcon class="h-5 text-black" />
               </MenuItem>
             </ul>
           </div>
