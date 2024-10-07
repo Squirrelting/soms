@@ -63,13 +63,13 @@ Route::prefix('import')->middleware(['auth', 'verified'])->group(function () {
 });
 
     //add section
-    Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
-        Route::get('/', [SectionsController::class, 'index'])->name('section.index');
-        Route::get('/create', [SectionsController::class, 'create'])->name('section.create');
-        Route::post('/store', [SectionsController::class, 'store'])->name('section.store');
-        Route::get('/{section}/edit', [SectionsController::class, 'edit'])->name('section.edit');
-        Route::put('/{section}', [SectionsController::class, 'update'])->name('section.update');
-        Route::delete('/{section}', [StudentsController::class, 'destroy'])->name('section.destroy');
+Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [SectionsController::class, 'index'])->name('section.index');
+    Route::get('/create', [SectionsController::class, 'create'])->name('section.create');
+    Route::post('/store', [SectionsController::class, 'store'])->name('section.store');
+    Route::get('/{section}/edit', [SectionsController::class, 'edit'])->name('section.edit');
+    Route::put('/{section}', [SectionsController::class, 'update'])->name('section.update');
+    Route::delete('/{section}', [SectionsController::class, 'destroy'])->name('section.destroy');
 
     });
     

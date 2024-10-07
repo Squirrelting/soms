@@ -107,6 +107,7 @@ const DeleteSection = (id) => {
         }
     });
 };
+
 </script>
 
 <template>
