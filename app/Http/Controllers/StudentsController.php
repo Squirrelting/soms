@@ -13,39 +13,44 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $grade = $request->input('grade');
-        $section = $request->input('section');
-    
-        // Fetch students with their grade, section, and submittedMinorOffenses relationships
-        $students = Student::with(['grade', 'section'])
-            ->withCount('submittedMinorOffenses', 'submittedMajorOffenses') // Add this to count the submitted minor offenses
-            ->when($search, function ($query, $search) {
-                $query->where('firstname', 'like', "%{$search}%")
-                    ->orWhere('lastname', 'like', "%{$search}%")
-                    ->orWhere('lrn', 'like', "%{$search}%");
-            })
-            ->when($grade, function ($query, $grade) {
-                $query->where('grade_id', $grade);
-            })
-            ->when($section, function ($query, $section) {
-                $query->where('section_id', $section);
-            })
-            ->paginate(10)
-            ->appends(['search' => $search, 'grade' => $grade, 'section' => $section]);
-    
-        $sections = Section::all(); // Fetch available sections for the dropdown
-    
-        return Inertia::render('Student/Index', [
-            'students' => $students,
-            'search' => $search,
-            'grade' => $grade,
-            'section' => $section,
-            'sections' => $sections, // Pass sections for the dropdown
-        ]);
-    }
+// In StudentsController.php
+public function index(Request $request)
+{
+    $search = $request->input('search');
+    $grade = $request->input('grade');
+    $section = $request->input('section');
+
+    // Fetch students with their grade, section, and count the submittedMinorOffenses and MajorOffenses where sanction is 0
+    $students = Student::with(['grade', 'section'])
+        ->withCount([
+            'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
+            'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('firstname', 'like', "%{$search}%")
+                ->orWhere('lastname', 'like', "%{$search}%")
+                ->orWhere('lrn', 'like', "%{$search}%");
+        })
+        ->when($grade, function ($query, $grade) {
+            $query->where('grade_id', $grade);
+        })
+        ->when($section, function ($query, $section) {
+            $query->where('section_id', $section);
+        })
+        ->paginate(10)
+        ->appends(['search' => $search, 'grade' => $grade, 'section' => $section]);
+
+    $sections = Section::all(); // Fetch available sections for the dropdown
+
+    return Inertia::render('Student/Index', [
+        'students' => $students,
+        'search' => $search,
+        'grade' => $grade,
+        'section' => $section,
+        'sections' => $sections, // Pass sections for the dropdown
+    ]);
+}
+
     
     public function getSections(Request $request)
     {

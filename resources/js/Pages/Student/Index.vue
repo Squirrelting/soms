@@ -217,20 +217,60 @@ const DeleteStudent = (id) => {
                         <td class="py-2 px-4 border">
                             {{ student.section?.section ?? "N/A" }}
                         </td>
-                        <td>
-                            <div class="flex justify-center items-center gap-4">
-                                <Link
-                                    :href="route('minor.offenses', student.id)"
-                                    class="px-2 py-1 text-sm bg-yellow-300 text-dark p-3 rounded"
-                                    >Minor</Link
-                                >
-                                <Link
-                                    :href="route('major.offenses', student.id)"
-                                    class="px-2 py-1 text-sm bg-red-300 text-dark p-3 rounded"
-                                    >Major</Link
-                                >
+                        <td class="py-2 px-4 border">
+                            <div
+                                class="flex justify-center items-center gap-4 relative"
+                            >
+                                <!-- Minor offenses button -->
+                                <div class="relative">
+                                    <Link
+                                        :href="
+                                            route('minor.offenses', student.id)
+                                        "
+                                        class="px-2 py-0.5 text-s bg-yellow-300 text-dark rounded"
+                                    >
+                                        Minor
+                                    </Link>
+                                    <!-- Badge for minor offenses -->
+                                    <span
+                                        v-if="
+                                            student.submitted_minor_offenses_count >
+                                            0
+                                        "
+                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                                    >
+                                        {{
+                                            student.submitted_minor_offenses_count
+                                        }}
+                                    </span>
+                                </div>
+
+                                <!-- Major offenses button -->
+                                <div class="relative">
+                                    <Link
+                                        :href="
+                                            route('major.offenses', student.id)
+                                        "
+                                        class="px-2 py-0.5 text-s bg-red-300 text-dark rounded"
+                                    >
+                                        Major
+                                    </Link>
+                                    <!-- Badge for major offenses -->
+                                    <span
+                                        v-if="
+                                            student.submitted_major_offenses_count >
+                                            0
+                                        "
+                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                                    >
+                                        {{
+                                            student.submitted_major_offenses_count
+                                        }}
+                                    </span>
+                                </div>
                             </div>
                         </td>
+
                         <td class="py-2 px-4 border">
                             <div v-if="student.email">
                                 <Link
@@ -241,7 +281,8 @@ const DeleteStudent = (id) => {
                                 </Link>
                             </div>
                         </td>
-                        <td>
+
+                        <td class="py-2 px-4 border">
                             <Link
                                 :href="route('students.edit', student.id)"
                                 class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded"
@@ -254,8 +295,9 @@ const DeleteStudent = (id) => {
                             >
                             <button
                                 v-if="
-                                    student.submitted_minor_offenses_count === 0 &&
-                                    student.submitted_minor_offenses_count === 0
+                                    student.submitted_minor_offenses_count ===
+                                        0 &&
+                                    student.submitted_major_offenses_count === 0
                                 "
                                 @click="DeleteStudent(student.id)"
                                 class="px-2 py-1 text-sm bg-red-600 text-white rounded"

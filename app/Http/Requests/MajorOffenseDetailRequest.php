@@ -27,7 +27,7 @@ class MajorOffenseDetailRequest extends FormRequest
             'student_lastname' => 'required|string|max:255', // Required last name
             'student_grade' => 'required|integer|between:1,12', // Validate student grade between 1 and 12
             'student_section' => 'required|string|max:255', // Required section, expecting a string
-            'student_sex' => 'required|string|in:Male,Female', // Adjusted to validate sex
+            'student_sex' => '', // Adjusted to validate sex
             'major_offense_id' => 'required|exists:major_offenses,id', // Required major offense ID
         ];
     }

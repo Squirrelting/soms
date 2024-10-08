@@ -35,15 +35,25 @@ class Student extends Model
         return $this->belongsTo(Section::class, 'section_id', 'id');
     }
 
-    // Define relationship with SubmittedMinorOffense
-    public function submittedMinorOffenses(): HasMany
-    {
-        return $this->hasMany(SubmittedMinorOffense::class, 'lrn', 'lrn');
-    }
+// In Student.php (Model)
+public function submittedMinorOffenses()
+{
+    return $this->hasMany(SubmittedMinorOffense::class, 'lrn', 'lrn');
+}
 
-    // Define relationship with SubmittedMajorOffense
-    public function submittedMajorOffenses(): HasMany
-    {
-        return $this->hasMany(SubmittedMajorOffense::class, 'lrn', 'lrn');
-    }
+public function submittedMinorOffensesWithNoSanction()
+{
+    return $this->submittedMinorOffenses()->where('sanction', 0);
+}
+
+public function submittedMajorOffenses()
+{
+    return $this->hasMany(SubmittedMajorOffense::class, 'lrn', 'lrn');
+}
+
+public function submittedMajorOffensesWithNoSanction()
+{
+    return $this->submittedMajorOffenses()->where('sanction', 0);
+}
+
 }
