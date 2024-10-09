@@ -16,6 +16,10 @@ class StudentsController extends Controller
 // In StudentsController.php
 public function index(Request $request)
 {
+    // Correctly extract start and end dates
+    $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
+    $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
+
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
@@ -26,19 +30,25 @@ public function index(Request $request)
             'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
             'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
         ])
-        ->when($search, function ($query, $search) {
-            $query->where('firstname', 'like', "%{$search}%")
-                ->orWhere('lastname', 'like', "%{$search}%")
-                ->orWhere('lrn', 'like', "%{$search}%");
-        })
         ->when($grade, function ($query, $grade) {
             $query->where('grade_id', $grade);
         })
         ->when($section, function ($query, $section) {
             $query->where('section_id', $section);
         })
+        ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        })
+        ->when($search, function ($query, $search) {
+            // Ensure the search is performed within the filtered grade, section, and date range
+            $query->where(function ($query) use ($search) {
+                $query->where('firstname', 'like', "%{$search}%")
+                      ->orWhere('lastname', 'like', "%{$search}%")
+                      ->orWhere('lrn', 'like', "%{$search}%");
+            });
+        })
         ->paginate(10)
-        ->appends(['search' => $search, 'grade' => $grade, 'section' => $section]);
+        ->appends(['search' => $search, 'grade' => $grade, 'section' => $section, 'startDate' => $startDate, 'endDate' => $endDate]);
 
     $sections = Section::all(); // Fetch available sections for the dropdown
 
@@ -51,7 +61,6 @@ public function index(Request $request)
     ]);
 }
 
-    
     public function getSections(Request $request)
     {
         $grade_id = $request->query('grade_id');

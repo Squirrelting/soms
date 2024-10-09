@@ -138,6 +138,7 @@ const saveMinorOffense = () => {
 };
 </script>
 <template>
+<Head title="Minor Offenses" />
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
             <div class="flex justify-between">
