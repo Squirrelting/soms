@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed } from "vue";
-import { Head, router, Link, useForm } from "@inertiajs/vue3";
+import { Head, router, Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { CalendarDaysIcon } from "@heroicons/vue/24/solid"; // Heroicons
 
 const props = defineProps({
     offensesData: Array,
@@ -16,122 +17,179 @@ const today = new Date();
 const lastMonth = new Date();
 lastMonth.setMonth(today.getMonth() - 1);
 
+const maxDate = today.toISOString().split('T')[0];
+
 // Reactive start and end dates
 const startDate = ref(lastMonth.toISOString().split("T")[0]);
 const endDate = ref(today.toISOString().split("T")[0]);
 
+// Refs for date inputs
+const startDateInput = ref(null);
+const endDateInput = ref(null);
+
+// Methods to show the date pickers
+const showStartDatePicker = () => {
+  startDateInput.value?.showPicker();
+};
+const showEndDatePicker = () => {
+  endDateInput.value?.showPicker();
+};
+
+// Computed properties for formatted dates
+const formattedStartDate = computed(() =>
+  new Date(startDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
+const formattedEndDate = computed(() =>
+  new Date(endDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
+
+// Method for filtering data
 const filter = () => {
-    router.get(
-        route("offenders.index"),
-        {
-            offenseFilter: offenseFilter.value,
-            startDate: startDate.value,
-            endDate: endDate.value,
-        },
-        {
-            preserveScroll: true,
-            preserveState: true,
-        }
-    );
+  router.get(
+    route("offenders.index"),
+    {
+      offenseFilter: offenseFilter.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
+    },
+    {
+      preserveScroll: true,
+      preserveState: true,
+    }
+  );
 };
 
 // Computed property for print URL
 const printUrl = computed(() => {
-    return route("printoffenders", {
-        offenseFilter: offenseFilter.value,
-        startDate: startDate.value,
-        endDate: endDate.value,
-    });
+  return route("printoffenders", {
+    offenseFilter: offenseFilter.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+  });
 });
 </script>
 
+
 <template>
     <Head title="Offenders" />
-
+  
     <AuthenticatedLayout>
-        <div class="mt-4 mx-4">
-            <div class="flex justify-between items-center mb-4">
-                <h5 class="text-xl font-semibold text-gray-700">
-                    Offenders per sex List
-                </h5>
-
-                <!-- Offense Dropdown -->
-                <select
-                    @change="filter"
-                    v-model="offenseFilter"
-                    class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
-                >
-                    <option value="">All Offenses</option>
-                    <option value="Minor">Minor Offense</option>
-                    <option value="Major">Major Offense</option>
-                </select>
-
-                <div class="ml-4">
-                    <label for="startDate" class="mr-2">Start Date:</label>
-                    <input
-                        @change="filter"
-                        type="date"
-                        id="startDate"
-                        v-model="startDate"
-                        class="form-input"
-                    />
-                </div>
-                <div class="ml-4">
-                    <label for="endDate" class="mr-2">End Date:</label>
-                    <input
-                        @change="filter"
-                        type="date"
-                        id="endDate"
-                        v-model="endDate"
-                        class="form-input"
-                    />
-                </div>
-                <a
-                    :href="printUrl"
-                    target="_blank"
-                    class="bg-blue-500 text-white py-2 px-5 rounded"
-                >
-                    Print
-                </a>
-                <div class="flex items-center">
-                    <Link
-                        :href="route('dashboard')"
-                        class="bg-red-600 text-white py-2 px-5 inline-block rounded"
-                        >Back
-                    </Link>
-                </div>
-            </div>
-
-            <table class="w-full bg-white border border-gray-200 shadow">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 text-left border">Offense Name</th>
-                        <th class="py-2 px-4 text-left border">Male count</th>
-                        <th class="py-2 px-4 text-left border">Female count</th>
-                        <th class="py-2 px-4 text-left border">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="offense in offensesData" :key="offense.id">
-                        <td class="py-2 px-4 border">
-                            {{
-                                offense.minor_offenses || offense.major_offenses
-                            }}
-                        </td>
-                        <td class="py-2 px-4 border">
-                            {{ offense.male_count }}
-                        </td>
-                        <td class="py-2 px-4 border">
-                            {{ offense.female_count }}
-                        </td>
-                        <td class="py-2 px-4 border">
-                            {{ offense.male_count + offense.female_count }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+      <div class="mt-4 mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h5 class="text-xl font-semibold text-gray-700">
+            Offenders per sex List
+          </h5>
+  
+          <!-- Offense Dropdown -->
+          <select
+            @change="filter"
+            v-model="offenseFilter"
+            class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
+          >
+            <option value="">All Offenses</option>
+            <option value="Minor">Minor Offense</option>
+            <option value="Major">Major Offense</option>
+          </select>
+  
+          <!-- Start Date Picker with formatted display -->
+          <div class="ml-4 flex items-center">
+            <label for="startDate" class="mr-2">Start Date:</label>
+            <button @click="showStartDatePicker" class="calendar-button">
+              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+            </button>
+            <input
+              type="date"
+              id="startDate"
+              v-model="startDate"
+              ref="startDateInput"
+              :max="maxDate"
+              @change="filter"
+              class="invisible-input"
+            />
+            <span>{{ formattedStartDate }}</span>
+          </div>
+  
+          <!-- End Date Picker with formatted display -->
+          <div class="ml-4 flex items-center">
+            <label for="endDate" class="mr-2">End Date:</label>
+            <button @click="showEndDatePicker" class="calendar-button">
+              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+            </button>
+            <input
+              type="date"
+              id="endDate"
+              v-model="endDate"
+              ref="endDateInput"
+              :max="maxDate"
+              @change="filter"
+              class="invisible-input"
+            />
+            <span>{{ formattedEndDate }}</span>
+          </div>
+  
+          <!-- Print and Back buttons -->
+          <a :href="printUrl" target="_blank" class="bg-blue-500 text-white py-2 px-5 rounded">
+            Print
+          </a>
+          <div class="flex items-center">
+            <Link :href="route('dashboard')" class="bg-red-600 text-white py-2 px-5 inline-block rounded">
+              Back
+            </Link>
+          </div>
         </div>
-
-        <Pagination :pagination="offensesData" />
+  
+        <table class="w-full bg-white border border-gray-200 shadow">
+          <thead>
+            <tr>
+              <th class="py-2 px-4 text-left border">Offense Name</th>
+              <th class="py-2 px-4 text-left border">Male count</th>
+              <th class="py-2 px-4 text-left border">Female count</th>
+              <th class="py-2 px-4 text-left border">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="offense in offensesData" :key="offense.id">
+              <td class="py-2 px-4 border">
+                {{ offense.minor_offenses || offense.major_offenses }}
+              </td>
+              <td class="py-2 px-4 border">{{ offense.male_count }}</td>
+              <td class="py-2 px-4 border">{{ offense.female_count }}</td>
+              <td class="py-2 px-4 border">{{ offense.male_count + offense.female_count }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <Pagination :pagination="offensesData" />
     </AuthenticatedLayout>
-</template>
+  </template>
+<style scoped>
+.calendar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.invisible-input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+span {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: #333;
+}
+</style>
+  

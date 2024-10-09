@@ -138,6 +138,8 @@ const saveMajorOffense = () => {
 };
 </script>
 <template>
+    <Head title="Major Offenses" />
+
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
             <div class="flex justify-between">

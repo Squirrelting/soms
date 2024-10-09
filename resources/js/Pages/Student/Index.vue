@@ -1,10 +1,11 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Swal from "sweetalert2";
-import axios from "axios"; // Import axios for API calls
+import axios from "axios"; 
+import { CalendarDaysIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps({
     students: Object,
@@ -17,18 +18,85 @@ const props = defineProps({
     },
 });
 
+// Default date values
+const today = new Date();
+const lastMonth = new Date();
+lastMonth.setMonth(today.getMonth() - 1);
+
+const maxDate = today.toISOString().split('T')[0];
+
+// Reactive start and end dates
+const startDate = ref(lastMonth.toISOString().split("T")[0]);
+const endDate = ref(today.toISOString().split("T")[0]);
+
+// Refs for date inputs
+const startDateInput = ref(null);
+const endDateInput = ref(null);
+
+// Methods to show the date pickers
+const showStartDatePicker = () => {
+  startDateInput.value?.showPicker();
+};
+const showEndDatePicker = () => {
+  endDateInput.value?.showPicker();
+};
+
+// Computed properties for formatted dates
+const formattedStartDate = computed(() =>
+  new Date(startDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
+const formattedEndDate = computed(() =>
+  new Date(endDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
+
+
 const searchQuery = ref(props.search || "");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
-const sections = ref(props.sections); // This will be populated based on the selected grade
+const sections = ref(props.sections); 
+
+// Function to filter based on search, grade, section, and date
+const filter = () => {
+    router.get(
+        route("students.index"),
+        {
+            search: searchQuery.value,
+            grade: gradeFilter.value,
+            section: sectionFilter.value,
+            startDate: startDate.value,
+            endDate: endDate.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                studentsData.value = page.props.students;
+            },
+        }
+    );
+};
+
+// Watch for changes in filters and trigger the filter method
+watch(
+    [searchQuery, gradeFilter, sectionFilter, startDate, endDate],
+    () => {
+        filter();
+    }
+);
 
 // Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
     try {
-        const response = await axios.get(
-            `/students/sections?grade_id=${gradeId}`
-        );
+        const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
         sections.value = response.data.sections; // Populate the sections dropdown
         sectionFilter.value = ""; // Reset section filter when grade changes
     } catch (error) {
@@ -39,29 +107,11 @@ const fetchSections = async (gradeId) => {
 // Watch for grade changes and fetch sections when the grade changes
 watch(gradeFilter, (newGrade) => {
     if (newGrade) {
-        fetchSections(newGrade); // Fetch sections based on the selected grade
+        fetchSections(newGrade); 
     } else {
-        sections.value = []; // Clear sections if no grade is selected
+        sections.value = []; 
     }
 });
-
-// Watch for changes in the search input, grade, and section filters
-watch(
-    [searchQuery, gradeFilter, sectionFilter],
-    ([newSearch, newGrade, newSection]) => {
-        router.get(
-            route("students.index"),
-            { search: newSearch, grade: newGrade, section: newSection },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    studentsData.value = page.props.students;
-                },
-            }
-        );
-    }
-);
 
 const DeleteStudent = (id) => {
     Swal.fire({
@@ -128,13 +178,50 @@ const DeleteStudent = (id) => {
                 <h5 class="text-xl font-semibold text-gray-700">
                     Student List
                 </h5>
+                <!-- Start Date Picker with formatted display -->
+          <div class="ml-4 flex items-center">
+            <label for="startDate" class="mr-2">Start Date:</label>
+            <button @click="showStartDatePicker" class="calendar-button">
+              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+            </button>
+            <input
+              type="date"
+              id="startDate"
+              v-model="startDate"
+              ref="startDateInput"
+              :max="maxDate"
+              @change="filter"
+              class="invisible-input"
+            />
+            <span>{{ formattedStartDate }}</span>
+          </div>
+  
+          <!-- End Date Picker with formatted display -->
+          <div class="ml-4 flex items-center">
+            <label for="endDate" class="mr-2">End Date:</label>
+            <button @click="showEndDatePicker" class="calendar-button">
+              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+            </button>
+            <input
+              type="date"
+              id="endDate"
+              v-model="endDate"
+              ref="endDateInput"
+              :max="maxDate"
+              @change="filter"
+              class="invisible-input"
+            />
+            <span>{{ formattedEndDate }}</span>
+          </div>
                 <div class="flex items-center">
+
+               
                     <!-- Search Input -->
                     <input
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Search by first name, last name, LRN"
-                        class="border border-gray-300 rounded-lg p-2 w-72 focus:outline-none focus:ring focus:border-blue-300"
+                        placeholder="Search by Name and LRN"
+                        class="border border-gray-300 rounded-lg p-2 w-60 focus:outline-none focus:ring focus:border-blue-300"
                     />
 
                     <!-- Grade Dropdown -->
@@ -313,3 +400,24 @@ const DeleteStudent = (id) => {
         <Pagination :pagination="studentsData" />
     </AuthenticatedLayout>
 </template>
+<style scoped>
+.calendar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.invisible-input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+span {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: #333;
+}
+</style>
