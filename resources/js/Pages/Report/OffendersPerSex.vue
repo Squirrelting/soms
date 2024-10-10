@@ -75,6 +75,15 @@ const printUrl = computed(() => {
     endDate: endDate.value,
   });
 });
+
+// Computed property for print URL
+const exportExcel = computed(() => {
+  return route("exportexcel", {
+    offenseFilter: offenseFilter.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+  });
+});
 </script>
 
 
@@ -139,6 +148,11 @@ const printUrl = computed(() => {
           <a :href="printUrl" target="_blank" class="bg-blue-500 text-white py-2 px-5 rounded">
             Print
           </a>
+          <a :href="exportExcel" class="bg-green-500 text-white py-2 px-5 rounded">
+            Export to Excel
+          </a>
+
+
           <div class="flex items-center">
             <Link :href="route('dashboard')" class="bg-red-600 text-white py-2 px-5 inline-block rounded">
               Back

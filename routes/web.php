@@ -28,6 +28,8 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
     //print offenders male/female
     Route::get('/print-offenders', [OffendersPerSexController::class, 'printoffenders'])->name('printoffenders');
+    Route::get('/export-excel', [OffendersPerSexController::class, 'exportExcel'])->name('exportexcel');
+
 });
 
 
