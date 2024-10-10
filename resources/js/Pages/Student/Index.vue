@@ -169,115 +169,114 @@ const DeleteStudent = (id) => {
             role="alert"
             class="alert alert-info mt-4 mx-5 px-4 py-2"
         >
-            <span>{{ $page.props.flash.message }}</span>
+            <span class="ml-2 text-base text-gray-800">{{ $page.props.flash.message }}</span>
         </div>
 
         <!-- Student List with Search and Filters -->
         <div class="mt-4 mx-4">
-            <div class="flex justify-between items-center mb-4">
-                <h5 class="text-xl font-semibold text-gray-700">
-                    Student List
-                </h5>
-                <!-- Start Date Picker with formatted display -->
-          <div class="ml-4 flex items-center">
-            <label for="startDate" class="mr-2">Start Date:</label>
-            <button @click="showStartDatePicker" class="calendar-button">
-              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
-            </button>
-            <input
-              type="date"
-              id="startDate"
-              v-model="startDate"
-              ref="startDateInput"
-              :max="maxDate"
-              @change="filter"
-              class="invisible-input"
-            />
-            <span>{{ formattedStartDate }}</span>
-          </div>
-  
-          <!-- End Date Picker with formatted display -->
-          <div class="ml-4 flex items-center">
-            <label for="endDate" class="mr-2">End Date:</label>
-            <button @click="showEndDatePicker" class="calendar-button">
-              <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
-            </button>
-            <input
-              type="date"
-              id="endDate"
-              v-model="endDate"
-              ref="endDateInput"
-              :max="maxDate"
-              @change="filter"
-              class="invisible-input"
-            />
-            <span>{{ formattedEndDate }}</span>
-          </div>
-                <div class="flex items-center">
 
-               
-                    <!-- Search Input -->
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Search by Name and LRN"
-                        class="border border-gray-300 rounded-lg p-2 w-60 focus:outline-none focus:ring focus:border-blue-300"
-                    />
+            <div class="flex justify-between items-center mb-2 space-x-2">
+    <h5 class="text-lg font-semibold text-gray-700">
+        Student List
+    </h5>
 
-                    <!-- Grade Dropdown -->
-                    <select
-                        v-model="gradeFilter"
-                        class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Grades</option>
-                        <option
-                            v-for="grade in [
-                                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                            ]"
-                            :key="grade"
-                            :value="grade"
-                        >
-                            Grade {{ grade }}
-                        </option>
-                    </select>
+    <!-- Start Date Picker -->
+    <div class="flex items-center space-x-1">
+        <label for="startDate" class="text-sm">Start:</label>
+        <button @click="showStartDatePicker" class="calendar-button">
+            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
+        </button>
+        <input
+            type="date"
+            id="startDate"
+            v-model="startDate"
+            ref="startDateInput"
+            :max="maxDate"
+            @change="filter"
+            class="invisible-input"
+        />
+        <span class="text-sm text-gray-700">{{ formattedStartDate }}</span>
+    </div>
 
-                    <!-- Section Dropdown (filtered by selected grade) -->
-                    <select
-                        v-model="sectionFilter"
-                        class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Sections</option>
-                        <option
-                            v-for="section in sections"
-                            :key="section.id"
-                            :value="section.id"
-                        >
-                            {{ section.section }}
-                        </option>
-                    </select>
+    <!-- End Date Picker -->
+    <div class="flex items-center space-x-1">
+        <label for="endDate" class="text-sm">End:</label>
+        <button @click="showEndDatePicker" class="calendar-button">
+            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
+        </button>
+        <input
+            type="date"
+            id="endDate"
+            v-model="endDate"
+            ref="endDateInput"
+            :max="maxDate"
+            @change="filter"
+            class="invisible-input"
+        />
+        <span class="text-sm text-gray-700">{{ formattedEndDate }}</span>
+    </div>
 
-                    <Link
-                        :href="route('import.students')"
-                        class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded"
-                        >import
-                    </Link>
+    <!-- Search Input -->
+    <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search by Name and LRN"
+        class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
+    />
 
-                    <!-- Add Student Button -->
-                    <Link
-                        :href="route('students.create')"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg ml-4 transition ease-in-out duration-150"
-                    >
-                        Add Student
-                    </Link>
-                </div>
-            </div>
+    <!-- Grade Dropdown -->
+    <select
+        v-model="gradeFilter"
+        class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+    >
+        <option value="">All Grades</option>
+        <option
+            v-for="grade in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+            :key="grade"
+            :value="grade"
+        >
+            Grade {{ grade }}
+        </option>
+    </select>
+
+    <!-- Section Dropdown -->
+    <select
+        v-model="sectionFilter"
+        class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+    >
+        <option value="">All Sections</option>
+        <option
+            v-for="section in sections"
+            :key="section.id"
+            :value="section.id"
+        >
+            {{ section.section }}
+        </option>
+    </select>
+
+    <!-- Import Link -->
+    <Link
+        :href="route('import.students')"
+        class="px-2 py-1 text-s bg-green-500 text-white rounded"
+    >
+        Import
+    </Link>
+
+    <!-- Add Student Button -->
+    <Link
+        :href="route('students.create')"
+        class="bg-blue-500 hover:bg-blue-600 text-white text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150"
+    >
+        Add Student
+    </Link>
+</div>
+
 
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
                         <th class="py-2 px-4 text-left border">LRN</th>
-                        <th class="py-2 px-4 text-left border">First Name</th>
-                        <th class="py-2 px-4 text-left border">Last Name</th>
+                        <th class="py-2 px-4 text-left border">Student's Name</th>
                         <th class="py-2 px-4 text-left border">Sex</th>
                         <th class="py-2 px-4 text-left border">Grade</th>
                         <th class="py-2 px-4 text-left border">Section</th>
@@ -294,9 +293,8 @@ const DeleteStudent = (id) => {
                     <tr v-for="student in studentsData.data" :key="student.id">
                         <td class="py-2 px-4 border">{{ student.lrn }}</td>
                         <td class="py-2 px-4 border">
-                            {{ student.firstname }}
+                            {{ student.lastname }}, {{ student.firstname }}
                         </td>
-                        <td class="py-2 px-4 border">{{ student.lastname }}</td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
                         <td class="py-2 px-4 border">
                             {{ student.grade?.grade ?? "N/A" }}
@@ -324,7 +322,7 @@ const DeleteStudent = (id) => {
                                             student.submitted_minor_offenses_count >
                                             0
                                         "
-                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-s rounded-full h-4 w-4 flex items-center justify-center"
                                     >
                                         {{
                                             student.submitted_minor_offenses_count
@@ -348,7 +346,7 @@ const DeleteStudent = (id) => {
                                             student.submitted_major_offenses_count >
                                             0
                                         "
-                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                                        class="absolute top-0 right-0 translate-x-2 -translate-y-2 bg-red-500 text-white text-s rounded-full h-4 w-4 flex items-center justify-center"
                                     >
                                         {{
                                             student.submitted_major_offenses_count
@@ -413,11 +411,5 @@ const DeleteStudent = (id) => {
   position: absolute;
   z-index: -1;
   pointer-events: none;
-}
-
-span {
-  margin-left: 8px;
-  font-size: 1rem;
-  color: #333;
 }
 </style>
