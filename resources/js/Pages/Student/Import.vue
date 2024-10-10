@@ -2,27 +2,29 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
-import { ref, watch } from "vue"; 
-import axios from 'axios'; 
+import { ref, watch } from "vue";
+import axios from 'axios';
 
+// Define props
 const props = defineProps({
     errors: Object,
     grades: Array,
     sections: Array,
 });
 
+// Define form using useForm
 const form = useForm({
-    lrn: "",
-    firstname: "",
-    lastname: "",
-    sex: "",
     grade_id: "", 
     section_id: "", 
-    email: "",
+    file: null // Adding file to the form object
 });
+
+// Create a ref for the file input
+const fileInput = ref(null);
 
 const sections = ref(props.sections);
 
+// Watch for grade changes and fetch sections accordingly
 watch(() => form.grade_id, async (newGrade) => {
     if (newGrade) {
         await fetchSections(newGrade);
@@ -32,6 +34,7 @@ watch(() => form.grade_id, async (newGrade) => {
     }
 });
 
+// Function to fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
     try {
         const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
@@ -42,7 +45,8 @@ const fetchSections = async (gradeId) => {
     }
 };
 
-const saveStudent = () => {
+// Import student function with SweetAlert and Inertia post
+const importStudent = () => {
     Swal.fire({
         title: "Are you sure?",
         text: "You are about to add this student!",
@@ -61,8 +65,16 @@ const saveStudent = () => {
                     Swal.showLoading();
                 },
             });
-            form.post(route("students.store"), {
-                onSuccess: () => {
+
+            // Append the file from the input element
+            form.file = fileInput.value.files[0];
+
+            // Send form data using Inertia's post method
+            form.post(route("import.store"), {
+                onFinish: () => {
+                    Swal.close(); // Close the loading alert once the request finishes
+
+                    // Show success message
                     Swal.fire({
                         icon: "success",
                         title: "Student Added",
@@ -70,15 +82,19 @@ const saveStudent = () => {
                         timer: 2000,
                         showConfirmButton: false,
                     });
-                    form.reset();
+
+                    form.reset(); // Reset the form after successful submission
                 },
                 onError: () => {
+                    Swal.close(); // Close the loading alert if an error occurs
+
+                    // Show error message
                     Swal.fire({
                         icon: "error",
                         title: "Failed",
                         text: "There was a problem saving the student. Please try again.",
                     });
-                },
+                }
             });
         }
     });
@@ -86,72 +102,22 @@ const saveStudent = () => {
 </script>
 
 
-
-
 <template>
-    <Head title="Input Student" />
+    <Head title="Import Student" />
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
             <div class="flex justify-between">
-                <h5 class="m-4">Input Student</h5>
+                <h5 class="m-4">Import Student</h5>
                 <Link
                     :href="route('students.index')"
                     class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
                     >Back</Link>
             </div>
 
-            <form @submit.prevent="saveStudent()">
+            <form @submit.prevent="importStudent()">
                 <div class="grid grid-cols-12 gap-4">
                     <div class="col-span-12">
-                        <div class="mb-3">
-                            <label>LRN</label>
-                            <input
-                                type="text"
-                                v-model="form.lrn"
-                                class="py-1 w-full"
-                            />
-                            <div v-if="errors.lrn" class="text-red-500">
-                                {{ errors.lrn }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Student First Name</label>
-                            <input
-                                type="text"
-                                v-model="form.firstname"
-                                class="py-1 w-full"
-                            />
-                            <div v-if="errors.firstname" class="text-red-500">
-                                {{ errors.firstname }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Student Last Name</label>
-                            <input
-                                type="text"
-                                v-model="form.lastname"
-                                class="py-1 w-full"
-                            />
-                            <div v-if="errors.lastname" class="text-red-500">
-                                {{ errors.lastname }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Student Sex</label>
-                            <select v-model="form.sex" class="py-1 w-full">
-                                <option value="">Select</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                            <div v-if="errors.sex" class="text-red-500">
-                                {{ errors.sex }}
-                            </div>
-                        </div>
-
                         <div class="mb-3">
                             <label>Student's Grade</label>
                             <select v-model="form.grade_id" class="py-1 w-full">
@@ -170,28 +136,15 @@ const saveStudent = () => {
                             <div v-if="errors.section_id" class="text-red-500">{{ errors.section_id }}</div>
                         </div>
 
-
-                        <div class="mb-3">
-                            <label>Parent's Email</label>
-                            <input
-                                type="email"
-                                v-model="form.email"
-                                class="py-1 w-full"
-                            />
-                            <div v-if="errors.email" class="text-red-500">
-                                {{ errors.email }}
-                            </div>
+                        <!-- File input -->
+                        <div>
+                            <label class="block mb-1">Upload CSV File:</label>
+                            <input type="file" ref="fileInput" required class="border border-gray-300 rounded py-1 w-full" />
                         </div>
 
-                        <div class="mb-3">
-                            <button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="bg-blue-500 text-white py-2 px-5 rounded mb-4"
-                            >
-                                <span v-if="form.processing">Saving...</span>
-                                <span v-else>Save</span>
-                            </button>
+                        <!-- Submit button -->
+                        <div>
+                            <button type="submit" class="bg-blue-500 text-white py-2 px-5 rounded">Import CSV</button>
                         </div>
                     </div>
                 </div>

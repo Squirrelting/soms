@@ -8,7 +8,7 @@ import {
   PencilIcon,
   UserPlusIcon,
   KeyIcon,
-  MagnifyingGlassPlusIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/vue/24/solid";
 
 // Reactive state for sidebar collapsed/expanded
@@ -32,39 +32,23 @@ onMounted(() => {
     isSidebarCollapsed.value = JSON.parse(storedState);
   }
 });
+
+function hasPermission(input) {
+    const permissions = usePage().props.auth.user.roles[0].permissions;
+    return (
+        Array.isArray(permissions) &&
+        permissions.some(
+            (permission) =>
+                permission.name.toLowerCase() === input.toLowerCase()
+        )
+    );
+}
+
+
 </script>
 
 <template>
   <header>
-    <!-- <nav class="bg-gray-400 pt-2 md:pt-1 pb-1 px-1 mt-0 h-auto fixed w-full z-20 top-0">
-      <button
-                  class="p-2 text-gray-700 bg-gray-500 absolute right-0 top-0 flex items-center justify-center"
-                  @click="toggleSidebar"
-                  :aria-expanded="isSidebarCollapsed"
-                >
-                  {{ isSidebarCollapsed ? '→' : '←' }}
-                </button>
-      <div class="flex items-center justify-between">
-        <div class="hidden md:block">
-
-              
-        </div>
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
-            Hi, {{ $page.props.auth.user.name }}
-          </div>
-          <ul tabindex="0" class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
-            <li>
-              <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200">Profile</Link>
-            </li>
-            <li>
-              <button @click="logOut()" class="text-gray-700 hover:bg-gray-200">Log out</button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav> -->
-
     <div class="navbar fixed z-20 bg-gray-400" >
   <div class="flex-none">
     <button class="btn btn-square btn-ghost"
@@ -129,7 +113,7 @@ onMounted(() => {
               </div>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Students')"
+                v-if="hasPermission('Manage Students')"
                 :label="isSidebarCollapsed ? '' : 'Dashboard'"
                 pattern="dashboard"
                 route="dashboard"
@@ -138,7 +122,7 @@ onMounted(() => {
               </MenuItem>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Students')"
+                v-if="hasPermission('Manage Students')"
                 :label="isSidebarCollapsed ? '' : 'Students'"
                 pattern="students.index"
                 route="students.index"
@@ -147,16 +131,16 @@ onMounted(() => {
               </MenuItem>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Standard Users')"
+                v-if="hasPermission('Manage POD Users')"
                 :label="isSidebarCollapsed ? '' : 'Register'"
-                pattern="register"
-                route="register"
+                pattern="user.index"
+                route="user.index"
               >
                 <UserPlusIcon class="h-5 text-black" />
               </MenuItem>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Students')"
+                v-if="hasPermission('Manage Students')"
                 :label="isSidebarCollapsed ? '' : 'Signatory'"
                 pattern="signatory.index"
                 route="signatory.index"
@@ -165,21 +149,21 @@ onMounted(() => {
               </MenuItem>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Standard Users')"
+                v-if="hasPermission('Manage POD Users')"
                 :label="isSidebarCollapsed ? '' : 'Roles'"
-                pattern="roles.index"
+                pattern="users.roles-permissions.roles.index"
                 route="users.roles-permissions.roles.index"
               >
                 <KeyIcon class="h-5 text-black" />
               </MenuItem>
 
               <MenuItem
-                v-if="$page.props.user.permissions.includes('Manage Standard Users')"
-                :label="isSidebarCollapsed ? '' : 'Permissions'"
-                pattern="permissions.index"
-                route="users.roles-permissions.permissions.index"
+                v-if="hasPermission('Manage POD Users')"
+                :label="isSidebarCollapsed ? '' : 'Add Section'"
+                pattern="section.index"
+                route="section.index"
               >
-                <MagnifyingGlassPlusIcon class="h-5 text-black" />
+                <ChatBubbleLeftEllipsisIcon class="h-5 text-black" />
               </MenuItem>
             </ul>
           </div>

@@ -4,12 +4,9 @@ import { Head, Link, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { ref, defineProps } from "vue";
 import {
-    TrashIcon,
     PencilSquareIcon,
     ShieldExclamationIcon,
-    UserPlusIcon,
 } from "@heroicons/vue/24/solid";
-import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps<{
     roles: {
@@ -35,31 +32,6 @@ const search = () => {
         }
     );
 };
-
-const selectedRoleName = ref("");
-const selectedRoleId = ref(0);
-
-const deleteModal = (id: number, name: string) => {
-    selectedRoleName.value = name;
-    selectedRoleId.value = id;
-};
-
-const deleteRole = (id: number) => {
-    router.delete(route("users.roles-permissions.roles.delete", { id: id }), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-            alert("deleted successfully");
-            selectedRoleId.value = 0;
-            selectedRoleName.value = "";
-        },
-        onError: () => {
-            alert("Somthing went wrong");
-            selectedRoleId.value = 0;
-            selectedRoleName.value = "";
-        },
-    });
-};
 </script>
 <template>
     <Head title="Roles" />
@@ -82,14 +54,6 @@ const deleteRole = (id: number) => {
                             v-model="searchTerm"
                         />
                     </div>
-                    <div>
-                        <Link
-                            class="disabled:text-gray-500 inline-flex hover:border-transparent items-center px-4 py-3 btn bg-kwikweb-400 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-kwikweb dark:hover:bg-white focus:bg-kwikweb-200 dark:focus:bg-white active:bg-kwikweb-900 dark:active:bg-gray-300 focus:outline-none focus:ring-offset-2 transition ease-in-out duration-150"
-                            :href="route('users.roles-permissions.roles.add')"
-                        >
-                            <UserPlusIcon class="h-5" />add role
-                        </Link>
-                    </div>
                 </div>
             </div>
             <div v-if="roles.data.length > 0" class="w-full">
@@ -97,7 +61,9 @@ const deleteRole = (id: number) => {
                     <thead>
                         <tr>
                             <th class="py-2 px-4 text-left border">No.</th>
-                            <th class="py-2 px-4 text-left border">Role name</th>
+                            <th class="py-2 px-4 text-left border">
+                                Role name
+                            </th>
                             <th class="py-2 px-4 text-left border">Actions</th>
                         </tr>
                     </thead>
@@ -106,28 +72,30 @@ const deleteRole = (id: number) => {
                             <td class="py-2 px-4 border">{{ role.number }}</td>
                             <td class="py-2 px-4 border">{{ role.name }}</td>
                             <td class="py-2 px-4 border">
-                                <Link
-                                    class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
-                                    :href="
-                                        route('users.roles-permissions.roles.edit', {
-                                            id: role.id,
-                                        })
+                                <div
+                                    v-if="
+                                        !['admin', 'super-admin'].includes(role.name)
                                     "
                                 >
-                                    <PencilSquareIcon class="h-5 w-5" />
-                                </Link>
-                                <button
-                                    class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-red-500 dark:text-red-500 uppercase tracking-widest hover:text-red-900 dark:hover:text-red-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
-                                    onclick="deleteModal.showModal()"
-                                    @click="deleteModal(role.id, role.name)"
-                                >
-                                    <TrashIcon class="h-5 w-5"></TrashIcon>
-                                </button>
+                                    <Link
+                                        class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
+                                        :href="
+                                            route(
+                                                'users.roles-permissions.roles.edit',
+                                                {
+                                                    id: role.id,
+                                                }
+                                            )
+                                        "
+                                    >
+                                        <PencilSquareIcon class="h-5 w-5" />
+                                    </Link>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <Pagination :pagination="roles"/>
+                <Pagination :pagination="roles" />
             </div>
             <div v-else class="w-full">
                 <div
@@ -149,26 +117,5 @@ const deleteRole = (id: number) => {
                 </div>
             </div>
         </div>
-
-        <dialog id="deleteModal" class="modal">
-            <div class="modal-box">
-                <h3 class="font-bold text-lg">
-                    Are you sure you want to delete this role?
-                </h3>
-                <p class="py-4">
-                    You are about to delete this role "{{ selectedRoleName }}"
-                </p>
-                <div class="modal-action">
-                    <form method="dialog">
-                        <button class="btn">Cancel</button>
-                        <DangerButton
-                            @click="deleteRole(selectedRoleId)"
-                            class="ml-2"
-                            >Yes, Delete it
-                        </DangerButton>
-                    </form>
-                </div>
-            </div>
-        </dialog>
     </AuthenticatedLayout>
 </template>

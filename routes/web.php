@@ -7,15 +7,16 @@ use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarGraphController;
 use App\Http\Controllers\PieChartController;
+use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\MajorOffensesController;
+use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\StudentsImportController;
 use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
-use App\Http\Controllers\Auth\RegisteredUserController;
 
 //Dashboard Graphs
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
@@ -27,40 +28,74 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
     //print offenders male/female
     Route::get('/print-offenders', [OffendersPerSexController::class, 'printoffenders'])->name('printoffenders');
-
+    Route::get('/export-excel', [OffendersPerSexController::class, 'exportExcel'])->name('exportexcel');
 
 });
 
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
+    // API route for fetching sections dynamically
+    Route::get('/sections', [StudentsController::class, 'getSections'])->name('students.sections');
     Route::get('/', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/create', [StudentsController::class, 'create'])->name('students.create');
-    Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}', [StudentsController::class, 'email'])->name('students.show_email');
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
-    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
-    
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
+    Route::post('/', [StudentsController::class, 'store'])->name('students.store');
+    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+
     Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
-    
-    //send email
-    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+
     //print cgm
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
 
-//signatoy
+    //student Import
+Route::prefix('email')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/{student}', [EmailController::class, 'email'])->name('show.email');
+    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+});
+
+
+    //student Import
+Route::prefix('import')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [StudentsImportController::class, 'index'])->name('import.students');
+    Route::post('/store', [StudentsImportController::class, 'store'])->name('import.store');
+});
+
+    //add section
+Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [SectionsController::class, 'index'])->name('section.index');
+    Route::get('/create', [SectionsController::class, 'create'])->name('section.create');
+    Route::post('/store', [SectionsController::class, 'store'])->name('section.store');
+    Route::get('/{section}/edit', [SectionsController::class, 'edit'])->name('section.edit');
+    Route::put('/{section}', [SectionsController::class, 'update'])->name('section.update');
+    Route::delete('/{section}', [SectionsController::class, 'destroy'])->name('section.destroy');
+
+    });
+    
+
+//signatory
 Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [SignatoryController::class, 'index'])->name('signatory.index');
     Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
     Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
     Route::get('/{signatory}/edit', [SignatoryController::class, 'edit'])->name('signatory.edit');
-    Route::get('/{signatory}/print', [SignatoryController::class, 'print'])->name('signatory.print');
     Route::put('/{signatory}', [SignatoryController::class, 'update'])->name('signatory.update');
     Route::delete('/{signatory}', [SignatoryController::class, 'destroy'])->name('signatory.destroy');
 });
+
+// Registered User Routes
+Route::prefix('user')->middleware(['auth', 'verified', 'can:Manage POD Users'])->group(function () {
+    Route::get('/', [RegisteredUserController::class, 'index'])->name('user.index');
+    Route::get('/{user}/edit', [RegisteredUserController::class, 'edit'])->name('user.edit');
+    Route::put('/{user}', [RegisteredUserController::class, 'update'])->name('user.update');
+    Route::delete('/{user}', [RegisteredUserController::class, 'destroy'])->name('user.destroy');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('user.add');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('user.store');
+});
+
 
     //Minor Offenses
 Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
@@ -83,31 +118,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->prefix('user')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-    ->name('register');
-
-Route::post('register', [RegisteredUserController::class, 'store']);
-});
-
 Route::group(['prefix' => 'roles-and-permissions'], function () {
     Route::group(['prefix' => 'roles', 'middleware' => 'can:Manage Roles'], function () {
         Route::get('/', [RoleController::class, 'index'])->name('users.roles-permissions.roles.index');
-        Route::get('/add', [RoleController::class, 'add'])->name('users.roles-permissions.roles.add');
-        Route::post('/store', [RoleController::class, 'store'])->name('users.roles-permissions.roles.store');
         Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('users.roles-permissions.roles.edit');
-        Route::put('/update/{id}', [RoleController::class, 'update'])->name('users.roles-permissions.roles.update');
-        Route::delete('delete/{id}', [RoleController::class, 'destroy'])->name('users.roles-permissions.roles.delete');
         Route::post('/assignPermission/{id}', [RoleController::class, 'assignPermission'])->name('users.roles-permissions.roles.assignPermission');
-    });
-
-    Route::group(['prefix' => 'permissions', 'middleware' => 'can:Manage Permissions'], function () {
-        Route::get('/', [PermissionController::class, 'index'])->name('users.roles-permissions.permissions.index');
-        Route::get('/add', [PermissionController::class, 'add'])->name('users.roles-permissions.permissions.add');
-        Route::post('/store', [PermissionController::class, 'store'])->name('users.roles-permissions.permissions.store');
-        Route::get('/edit/{id}', [PermissionController::class, 'edit'])->name('users.roles-permissions.permissions.edit');
-        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('users.roles-permissions.permissions.update');
-        Route::delete('delete/{id}', [PermissionController::class, 'destroy'])->name('users.roles-permissions.permissions.destroy');
     });
 });
 

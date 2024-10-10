@@ -1,35 +1,89 @@
 <script setup>
-import { ref, watchEffect } from "vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { ref, watchEffect, computed } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue'; 
 import BarGraph from '@/Components/BarGraph.vue'; 
+import { CalendarDaysIcon } from "@heroicons/vue/24/solid"; // Heroicons
 
 // Default date values
 const today = new Date();
 const lastMonth = new Date();
 lastMonth.setMonth(today.getMonth() - 1);
 
+const maxDate = today.toISOString().split('T')[0];
+
+
 // Reactive start and end dates
 const startDate = ref(lastMonth.toISOString().split('T')[0]);
 const endDate = ref(today.toISOString().split('T')[0]);
 
+// Refs for date inputs
+const startDateInput = ref(null);
+const endDateInput = ref(null);
+
+// Methods to show the date pickers
+const showStartDatePicker = () => {
+  startDateInput.value?.showPicker(); // Trigger the native date picker
+};
+
+const showEndDatePicker = () => {
+  endDateInput.value?.showPicker(); // Trigger the native date picker
+};
+
 // Watch for changes in startDate and endDate
 watchEffect([startDate, endDate]);
+
+// Formatting dates to a readable format
+const formattedStartDate = computed(() =>
+  new Date(startDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
+
+const formattedEndDate = computed(() =>
+  new Date(endDate.value).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
+);
 </script>
+
 
 <template>
   <Head title="Dashboard" />
   <AuthenticatedLayout>
     <div class="m-4 flex space-x-4">
-      <div>
+      <!-- Start Date Picker -->
+      <div class="flex items-center">
         <label for="startDate" class="mr-2">Start Date:</label>
-        <input type="date" id="startDate" v-model="startDate" class="form-input" />
+        <!-- Partially hidden date input field (not completely hidden) -->
+        <input type="date" id="startDate" v-model="startDate" ref="startDateInput" :max="maxDate" 
+        class="invisible-input" />
+        <!-- Calendar icon to open the date picker -->
+        <button @click="showStartDatePicker" class="calendar-button">
+          <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+        </button>
+        <!-- Display the formatted selected date -->
+        <span>{{ formattedStartDate }}</span>
       </div>
-      <div>
+
+      <!-- End Date Picker -->
+      <div class="flex items-center">
         <label for="endDate" class="mr-2">End Date:</label>
-        <input type="date" id="endDate" v-model="endDate" class="form-input" />
+        <!-- Partially hidden date input field (not completely hidden) -->
+        <input type="date" id="endDate" v-model="endDate" ref="endDateInput" :max="maxDate" 
+        class="invisible-input" />
+        <!-- Calendar icon to open the date picker -->
+        <button @click="showEndDatePicker" class="calendar-button">
+          <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
+        </button>
+        <!-- Display the formatted selected date -->
+        <span>{{ formattedEndDate }}</span>
       </div>
       <!-- Buttons section -->
       <div class="flex space-x-2">
@@ -90,6 +144,25 @@ watchEffect([startDate, endDate]);
 </template>
 
 <style scoped>
+.calendar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.invisible-input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+span {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: #333;
+}
 .chart-container {
   height: 300px; /* Set a consistent height for both graphs */
 }

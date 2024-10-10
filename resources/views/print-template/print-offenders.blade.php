@@ -37,6 +37,7 @@
     <p><strong>Date: {{ $date }}</strong></p>
     <p><strong>Selected Date: {{ $selectedDate['startDate'] }} to {{ $selectedDate['endDate'] }}</strong></p>
 
+    <p><strong>Selected Offense Type: {{ $offenseFilter ? ucfirst($offenseFilter) : 'All Offenses' }}</strong></p>
     <table>
         <thead>
             <tr>

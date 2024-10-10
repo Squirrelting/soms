@@ -3,21 +3,22 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3'; 
 import Swal from 'sweetalert2'; 
 
-
 const props = defineProps({ 
     errors: Object,
     student: Object,
     minorOffenses: Array,
     submittedminorOffenses: Array,
- });
+});
 
 // Initialize the form object
 const form = useForm({
     minor_offense_id: '',
     lrn: props.student.lrn, 
-    student_name: props.student.name,
+    student_firstname: props.student.firstname,
+    student_lastname: props.student.lastname,
     student_sex: props.student.sex, 
-    student_grade: props.student.grade 
+    student_grade: props.student.grade?.grade??'N/A', // Directly from props
+    student_section: props.student.section?.section??'N/A', // Directly from props
 });
 
 const sanction = useForm({
@@ -75,10 +76,8 @@ const Cleanse = (id) => {
     });
 };
 
-
-
- // Function to save a minor offense
- const saveMinorOffense = () => {
+// Function to save a minor offense
+const saveMinorOffense = () => {
     if (form.minor_offense_id === '') {
         form.post(route('minor.store'));
     } else {
@@ -137,20 +136,10 @@ const Cleanse = (id) => {
         });
     }
 };
-
 </script>
-
-    
-    <Head title="Show Student" />
-
-    <template>
-    <Head title="Show Student" />
-
+<template>
+<Head title="Minor Offenses" />
     <AuthenticatedLayout>
-     <!-- message from StudentsController-->
-    <div v-if="$page.props.flash.message" class="alert bg-green-200 mt-4 mx-5 px-4 py-2">
-        {{ $page.props.flash.message }}
-      </div>
         <div class="mt-4 mx-4">
             <div class="flex justify-between">
                 <h5 class="m-4">Student</h5>
@@ -160,9 +149,11 @@ const Cleanse = (id) => {
                 <div class="col-span-12">
                     <div class="mb-3">
                         {{ student.lrn }},
-                        {{ student.name }},
+                        {{ student.firstname }},
+                        {{ student.lastname }},
                         {{ student.sex }},
-                        {{ student.grade }}
+                        Grade {{ student.grade?.grade??'N/A' }}, <!-- Auto-filled from props -->
+                        {{ student.section?.section??'N/A'}} <!-- Auto-filled from props -->
                     </div>
                 </div>
             </div>
@@ -176,7 +167,7 @@ const Cleanse = (id) => {
                         <tr>
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
                             <th class="py-2 px-4 text-left border">Penalty</th>
-                            <th class="py-2 px-4 text-left border">Date Committed</th>
+                            <th class="py-2 px-4 text-left border">Recorded date</th>
                             <th class="py-2 px-4 text-left border">Sanction</th>
                             <th class="py-2 px-4 text-left border">Acted Date</th>
 
@@ -240,5 +231,3 @@ const Cleanse = (id) => {
         </div>
     </AuthenticatedLayout>
 </template>
-
-
