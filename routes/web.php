@@ -14,7 +14,6 @@ use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\RegisteredUserController;
-use App\Http\Controllers\StudentsImportController;
 use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
 
@@ -51,17 +50,10 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
 
-    //student Import
+    //student send email
 Route::prefix('email')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}', [EmailController::class, 'email'])->name('show.email');
     Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
-});
-
-
-    //student Import
-Route::prefix('import')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/', [StudentsImportController::class, 'index'])->name('import.students');
-    Route::post('/store', [StudentsImportController::class, 'store'])->name('import.store');
 });
 
     //add section
