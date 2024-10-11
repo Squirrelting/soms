@@ -9,6 +9,7 @@ import {
   UserPlusIcon,
   KeyIcon,
   ChatBubbleLeftEllipsisIcon,
+  CalculatorIcon,
 } from "@heroicons/vue/24/solid";
 
 // Reactive state for sidebar collapsed/expanded
@@ -128,6 +129,15 @@ function hasPermission(input) {
                 route="students.index"
               >
                 <UsersIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage Students')"
+                :label="isSidebarCollapsed ? '' : 'Reports'"
+                pattern="report.index"
+                route="report.index"
+              >
+                <CalculatorIcon class="h-5 text-black" />
               </MenuItem>
 
               <MenuItem
