@@ -4,6 +4,7 @@ import { Head, router, Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { CalendarDaysIcon } from "@heroicons/vue/24/solid"; // Heroicons
+import Swal from "sweetalert2";
 
 const props = defineProps({
     offensesData: Array,
@@ -75,6 +76,33 @@ const printUrl = computed(() => {
     endDate: endDate.value,
   });
 });
+
+// Computed property for print URL
+const exportExcel = computed(() => {
+  return route("exportexcel", {
+    offenseFilter: offenseFilter.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+  });
+});
+
+// Check if there is data, if not, show SweetAlert and prevent navigation
+const checkDataAndProceed = (action) => {
+  if (props.offensesData.length === 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "No offenses data",
+      text: "There are no offenses data to export or print.",
+    });
+  } else {
+    // Perform the action (either export or print)
+    if (action === "print") {
+      window.open(printUrl.value, "_blank");
+    } else if (action === "export") {
+      window.location.href = exportExcel.value;
+    }
+  }
+};
 </script>
 
 
@@ -135,10 +163,15 @@ const printUrl = computed(() => {
             <span>{{ formattedEndDate }}</span>
           </div>
   
-          <!-- Print and Back buttons -->
-          <a :href="printUrl" target="_blank" class="bg-blue-500 text-white py-2 px-5 rounded">
-            Print
-          </a>
+        <!-- Print and Export buttons -->
+        <button @click="checkDataAndProceed('print')" class="bg-blue-500 text-white py-2 px-5 rounded">
+          Print
+        </button>
+        <button @click="checkDataAndProceed('export')" class="bg-green-500 text-white py-2 px-5 rounded">
+          Export to Excel
+        </button>
+
+
           <div class="flex items-center">
             <Link :href="route('dashboard')" class="bg-red-600 text-white py-2 px-5 inline-block rounded">
               Back
