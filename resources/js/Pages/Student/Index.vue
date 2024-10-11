@@ -254,14 +254,6 @@ const DeleteStudent = (id) => {
         </option>
     </select>
 
-    <!-- Import Link -->
-    <Link
-        :href="route('import.students')"
-        class="px-2 py-1 text-s bg-green-500 text-white rounded"
-    >
-        Import
-    </Link>
-
     <!-- Add Student Button -->
     <Link
         :href="route('students.create')"
