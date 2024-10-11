@@ -11,6 +11,7 @@
         "@vitejs/plugin-vue": "^5.0.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
+        "daisyui": "^4.12.10",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.2.1",
@@ -18,7 +19,10 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@heroicons/vue": "^2.1.5",
         "@inertiajs/inertia": "^0.11.1",
+        "chart.js": "^4.4.4",
+        "chartjs-plugin-datalabels": "^2.2.0",
         "sweetalert2": "^11.14.0"
     }
 }

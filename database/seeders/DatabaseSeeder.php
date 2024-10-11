@@ -17,9 +17,12 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             MinorOffenseSeeder::class,
+            GradeSeeder::class,
+            SectionSeeder::class,
             StudentSeeder::class,
             MinorPenaltySeeder::class,
-
+            MajorOffenseSeeder::class,
+            MajorPenaltySeeder::class,
         ]);
     }
 }

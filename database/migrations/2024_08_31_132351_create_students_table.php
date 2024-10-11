@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lrn')->unique(); 
-            $table->string('name'); 
+            $table->string('firstname'); 
+            $table->string('lastname');
             
-            $table->string('sex');
-            $table->string('grade');
-            $table->string('email');
+            $table->string('sex')->nullable();
+            $table->unsignedBigInteger('grade_id')->nullable();
+            $table->foreign('grade_id')->references('id')->on('grade')->onDelete('set null');
+            $table->unsignedBigInteger('section_id')->nullable();
+            $table->foreign('section_id')->references('id')->on('section')->onDelete('set null');
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

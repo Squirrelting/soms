@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 defineProps({
     canResetPassword: {
@@ -23,13 +24,50 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+    // Show loading indicator
+    Swal.fire({
+        title: 'Logging in...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    form.post(route('authenticateUser'), {
+        onFinish: () => {
+            form.reset('password');
+        },
+        onSuccess: () => {
+            // Close the loading indicator and show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Logged in!',
+                text: 'You have been logged in successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        },
+        onError: () => {
+            // Close the loading indicator if there's an error
+            Swal.close();
+        }
     });
 };
 </script>
 
 <template>
+            <!-- Background image with dark overlay -->
+        <div class="absolute inset-0 z-0">
+            <img
+                id="background"
+                class="w-full h-full object-cover opacity-40"
+                src="/Images/SCNHS-Background.jpg"
+                alt="Background"
+            />
+            <div class="absolute z-0"></div>
+        </div>
     <GuestLayout>
         <Head title="Log in" />
 
@@ -49,6 +87,7 @@ const submit = () => {
                     required
                     autofocus
                     autocomplete="username"
+                    
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />

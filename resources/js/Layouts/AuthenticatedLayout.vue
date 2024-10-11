@@ -1,182 +1,186 @@
 <script setup>
-import { ref } from 'vue';
-import Logo from '@/Pages/Images/SCNHS-Logo.png';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted } from "vue";
+import MenuItem from "@/Components/MenuItem.vue";
+import { Link, router, usePage } from "@inertiajs/vue3";
+import {
+  HomeIcon,
+  UsersIcon,
+  PencilIcon,
+  UserPlusIcon,
+  KeyIcon,
+  ChatBubbleLeftEllipsisIcon,
+} from "@heroicons/vue/24/solid";
 
-const showingNavigationDropdown = ref(false);
+// Reactive state for sidebar collapsed/expanded
+const isSidebarCollapsed = ref(false);
+
+// Toggle function for collapsing sidebar
+const toggleSidebar = () => {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+  localStorage.setItem("isSidebarCollapsed", isSidebarCollapsed.value);
+};
+
+// Function to handle log out
+const logOut = () => {
+  router.post(route("logout"));
+};
+
+// Initialize sidebar state on mount
+onMounted(() => {
+  const storedState = localStorage.getItem("isSidebarCollapsed");
+  if (storedState !== null) {
+    isSidebarCollapsed.value = JSON.parse(storedState);
+  }
+});
+
+function hasPermission(input) {
+    const permissions = usePage().props.auth.user.roles[0].permissions;
+    return (
+        Array.isArray(permissions) &&
+        permissions.some(
+            (permission) =>
+                permission.name.toLowerCase() === input.toLowerCase()
+        )
+    );
+}
+
+
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white border-b border-gray-100">
-                <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <Link href="/dashboard">
-                                    <img :src="Logo" alt="SCNHS Logo" class="w-10 h-10" />
-                                </Link>
-                            </div>
-
-                            <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-
-                            <!-- Dashboard Link (for users with manage_students permission) -->
-                            <NavLink
-                                v-if="$page.props.user.permissions.includes('manage_students')"
-                                :href="route('dashboard')"
-                                :active="route().current('dashboard')"
-                            >
-                                Dashboard
-                            </NavLink>
-
-                            <!-- About Us Link (for users with manage_students permission) -->
-                            <NavLink
-                                v-if="$page.props.user.permissions.includes('manage_standard')"
-                                :href="route('register')"
-                                :active="route().current('register')"
-                            >
-                                Register
-                            </NavLink>
-
-                            <!-- Contact Us Link (for users with manage_standard permission) -->
-                            <NavLink
-                                v-if="$page.props.user.permissions.includes('manage_standard')"
-                                :href="route('adminpage')"
-                                :active="route().current('adminpage')"
-                            >
-                                Admin Page
-                            </NavLink>
-                            
-                            <NavLink
-                                v-if="$page.props.user.permissions.includes('manage_students')"
-                                :href="route('signatorypage')"
-                                :active="route().current('signatorypage')"
-                            >
-                                Signatory Page
-                            </NavLink>
-                            </div>
-                        </div>
-
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
-                            <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="ms-2 -me-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
-                            >
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex': !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex': showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
-                    class="sm:hidden"
-                >
-                    <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
-                            <div class="font-medium text-base text-gray-800">
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <main>
-                <slot />
-            </main>
+  <header>
+    <div class="navbar fixed z-20 bg-gray-400" >
+  <div class="flex-none">
+    <button class="btn btn-square btn-ghost"
+    @click="toggleSidebar"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="inline-block h-5 w-5 stroke-current">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl">SOMS</a>
+  </div>
+  <div class="flex-none">
+    <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
+            Hi, {{ $page.props.auth.user.name }}
+          </div>
+          <ul tabindex="0" class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
+            <li>
+              <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200">Profile</Link>
+            </li>
+            <li>
+              <button @click="logOut()" class="text-gray-700 hover:bg-gray-200">Log out</button>
+            </li>
+          </ul>
         </div>
+  </div>
+</div>
+  </header>
+
+  <main>
+    <div class="flex flex-col md:flex-row">
+      <nav aria-label="alternative nav">
+        <div
+          id="sidebar"
+          :class="[ 
+            'bg-gray-300 shadow-xl fixed bottom-0 mt-12 md:relative md:h-screen z-10 content-center transition-all duration-300',
+            isSidebarCollapsed ? 'md:w-16' : 'md:w-36'
+          ]"
+        >
+          <div class="md:mt-14 md:fixed md:left-0 md:top-0 content-center md:content-start text-left justify-between">
+            <ul class="list-reset flex flex-row md:flex-col pt-3 md:py-3 px-1 md:px-2 text-center md:text-left">
+
+
+              <!-- Logo and Menu Items -->
+              <div class="flex justify-center items-center mt-4">
+                <img
+                  :class="[isSidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20']"
+                  class="rounded-full transition-all duration-300"
+                  src="/Images/SCNHS-Logo.png"
+                  alt="logo"
+                />
+              </div>
+
+              <MenuItem
+                v-if="hasPermission('Manage Students')"
+                :label="isSidebarCollapsed ? '' : 'Dashboard'"
+                pattern="dashboard"
+                route="dashboard"
+              >
+                <HomeIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage Students')"
+                :label="isSidebarCollapsed ? '' : 'Students'"
+                pattern="students.index"
+                route="students.index"
+              >
+                <UsersIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage POD Users')"
+                :label="isSidebarCollapsed ? '' : 'Register'"
+                pattern="user.index"
+                route="user.index"
+              >
+                <UserPlusIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage Students')"
+                :label="isSidebarCollapsed ? '' : 'Signatory'"
+                pattern="signatory.index"
+                route="signatory.index"
+              >
+                <PencilIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage POD Users')"
+                :label="isSidebarCollapsed ? '' : 'Roles'"
+                pattern="users.roles-permissions.roles.index"
+                route="users.roles-permissions.roles.index"
+              >
+                <KeyIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
+                v-if="hasPermission('Manage POD Users')"
+                :label="isSidebarCollapsed ? '' : 'Add Section'"
+                pattern="section.index"
+                route="section.index"
+              >
+                <ChatBubbleLeftEllipsisIcon class="h-5 text-black" />
+              </MenuItem>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section class="w-full">
+        <div class="mt-5 md:mt-20 lg:mt-10 flex-1 pt-5">
+          <slot />
+        </div>
+      </section>
     </div>
+  </main>
 </template>
+
+<style>
+.transition-width {
+  transition: width 1s ease;
+}
+</style>

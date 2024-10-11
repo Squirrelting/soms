@@ -10,6 +10,15 @@ use App\Http\Requests\SignatoryDetailRequest;
 
 class SignatoryController extends Controller
 {
+
+    public function index(){
+        $signatory = Signatory::get();
+    
+        return Inertia::render('Signatory/Index',[
+            'signatory'=> $signatory
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('Signatory/Create');
@@ -22,7 +31,7 @@ class SignatoryController extends Controller
     
         Signatory::create($validated);
     
-        return redirect()->route('signatorypage')->with('message', 'Signatory added successfully');
+        return redirect()->route('signatory.index')->with('message', 'Signatory added successfully');
     }
     
 
@@ -39,7 +48,7 @@ class SignatoryController extends Controller
     
         $signatory->update($validated);
     
-        return redirect()->route('signatorypage')->with('message', 'Signatory updated successfully');
+        return redirect()->route('signatory.index')->with('message', 'Signatory updated successfully');
     }
     
     public function destroy(Signatory $signatory)
