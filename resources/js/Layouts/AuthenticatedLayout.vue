@@ -134,8 +134,8 @@ function hasPermission(input) {
               <MenuItem
                 v-if="hasPermission('Manage Students')"
                 :label="isSidebarCollapsed ? '' : 'Reports'"
-                pattern="report.index"
-                route="report.index"
+                pattern="reports.index"
+                route="reports.index"
               >
                 <CalculatorIcon class="h-5 text-black" />
               </MenuItem>

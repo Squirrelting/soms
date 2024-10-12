@@ -259,7 +259,7 @@ class OffendersPerSexController extends Controller
             $offensesData = $submittedminorOffenses->merge($submittedmajorOffenses);
         }
     
-        return Inertia::render('Report/OffendersPerSex', [
+        return Inertia::render('Dashboard/OffendersPerSex', [
             'offensesData' => $offensesData,
         ]);
     }

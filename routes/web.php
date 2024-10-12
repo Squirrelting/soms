@@ -5,6 +5,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\BarGraphController;
 use App\Http\Controllers\PieChartController;
 use App\Http\Controllers\SectionsController;
@@ -31,6 +32,10 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
 });
 
+//Reports
+Route::prefix('reports')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [ReportsController::class, 'index'])->name('reports.index');
+});
 
 //students
 Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
@@ -64,7 +69,6 @@ Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{section}/edit', [SectionsController::class, 'edit'])->name('section.edit');
     Route::put('/{section}', [SectionsController::class, 'update'])->name('section.update');
     Route::delete('/{section}', [SectionsController::class, 'destroy'])->name('section.destroy');
-
     });
     
 
