@@ -50,6 +50,7 @@ public function index(Request $request)
         ->when($search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('firstname', 'like', "%{$search}%")
+                      ->orWhere('middlename', 'like', "%{$search}%")
                       ->orWhere('lastname', 'like', "%{$search}%")
                       ->orWhere('lrn', 'like', "%{$search}%");
             });

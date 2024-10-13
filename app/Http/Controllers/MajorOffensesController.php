@@ -76,6 +76,7 @@ public function major(Student $student)
         SubmittedMajorOffense::create([
             'lrn' => $validated['lrn'],
             'student_firstname' => $validated['student_firstname'],
+            'student_middlename' => $validated['student_middlename'],
             'student_lastname' => $validated['student_lastname'], // Correct field name
             'student_grade' => $validated['student_grade'],
             'student_section' => $validated['student_section'],

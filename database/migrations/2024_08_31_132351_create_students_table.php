@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('lrn')->unique(); 
             $table->string('firstname'); 
+            $table->string('middlename')->nullable(); 
             $table->string('lastname');
             
             $table->string('sex')->nullable();

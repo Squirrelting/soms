@@ -20,6 +20,7 @@ const props = defineProps({
 const form = useForm({
     lrn: props.student.lrn,
     firstname: props.student.firstname,
+    middlename: props.student.middlename,
     lastname: props.student.lastname,
     sex: props.student.sex,
     grade_id: props.student.grade_id,  // Keep as grade_id
@@ -122,6 +123,13 @@ const updateStudent = () => {
                             <label>First Name</label>
                             <input type="text" v-model="form.firstname" class="py-1 w-full" />
                             <div v-if="errors.firstname" class="text-red-500">{{ errors.firstname }}</div>
+                        </div>
+
+                        <!-- Middle Name -->
+                        <div class="mb-3">
+                            <label>Middle Name</label>
+                            <input type="text" v-model="form.middlename" class="py-1 w-full" />
+                            <div v-if="errors.middlename" class="text-red-500">{{ errors.middlename }}</div>
                         </div>
 
                         <!-- Last Name -->

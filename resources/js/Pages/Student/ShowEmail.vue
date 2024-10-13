@@ -82,6 +82,7 @@ const SendEmail = (id) => {
                     <div class="mb-3">
                         {{ student.lrn }}, 
                         {{ student.firstname }},
+                        {{ student.middlename }},
                         {{ student.lastname }},
                         {{ student.sex }},
                         Grade {{ student.grade?.grade??'N/A' }},
