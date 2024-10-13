@@ -15,6 +15,7 @@ const form = useForm({
     major_offense_id: '',
     lrn: props.student.lrn, 
     student_firstname: props.student.firstname,
+    student_middlename: props.student.middlename,
     student_lastname: props.student.lastname,
     student_sex: props.student.sex, 
     student_grade: props.student.grade?.grade??'N/A', // Directly from props
@@ -151,6 +152,7 @@ const saveMajorOffense = () => {
                     <div class="mb-3">
                         {{ student.lrn }},
                         {{ student.firstname }},
+                        {{ student.middlename }}
                         {{ student.lastname }},
                         {{ student.sex }},
                         Grade {{ student.grade?.grade??'N/A' }}, <!-- Auto-filled from props -->

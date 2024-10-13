@@ -297,7 +297,7 @@ watch(gradeFilter, (newGrade) => {
                     <tr v-for="student in studentsData.data" :key="student.id">
                         <td class="py-2 px-4 border">{{ student.lrn }}</td>
                         <td class="py-2 px-4 border">
-                            {{ student.lastname }}, {{ student.firstname }}
+                            {{ student.lastname }}, {{ student.firstname }} {{ student.middlename }}
                         </td>
                         <td class="py-2 px-4 border">{{ student.sex }}</td>
                         <td class="py-2 px-4 border">

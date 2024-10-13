@@ -24,6 +24,7 @@ class StudentDetailRequest extends FormRequest
         return [
             "lrn" => "required|integer|digits_between:1,8",
             "firstname" => "required|string|max:255",
+            "middlename" => "nullable|string|max:255",
             "lastname" => "required|string|max:255",
             "sex" => "required|string|in:Male,Female",
             "grade_id" => "required|integer|exists:grade,id", // Use grade_id and reference the 'grades' table

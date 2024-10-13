@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('lrn')->references('lrn')->on('students');
             
             $table->string('student_firstname');
+            $table->string('student_middlename')->nullable();
             $table->string('student_lastname');
             $table->string('student_grade');
             $table->string('student_section');

@@ -22,13 +22,14 @@ class MinorOffenseDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lrn' => 'required|integer|digits_between:1,8|exists:students,lrn', // Ensure lrn exists in students table
-            'student_firstname' => 'required|string|max:255', // Required first name
-            'student_lastname' => 'required|string|max:255', // Required last name
-            'student_grade' => 'required|integer|between:1,12', // Validate student grade between 1 and 12
-            'student_section' => 'required|string|max:255', // Required section, expecting a string
-            'student_sex' => '', // Adjusted to validate sex
-            'minor_offense_id' => 'required|exists:minor_offenses,id', // Required minor offense ID
+            'lrn' => 'required|integer|digits_between:1,8|exists:students,lrn', 
+            'student_firstname' => 'required|string|max:255', 
+            'student_middlename' => 'nullable|string|max:255', 
+            'student_lastname' => 'required|string|max:255', 
+            'student_grade' => 'required|integer|between:1,12', 
+            'student_section' => 'required|string|max:255', 
+            'student_sex' => '', 
+            'minor_offense_id' => 'required|exists:minor_offenses,id', 
         ];
     }
 }
