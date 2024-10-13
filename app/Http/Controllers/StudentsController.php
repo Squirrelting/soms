@@ -16,15 +16,23 @@ class StudentsController extends Controller
 // In StudentsController.php
 public function index(Request $request)
 {
-    // Correctly extract start and end dates
+    // Extract start and end dates
     $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
     $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
 
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
+    $sortColumn = $request->input('sortColumn', 'id');  // Default to 'id' if no sort column is provided
+    $sortOrder = $request->input('sortOrder', 'asc');   // Default to 'asc' order if not provided
 
-    // Fetch students with their grade, section, and count the submittedMinorOffenses and MajorOffenses where sanction is 0
+    // Define the allowed columns for sorting to avoid SQL injection
+    $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
+    if (!in_array($sortColumn, $allowedSortColumns)) {
+        $sortColumn = 'id'; // Fallback to default if invalid column is passed
+    }
+
+    // Fetch students with their grade, section, and count offenses
     $students = Student::with(['grade', 'section'])
         ->withCount([
             'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
@@ -40,15 +48,23 @@ public function index(Request $request)
             $query->whereBetween('created_at', [$startDate, $endDate]);
         })
         ->when($search, function ($query, $search) {
-            // Ensure the search is performed within the filtered grade, section, and date range
             $query->where(function ($query) use ($search) {
                 $query->where('firstname', 'like', "%{$search}%")
                       ->orWhere('lastname', 'like', "%{$search}%")
                       ->orWhere('lrn', 'like', "%{$search}%");
             });
         })
+        ->orderBy($sortColumn, $sortOrder) // Apply sorting here
         ->paginate(10)
-        ->appends(['search' => $search, 'grade' => $grade, 'section' => $section, 'startDate' => $startDate, 'endDate' => $endDate]);
+        ->appends([
+            'search' => $search,
+            'grade' => $grade,
+            'section' => $section,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'sortColumn' => $sortColumn,
+            'sortOrder' => $sortOrder,
+        ]);
 
     $sections = Section::all(); // Fetch available sections for the dropdown
 
@@ -57,7 +73,9 @@ public function index(Request $request)
         'search' => $search,
         'grade' => $grade,
         'section' => $section,
-        'sections' => $sections, // Pass sections for the dropdown
+        'sections' => $sections,
+        'sortColumn' => $sortColumn,
+        'sortOrder' => $sortOrder,
     ]);
 }
 
@@ -124,15 +142,5 @@ public function index(Request $request)
             'student' => $student,
             'signatory' => $signatory,
         ]);
-    }
-
-    public function destroy(Student $student)
-    {
-        if ($student->submittedMinorOffenses()->count() === 0 && $student->submittedMajorOffenses()->count() === 0) {
-            $student->delete();
-            return Redirect::back()->with('message', 'Student Deleted Successfully');
-        } else {
-            return Redirect::back()->withErrors(['message', 'Student can not be deleted ']);
-        }
     }
 }
