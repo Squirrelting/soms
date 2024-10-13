@@ -48,9 +48,6 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
     Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
 
-    Route::delete('/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
-    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
-
     //print cgm
     Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });

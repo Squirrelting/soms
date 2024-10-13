@@ -63,6 +63,19 @@ const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
 const sections = ref(props.sections); 
+const sortColumn = ref("id"); 
+const sortOrder = ref("asc"); 
+
+// Sorting method
+const sortTable = (column) => {
+  if (sortColumn.value === column) {
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
+  } else {
+    sortColumn.value = column;
+    sortOrder.value = "asc"; // Set ascending as default order for new column
+  }
+  filter(); // Call the filter method to apply the sorting
+};
 
 // Function to filter based on search, grade, section, and date
 const filter = () => {
@@ -74,6 +87,8 @@ const filter = () => {
             section: sectionFilter.value,
             startDate: startDate.value,
             endDate: endDate.value,
+            sortColumn: sortColumn.value, // Pass the sorting column
+            sortOrder: sortOrder.value,   // Pass the sorting order
         },
         {
             preserveState: true,
@@ -113,50 +128,6 @@ watch(gradeFilter, (newGrade) => {
     }
 });
 
-const DeleteStudent = (id) => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You are about to delete this student! This action cannot be undone.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "Cancel",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: "Deleting...",
-                text: "Please wait while we delete the student data.",
-                didOpen: () => Swal.showLoading(),
-            });
-
-            router.delete(route("students.destroy", id), {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    studentsData.value.data = studentsData.value.data.filter(
-                        (student) => student.id !== id
-                    );
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Deleted!",
-                        text: "The student has been deleted.",
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                },
-                onError: () =>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Failed!",
-                        text: "There was a problem deleting the student. Please try again.",
-                    }),
-            });
-        }
-    });
-};
 </script>
 
 <template>
@@ -267,17 +238,58 @@ const DeleteStudent = (id) => {
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 text-left border">LRN</th>
-                        <th class="py-2 px-4 text-left border">Student's Name</th>
-                        <th class="py-2 px-4 text-left border">Sex</th>
-                        <th class="py-2 px-4 text-left border">Grade</th>
-                        <th class="py-2 px-4 text-left border">Section</th>
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('lrn')">
+                        LRN
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'lrn' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'lrn' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
+                        </th>
+
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('lastname')">
+                        Student's Name
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'lastname' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'lastname' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
+                        </th>
+
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('sex')">
+                            Sex
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'sex' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'sex' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
+                        </th>
+
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('grade_id')">
+                            Grade
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'grade_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'grade_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
+                        </th>
+
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('section_id')">
+                            Section
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'section_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'section_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
+                        </th>
+
                         <th class="py-2 px-4 text-left border">
                             Offenses/Penalties
                         </th>
-                        <th class="py-2 px-4 text-left border">
-                            Parent's Email
+                        
+                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('email')">
+                        Parent's Email
+                        <span class="ml-1 text-xs">
+                            <span :class="sortColumn === 'email' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                            <span :class="sortColumn === 'email' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                        </span>
                         </th>
+
                         <th class="py-2 px-4 text-left border">Actions</th>
                     </tr>
                 </thead>
@@ -370,17 +382,6 @@ const DeleteStudent = (id) => {
                                 class="px-2 py-1 text-sm bg-blue-500 text-white p-3 rounded"
                                 >Print</Link
                             >
-                            <button
-                                v-if="
-                                    student.submitted_minor_offenses_count ===
-                                        0 &&
-                                    student.submitted_major_offenses_count === 0
-                                "
-                                @click="DeleteStudent(student.id)"
-                                class="px-2 py-1 text-sm bg-red-600 text-white rounded"
-                            >
-                                Delete
-                            </button>
                         </td>
                     </tr>
                 </tbody>
