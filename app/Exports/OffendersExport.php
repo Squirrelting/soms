@@ -28,10 +28,10 @@ class OffendersExport implements FromCollection, WithHeadings
         // Format the data for Excel export as a collection
         return collect($this->offensesData->map(function ($offense) {
             // Adjust the offense name according to its type
-            $offenseName = $offense->type === 'Minor' ? $offense->minor_offenses : $offense->major_offenses;
+            $offenseName = $offense->type === 'Minor' ? $offense->minor_offense : $offense->major_offense;
 
             // Debugging: Check if offense names are set correctly
-            if (!isset($offense->minor_offenses) && !isset($offense->major_offenses)) {
+            if (!isset($offense->minor_offense) && !isset($offense->major_offense)) {
                 dd('No offense name found for:', $offense);
             }
 
