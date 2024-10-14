@@ -11,7 +11,7 @@
         <?php foreach ($offensesData as $offense): ?>
             <tr>
                 <td>
-                <?php echo $offense->type === 'Minor' ? $offense->minor_offenses : $offense->major_offenses; ?>
+                <?php echo $offense->type === 'Minor' ? $offense->minor_offense : $offense->major_offense; ?>
 
                 </td>
                 <td><?php echo $offense->male_count ?? 0; ?></td>

@@ -12,7 +12,7 @@ const props = defineProps({
 
 // Initialize the form object
 const form = useForm({
-    major_offense_id: '',
+    major_offense: '',
     lrn: props.student.lrn, 
     student_firstname: props.student.firstname,
     student_middlename: props.student.middlename,
@@ -79,7 +79,7 @@ const Cleanse = (id) => {
 
 // Function to save a major offense
 const saveMajorOffense = () => {
-    if (form.major_offense_id === '') {
+    if (form.major_offense === '') {
         form.post(route('major.store'));
     } else {
         Swal.fire({
@@ -178,8 +178,8 @@ const saveMajorOffense = () => {
                     </thead>
                     <tbody>
                         <tr v-for="offense in submittedmajorOffenses" :key="offense.id">
-                            <td class="py-2 px-4 border">{{ offense.major_offense.major_offenses }}</td>
-                            <td class="py-2 px-4 border">{{ offense.major_penalty.major_penalties }}</td>
+                            <td class="py-2 px-4 border">{{ offense.major_offense }}</td>
+                            <td class="py-2 px-4 border">{{ offense.major_penalty }}</td>
                             <td class="py-2 px-4 border">{{ offense.offense_date }}</td>
                             <td class="py-2 px-4 border">
                                 <button
@@ -209,14 +209,14 @@ const saveMajorOffense = () => {
                     <div class="col-span-12">
                         <div class="mb-3">
                             <label>Select Major Offenses</label>
-                            <select v-model="form.major_offense_id" class="py-1 w-full">
+                            <select v-model="form.major_offense" class="py-1 w-full">
                                 <option value="">Select Major Offense</option>
                                 <!-- Loop through the majorOffenses prop to populate the select -->
-                                <option v-for="offense in majorOffenses" :key="offense.id" :value="offense.id">
+                                <option v-for="offense in majorOffenses" :key="offense.id" :value="offense.major_offenses">
                                     {{ offense.major_offenses }}
                                 </option>
                             </select>
-                            <div v-if="errors.major_offense_id" class="text-red-500">{{ errors.major_offense_id }}</div>
+                            <div v-if="errors.major_offense" class="text-red-500">{{ errors.major_offense }}</div>
                         </div>
                         <div class="mb-3">
                             <button

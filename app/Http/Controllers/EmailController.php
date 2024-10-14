@@ -16,10 +16,10 @@ class EmailController extends Controller
         $subject = "Notice to your Child";
 
         // Fetch submitted minor offenses related to the student
-        $submittedminorOffenses = $student->submittedMinorOffenses()->with('minorOffense', 'minorPenalty')->get();
+        $submittedminorOffenses = $student->submittedMinorOffenses()->get();
 
         // Fetch submitted major offenses related to the student
-        $submittedmajorOffenses = $student->submittedMajorOffenses()->with('majorOffense', 'majorPenalty')->get();
+        $submittedmajorOffenses = $student->submittedMajorOffenses()->get();
 
         // Send email to the student's email
         Mail::to($student->email)->send(new SendEmail($subject, $submittedminorOffenses, $submittedmajorOffenses, $student));
@@ -31,7 +31,6 @@ class EmailController extends Controller
         $studentWithGradeAndSection = $student->load('grade', 'section');
 
         $submittedminorOffenses = $student->submittedMinorOffenses()
-            ->with('minorOffense', 'minorPenalty')
             ->get()
             ->map(function($offense) {
                 $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
@@ -46,7 +45,6 @@ class EmailController extends Controller
             });   
 
         $submittedmajorOffenses = $student->submittedMajorOffenses()
-            ->with('majorOffense', 'majorPenalty')
             ->get()
             ->map(function($offense) {
                 $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');

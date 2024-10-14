@@ -17,6 +17,7 @@ const email = useForm({
 
 const SendEmail = (id) => {
     email.id = id;
+    
     Swal.fire({
         title: 'Are you sure?',
         text: "Do you want to send this data to the parent's email?",
@@ -27,33 +28,38 @@ const SendEmail = (id) => {
         confirmButtonText: 'Yes, send it!'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Show a loading state while the email is being sent
             Swal.fire({
                 title: "Sending...",
                 text: "Please wait while we send the email.",
+                allowOutsideClick: false, // Prevent closing the alert manually
                 didOpen: () => {
                     Swal.showLoading();
                 },
             });
+            
             email.post(route("send.email", id), {
-                onFinish: () => {
-                    Swal.close(); // Close the loading alert once the request finishes
+                onSuccess: () => {
+                    Swal.close(); // Close the loading alert when the request finishes
 
-                    // Show a success message
-                    Swal.fire(
-                        'Saved!',
-                        'The offense has been sent to the Email successfully.',
-                        'success'
-                    );
+                    // Show the success message with OK button
+                    Swal.fire({
+                        title: 'Email Sent!',
+                        text: 'The offense has been sent to the parent\'s email successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
                 },
                 onError: () => {
-                    Swal.close(); // Close the loading alert if an error occurs
+                    Swal.close(); // Close the loading alert on error
 
-                    // Show an error message
-                    Swal.fire(
-                        'Error!',
-                        'There was a problem sending the offense to the parents email.',
-                        'error'
-                    );
+                    // Show the error message
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was a problem sending the offense to the parent\'s email.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
             });
         }
@@ -114,10 +120,10 @@ const SendEmail = (id) => {
                             :key="offense.id"
                         >
                             <td class="py-2 px-4 border">
-                                {{ offense.minor_offense.minor_offenses }}
+                                {{ offense.minor_offense }}
                             </td>
                             <td class="py-2 px-4 border">
-                                {{ offense.minor_penalty.minor_penalties }}
+                                {{ offense.minor_penalty }}
                             </td>
                             <td class="py-2 px-4 border">
                                 {{ offense.offense_date }}
@@ -151,10 +157,10 @@ const SendEmail = (id) => {
                             :key="offense.id"
                         >
                             <td class="py-2 px-4 border">
-                                {{ offense.major_offense.major_offenses }}
+                                {{ offense.major_offense }}
                             </td>
                             <td class="py-2 px-4 border">
-                                {{ offense.major_penalty.major_penalties }}
+                                {{ offense.major_penalty }}
                             </td>
                             <td class="py-2 px-4 border">
                                 {{ offense.offense_date }}

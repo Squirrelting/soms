@@ -3,7 +3,6 @@ import { ref, watch, computed } from "vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import Swal from "sweetalert2";
 import axios from "axios"; 
 import { CalendarDaysIcon } from "@heroicons/vue/24/solid";
 
@@ -11,6 +10,7 @@ const props = defineProps({
     students: Object,
     search: String,
     grade: String,
+    grades: Array,
     section: String,
     sections: {
         type: Array,
@@ -49,6 +49,7 @@ const formattedStartDate = computed(() =>
     year: "numeric",
   })
 );
+
 const formattedEndDate = computed(() =>
   new Date(endDate.value).toLocaleDateString("en-US", {
     month: "long",
@@ -64,7 +65,7 @@ const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
 const sections = ref(props.sections); 
 const sortColumn = ref("id"); 
-const sortOrder = ref("asc"); 
+const sortOrder = ref("desc"); 
 
 // Sorting method
 const sortTable = (column) => {
@@ -201,13 +202,8 @@ watch(gradeFilter, (newGrade) => {
         class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
     >
         <option value="">All Grades</option>
-        <option
-            v-for="grade in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-            :key="grade"
-            :value="grade"
-        >
-            Grade {{ grade }}
-        </option>
+        <option v-for="grade in grades" :key="grade.id" :value="grade.id">Grade {{ grade.grade }}</option>
+
     </select>
 
     <!-- Section Dropdown -->
@@ -238,63 +234,76 @@ watch(gradeFilter, (newGrade) => {
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('lrn')">
+                        <!-- <th class="hidden" >
+                            ID
+                        </th> -->
+                        <th class="py-1 px-2 text-left border cursor-pointer text-sm" @click="sortTable('id')">
+                            No.
+                            <span class="ml-1 text-[8px]">
+                                <span :class="sortColumn === 'id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
+                                <span :class="sortColumn === 'id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                            </span>
+                        </th>
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('lrn')">
                         LRN
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'lrn' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'lrn' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('lastname')">
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('lastname')">
                         Student's Name
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'lastname' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'lastname' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('sex')">
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('sex')">
                             Sex
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'sex' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'sex' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('grade_id')">
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('grade_id')">
                             Grade
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'grade_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'grade_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('section_id')">
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('section_id')">
                             Section
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'section_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'section_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border">
+                        <th class="py-2 px-4 text-left border text-sm">
                             Offenses/Penalties
                         </th>
                         
-                        <th class="py-2 px-4 text-left border cursor-pointer" @click="sortTable('email')">
+                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('email')">
                         Parent's Email
-                        <span class="ml-1 text-xs">
+                        <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'email' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                             <span :class="sortColumn === 'email' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border">Actions</th>
+                        <th class="py-2 px-4 text-left border text-sm">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="student in studentsData.data" :key="student.id">
+                    <tr v-for="(student, index) in studentsData.data" :key="student.id">
+                        <td class="py-2 px-4 border">{{ student.id }}</td>
+
+                        <!-- <td class="py-2 px-4 text-left border text-sm">{{ index + 1 }}</td> -->
                         <td class="py-2 px-4 border">{{ student.lrn }}</td>
                         <td class="py-2 px-4 border">
                             {{ student.lastname }}, {{ student.firstname }} {{ student.middlename }}

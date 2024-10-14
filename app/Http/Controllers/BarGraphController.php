@@ -16,29 +16,27 @@ class BarGraphController extends Controller
 
         // Fetch top minor offenses based on their frequency
         $minorOffenses = SubmittedMinorOffense::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('minor_offense_id, COUNT(*) as count')
-            ->groupBy('minor_offense_id')
+            ->selectRaw('minor_offense, COUNT(*) as count')
+            ->groupBy('minor_offense')
             ->orderByDesc('count')
-            ->with('minorOffense') // Fetch the related offense details
             ->get();
 
         // Fetch top major offenses based on their frequency
         $majorOffenses = SubmittedMajorOffense::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('major_offense_id, COUNT(*) as count')
-            ->groupBy('major_offense_id')
+            ->selectRaw('major_offense, COUNT(*) as count')
+            ->groupBy('major_offense')
             ->orderByDesc('count')
-            ->with('majorOffense') // Fetch the related offense details
             ->get();
 
         // Combine both minor and major offenses into a single collection
         $combinedOffenses = $minorOffenses->map(function ($offense) {
             return [
-                'offense_name' => $offense->minorOffense->minor_offenses,
+                'offense_name' => $offense->minor_offense,
                 'count' => $offense->count,
             ];
         })->concat($majorOffenses->map(function ($offense) {
             return [
-                'offense_name' => $offense->majorOffense->major_offenses,
+                'offense_name' => $offense->major_offense,
                 'count' => $offense->count,
             ];
         }));

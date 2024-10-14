@@ -22,26 +22,13 @@ class SubmittedMinorOffense extends Model
         'student_sex',
         'sanction',
         'cleansed_date',
-        'minor_offense_id',
-        'minor_penalty_id', // Include the penalty in the fillable fields
+        'minor_offense',
+        'minor_penalty',
 
     ];
 
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'lrn', 'lrn');
-    }
-
-    /**
-     * Get the minor offense that owns the SubmittedMinorOffenses.
-     */
-    public function minorOffense(): BelongsTo
-    {
-        return $this->belongsTo(MinorOffense::class, 'minor_offense_id', 'id');
-    }
-
-    public function minorPenalty(): BelongsTo
-    {
-        return $this->belongsTo(MinorPenalty::class, 'minor_penalty_id', 'id');
     }
 }
