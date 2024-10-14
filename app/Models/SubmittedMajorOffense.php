@@ -21,25 +21,12 @@ class SubmittedMajorOffense extends Model
         'student_sex',
         'sanction',
         'cleansed_date',
-        'major_offense_id',
-        'major_penalty_id', // Include the penalty in the fillable fields
+        'major_offense',
+        'major_penalty', 
     ];
 
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'lrn', 'lrn');
-    }
-
-    /**
-     * Get the major offense that owns the SubmittedMajorOffenses.
-     */
-    public function majorOffense(): BelongsTo
-    {
-        return $this->belongsTo(MajorOffense::class, 'major_offense_id', 'id');
-    }
-
-    public function majorPenalty(): BelongsTo
-    {
-        return $this->belongsTo(MajorPenalty::class, 'major_penalty_id', 'id');
     }
 }

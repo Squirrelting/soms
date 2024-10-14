@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\SubmittedMinorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\MinorOffenseDetailRequest;
+use App\Models\MinorPenalty;
 
 class MinorOffensesController extends Controller
 {
@@ -23,7 +24,6 @@ public function minor(Student $student)
 
     // Fetch submitted minor offenses related to the student
     $submittedminorOffenses = $student->submittedMinorOffenses()
-        ->with('minorOffense', 'minorPenalty')
         ->get()
         ->map(function($offense) {
             // Format the created_at date to "Month Day, Year"
@@ -71,20 +71,21 @@ public function minor(Student $student)
         } elseif ($existingOffenses >= 2) {
             $penaltyId = 3; // Third or more offenses, third penalty
         }
+
+        $penalty = MinorPenalty::find($penaltyId);
     
         // Create a new SubmittedMinorOffense
         SubmittedMinorOffense::create([
             'lrn' => $validated['lrn'],
             'student_firstname' => $validated['student_firstname'],
             'student_middlename' => $validated['student_middlename'],
-            'student_lastname' => $validated['student_lastname'], // Correct field name
+            'student_lastname' => $validated['student_lastname'],
             'student_grade' => $validated['student_grade'],
             'student_section' => $validated['student_section'],
             'student_sex' => $validated['student_sex'],
-            'minor_offense_id' => $validated['minor_offense_id'],
-            'minor_penalty_id' => $penaltyId, // Save the penalty based on the number of offenses
+            'minor_offense' => $validated['minor_offense'],
+            'minor_penalty' => $penalty->minor_penalties, 
         ]);
-    
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');
     }
     

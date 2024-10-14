@@ -191,11 +191,11 @@ const checkDataAndProceed = (action) => {
           <tbody>
             <tr v-for="offense in offensesData" :key="offense.id">
               <td class="py-2 px-4 border">
-                {{ offense.minor_offenses || offense.major_offenses }}
+                {{ offense.offense_name }}              
               </td>
               <td class="py-2 px-4 border">{{ offense.male_count }}</td>
               <td class="py-2 px-4 border">{{ offense.female_count }}</td>
-              <td class="py-2 px-4 border">{{ offense.male_count + offense.female_count }}</td>
+              <td class="py-2 px-4 border">{{ parseInt(offense.male_count)  + parseInt(offense.female_count) }}</td>
             </tr>
           </tbody>
         </table>

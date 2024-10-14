@@ -51,9 +51,9 @@
             @foreach ($offensesData as $offense)
                 <tr>
                     @if ($offense->type === 'Minor')
-                    <td>{{ $offense->minor_offenses }}</td>
+                    <td>{{ $offense->minor_offense }}</td>
                     @else
-                    <td>{{ $offense->major_offenses }}</td>
+                    <td>{{ $offense->major_offense }}</td>
                     @endif
                     <td>{{ $offense->male_count }}</td>
                     <td>{{ $offense->female_count }}</td>

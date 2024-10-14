@@ -15,26 +15,30 @@
     <p>Student Name: {{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</p>
     <p>Grade: {{ $student->grade->grade??'N/A' }}</p>
     <p>Grade: {{ $student->section->section??'N/A' }}</p>
-    <h5>Major Offenses:</h5>
-    
-    <ul>
-        @foreach ($submittedmajorOffenses as $majorOffense)
-            <li>
-                Offense: {{ $majorOffense->majorOffense->major_offenses }}<br>
-                Penalty: {{ $majorOffense->majorPenalty->major_penalties }}
-            </li>
-        @endforeach
-    </ul>
-    
+
+    @if ($submittedminorOffenses->isNotEmpty())
     <h5>Minor Offenses:</h5>
     <ul>
         @foreach ($submittedminorOffenses as $minorOffense)
             <li>
-                Offense: {{ $minorOffense->minorOffense->minor_offenses }}<br>
-                Penalty: {{ $minorOffense->minorPenalty->minor_penalties }}
+                Offense: {{ $minorOffense->minor_offense }}<br>
+                Penalty: {{ $minorOffense->minor_penalty }}
             </li>
         @endforeach
-    </ul>    
+    </ul>
+    @endif   
+
+    @if ($submittedmajorOffenses->isNotEmpty())
+        <h5>Major Offenses:</h5>
+        <ul>
+            @foreach ($submittedmajorOffenses as $majorOffense)
+                <li>
+                    Offense: {{ $majorOffense->minor_offense }}<br>
+                    Penalty: {{ $majorOffense->minor_penalty }}
+                </li>
+            @endforeach
+        </ul>
+    @endif 
 
     <h4>Dear Parent/Guardian</h4>
     <p style="color: gray;"> CONFIDENTIALITY NOTICE: We hope this message finds you well. It is with a sense of responsibility that we bring to your attention certain incidents involving your child within the premises of SANTIAGO CITY NATIONAL HIGH SCHOOL.

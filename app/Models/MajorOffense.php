@@ -15,9 +15,4 @@ class MajorOffense extends Model
     protected $fillable = [
         'major_offenses'
     ];
-
-    public function submittedMajorOffenses(): HasMany
-    {
-        return $this->hasMany(SubmittedMajorOffense::class, 'major_offense_id', 'id');
-    }
 }

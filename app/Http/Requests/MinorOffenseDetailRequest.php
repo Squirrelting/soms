@@ -26,10 +26,10 @@ class MinorOffenseDetailRequest extends FormRequest
             'student_firstname' => 'required|string|max:255', 
             'student_middlename' => 'nullable|string|max:255', 
             'student_lastname' => 'required|string|max:255', 
-            'student_grade' => 'required|integer|between:1,12', 
+            'student_grade' => 'required|integer|between:7,12', 
             'student_section' => 'required|string|max:255', 
             'student_sex' => '', 
-            'minor_offense_id' => 'required|exists:minor_offenses,id', 
+            'minor_offense' => 'required|string|max:255',  
         ];
     }
 }
