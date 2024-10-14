@@ -25,11 +25,8 @@ return new class extends Migration
             $table->tinyInteger('sanction')->default(0);
             $table->timestamp('cleansed_date')->nullable();
 
-            $table->unsignedBigInteger('major_offense_id');
-            $table->foreign('major_offense_id')->references('id')->on('major_offenses');
-
-            $table->unsignedBigInteger('major_penalty_id');
-            $table->foreign('major_penalty_id')->references('id')->on('major_penalties');
+            $table->string('major_offense');
+            $table->string('major_penalty');
             $table->timestamps();
         });
     }

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\MajorOffense;
+use App\Models\MajorPenalty;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMajorOffense;
 use Illuminate\Support\Facades\Redirect;
@@ -23,7 +24,6 @@ public function major(Student $student)
 
     // Fetch submitted major offenses related to the student
     $submittedmajorOffenses = $student->submittedMajorOffenses()
-        ->with('majorOffense', 'majorPenalty')
         ->get()
         ->map(function($offense) {
             // Format the created_at date to "Month Day, Year"
@@ -71,7 +71,8 @@ public function major(Student $student)
         } elseif ($existingOffenses >= 2) {
             $penaltyId = 3; // Third or more offenses, third penalty
         }
-    
+        $penalty = MajorPenalty::find($penaltyId);
+
         // Create a new SubmittedMajorOffense
         SubmittedMajorOffense::create([
             'lrn' => $validated['lrn'],
@@ -81,8 +82,8 @@ public function major(Student $student)
             'student_grade' => $validated['student_grade'],
             'student_section' => $validated['student_section'],
             'student_sex' => $validated['student_sex'],
-            'major_offense_id' => $validated['major_offense_id'],
-            'major_penalty_id' => $penaltyId, // Save the penalty based on the number of offenses
+            'major_offense' => $validated['major_offense'],
+            'major_penalty' => $penalty->major_penalties, 
         ]);
     
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');

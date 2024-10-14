@@ -26,10 +26,10 @@ class MajorOffenseDetailRequest extends FormRequest
             'student_firstname' => 'required|string|max:255',
             'student_middlename' => 'nullable|string|max:255', 
             'student_lastname' => 'required|string|max:255', 
-            'student_grade' => 'required|integer|between:1,12', 
+            'student_grade' => 'required|integer|between:7,12', 
             'student_section' => 'required|string|max:255', 
             'student_sex' => '', 
-            'major_offense_id' => 'required|exists:major_offenses,id', 
+            'major_offense' => 'required|string|max:255', 
         ];
     }
 }

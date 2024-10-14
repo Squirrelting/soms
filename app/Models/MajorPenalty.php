@@ -15,9 +15,4 @@ class MajorPenalty extends Model
     protected $fillable = [
         'major_penalties'
     ];
-
-    public function submittedMajorOffenses(): HasMany
-    {
-        return $this->hasMany(SubmittedMajorOffense::class, 'major_penalty_id', 'id');
-    }
 }

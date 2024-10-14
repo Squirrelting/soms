@@ -15,10 +15,4 @@ class MinorOffense extends Model
     protected $fillable = [
         'minor_offenses'
     ];
-
-    public function submittedMinorOffenses(): HasMany
-    {
-        return $this->hasMany(SubmittedMinorOffense::class, 'minor_offense_id', 'id');
-    }
-
 }
