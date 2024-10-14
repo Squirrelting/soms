@@ -24,7 +24,7 @@ public function index(Request $request)
     $grade = $request->input('grade');
     $section = $request->input('section');
     $sortColumn = $request->input('sortColumn', 'id');  // Default to 'id' if no sort column is provided
-    $sortOrder = $request->input('sortOrder', 'asc');   // Default to 'asc' order if not provided
+    $sortOrder = $request->input('sortOrder', 'desc');   // Default to 'asc' order if not provided
 
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
@@ -68,11 +68,13 @@ public function index(Request $request)
         ]);
 
     $sections = Section::all(); // Fetch available sections for the dropdown
-
+    $grades = Grade::all();
+    
     return Inertia::render('Student/Index', [
         'students' => $students,
         'search' => $search,
         'grade' => $grade,
+        'grades' => $grades,
         'section' => $section,
         'sections' => $sections,
         'sortColumn' => $sortColumn,
