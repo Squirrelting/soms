@@ -28,7 +28,9 @@ class MinorOffenseDetailRequest extends FormRequest
             'student_lastname' => 'required|string|max:255', 
             'student_grade' => 'required|integer|between:7,12', 
             'student_section' => 'required|string|max:255', 
-            'student_sex' => '', 
+            'student_sex' => '',
+            'student_schoolyear' => 'required|string|max:255', 
+            'student_quarter' => 'required|in:firstquarter,secondquarter',
             'minor_offense' => 'required|string|max:255',  
         ];
     }

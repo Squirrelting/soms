@@ -22,14 +22,15 @@ class StudentDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "lrn" => "required|integer|digits_between:1,8",
-            "firstname" => "required|string|max:255",
-            "middlename" => "nullable|string|max:255",
-            "lastname" => "required|string|max:255",
-            "sex" => "required|string|in:Male,Female",
-            "grade_id" => "required|integer|exists:grade,id", // Use grade_id and reference the 'grades' table
-            "section_id" => "required|integer|exists:section,id", // Use section_id and reference the 'sections' table
-            "email" => "nullable|string|max:255|email", // Optional email validation
+            'lrn' => 'required|integer|digits_between:1,8',
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'sex' => 'required|string|in:Male,Female',
+            'quarter' => 'required|in:firstquarter,secondquarter',
+            'grade_id' => 'required|integer|exists:grade,id', // Use grade_id and reference the 'grades' table
+            'section_id' => 'required|integer|exists:section,id', // Use section_id and reference the 'sections' table
+            'email' => 'nullable|string|max:255|email', // Optional email validation
         ];
     }
 }

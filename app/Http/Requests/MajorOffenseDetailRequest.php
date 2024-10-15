@@ -29,6 +29,8 @@ class MajorOffenseDetailRequest extends FormRequest
             'student_grade' => 'required|integer|between:7,12', 
             'student_section' => 'required|string|max:255', 
             'student_sex' => '', 
+            'student_schoolyear' => 'required|string|max:255', 
+            'student_quarter' => 'required|in:firstquarter,secondquarter',
             'major_offense' => 'required|string|max:255', 
         ];
     }

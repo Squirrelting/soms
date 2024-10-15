@@ -244,7 +244,7 @@ watch(gradeFilter, (newGrade) => {
                                 <span :class="sortColumn === 'id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                             </span>
                         </th>
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('lrn')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('lrn')">
                         LRN
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'lrn' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -252,7 +252,7 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('lastname')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('lastname')">
                         Student's Name
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'lastname' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -260,7 +260,7 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('sex')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('sex')">
                             Sex
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'sex' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -268,7 +268,7 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('grade_id')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('grade_id')">
                             Grade
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'grade_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -276,7 +276,7 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('section_id')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('section_id')">
                             Section
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'section_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -284,11 +284,11 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border text-sm">
+                        <th class="py-2 px-2 text-left border text-sm">
                             Offenses/Penalties
                         </th>
                         
-                        <th class="py-2 px-4 text-left border cursor-pointer text-sm" @click="sortTable('email')">
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('email')">
                         Parent's Email
                         <span class="ml-1 text-[8px]">
                             <span :class="sortColumn === 'email' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
@@ -296,26 +296,26 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-4 text-left border text-sm">Actions</th>
+                        <th class="py-2 px-2 text-left border text-sm">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(student, index) in studentsData.data" :key="student.id">
-                        <td class="py-2 px-4 border">{{ student.id }}</td>
+                        <td class="py-2 px-2 border text-sm">{{ student.id }}</td>
 
                         <!-- <td class="py-2 px-4 text-left border text-sm">{{ index + 1 }}</td> -->
-                        <td class="py-2 px-4 border">{{ student.lrn }}</td>
-                        <td class="py-2 px-4 border">
+                        <td class="py-2 px-2 border text-sm">{{ student.lrn }}</td>
+                        <td class="py-2 px-2 border text-sm">
                             {{ student.lastname }}, {{ student.firstname }} {{ student.middlename }}
                         </td>
-                        <td class="py-2 px-4 border">{{ student.sex }}</td>
-                        <td class="py-2 px-4 border">
-                            {{ student.grade?.grade ?? "N/A" }}
+                        <td class="py-2 px-2 border text-sm">{{ student.sex }}</td>
+                        <td class="py-2 px-2 border text-sm">
+                            Grade {{ student.grade?.grade ?? "N/A" }}
                         </td>
-                        <td class="py-2 px-4 border">
+                        <td class="py-2 px-2 border text-sm">
                             {{ student.section?.section ?? "N/A" }}
                         </td>
-                        <td class="py-2 px-4 border">
+                        <td class="py-2 px-2 border text-sm">
                             <div
                                 class="flex justify-center items-center gap-4 relative"
                             >
@@ -369,7 +369,7 @@ watch(gradeFilter, (newGrade) => {
                             </div>
                         </td>
 
-                        <td class="py-2 px-4 border">
+                        <td class="py-2 px-4 border text-sm">
                             <div v-if="student.email">
                                 <Link
                                     :href="route('show.email', student.id)"
@@ -380,15 +380,15 @@ watch(gradeFilter, (newGrade) => {
                             </div>
                         </td>
 
-                        <td class="py-2 px-4 border">
+                        <td class="py-2 px-4 border text-sm">
                             <Link
                                 :href="route('students.edit', student.id)"
-                                class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded"
+                                class="px-2 py-1 bg-green-500 text-white p-3 rounded"
                                 >Edit</Link
                             >
                             <Link
                                 :href="route('students.print', student.id)"
-                                class="px-2 py-1 text-sm bg-blue-500 text-white p-3 rounded"
+                                class="px-2 py-1 bg-blue-500 text-white p-3 rounded"
                                 >Print</Link
                             >
                         </td>
