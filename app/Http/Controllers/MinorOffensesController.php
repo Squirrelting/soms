@@ -83,6 +83,8 @@ public function minor(Student $student)
             'student_grade' => $validated['student_grade'],
             'student_section' => $validated['student_section'],
             'student_sex' => $validated['student_sex'],
+            'student_schoolyear' => $validated['student_schoolyear'],
+            'student_quarter' => $validated['student_quarter'],
             'minor_offense' => $validated['minor_offense'],
             'minor_penalty' => $penalty->minor_penalties, 
         ]);

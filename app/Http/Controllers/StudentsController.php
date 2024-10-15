@@ -130,20 +130,21 @@ public function index(Request $request)
 
     public function store(StudentDetailRequest $request)
     {
-        // Use the validated data from the request to create a student
-        Student::create($request->validated());
-
-        // Redirect back to the students index with a success message
+        // Get the current year and next year
+        $yearToday = now()->year;
+        $nextYear = $yearToday + 1;
+    
+        // Concatenate the years to form the school year
+        $schoolYear = $yearToday . '-' . $nextYear;
+    
+        // Merge the school year with the validated data
+        $studentData = array_merge($request->validated(), ['schoolyear' => $schoolYear]);
+    
+        // Create the student record and store in the database
+        Student::create($studentData);
+    
+        // Redirect back with success message
         return redirect()->route('students.index')->with('message', 'Student added successfully');
     }
-
-    public function print(Student $student)
-    {
-        $signatory = Signatory::all();
-
-        return Inertia::render('Student/Print', [
-            'student' => $student,
-            'signatory' => $signatory,
-        ]);
-    }
+    
 }

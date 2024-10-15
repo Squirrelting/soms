@@ -19,6 +19,8 @@ class Student extends Model
         'middlename',
         'lastname',
         'sex',
+        'schoolyear',
+        'quarter',
         'grade_id',
         'section_id',
         'email',

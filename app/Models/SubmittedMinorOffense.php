@@ -20,6 +20,8 @@ class SubmittedMinorOffense extends Model
         'student_grade',
         'student_section',
         'student_sex',
+        'student_schoolyear',
+        'student_quarter',
         'sanction',
         'cleansed_date',
         'minor_offense',
