@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailController extends Controller
 {
-    public function sendemail(Student $student)
+    static public function sendemail(Student $student)
     {
 
         $subject = "Notice to your Child";
