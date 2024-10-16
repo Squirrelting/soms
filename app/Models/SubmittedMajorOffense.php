@@ -15,10 +15,13 @@ class SubmittedMajorOffense extends Model
     protected $fillable = [
         'lrn',
         'student_firstname',
+        'student_middlename',
         'student_lastname',
         'student_grade',
         'student_section',
         'student_sex',
+        'student_schoolyear',
+        'student_quarter',
         'sanction',
         'cleansed_date',
         'major_offense',

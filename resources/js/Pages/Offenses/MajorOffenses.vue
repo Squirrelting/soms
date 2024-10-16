@@ -17,7 +17,9 @@ const form = useForm({
     student_firstname: props.student.firstname,
     student_middlename: props.student.middlename,
     student_lastname: props.student.lastname,
-    student_sex: props.student.sex, 
+    student_sex: props.student.sex,
+    student_schoolyear: props.student.schoolyear,
+    student_quarter: props.student.quarter, 
     student_grade: props.student.grade?.grade??'N/A', // Directly from props
     student_section: props.student.section?.section??'N/A', // Directly from props
 });

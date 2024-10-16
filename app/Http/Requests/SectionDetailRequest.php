@@ -22,8 +22,8 @@ class SectionDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "section" => "required|string|max:255",
-            "grade_id" => "required|integer|exists:grade,id", 
+            'section' => 'required|string|max:255',
+            'grade_id' => 'required|integer|exists:grade,id', 
         ];
     }
 }

@@ -24,11 +24,13 @@ class MajorOffenseDetailRequest extends FormRequest
         return [
             'lrn' => 'required|integer|digits_between:1,8|exists:students,lrn', 
             'student_firstname' => 'required|string|max:255',
-            'student_middlename' => 'nullable|string|max:255', 
+            'student_middlename' => '', 
             'student_lastname' => 'required|string|max:255', 
             'student_grade' => 'required|integer|between:7,12', 
             'student_section' => 'required|string|max:255', 
             'student_sex' => '', 
+            'student_schoolyear' => 'required|string|max:255', 
+            'student_quarter' => 'required|in:firstquarter,secondquarter',
             'major_offense' => 'required|string|max:255', 
         ];
     }

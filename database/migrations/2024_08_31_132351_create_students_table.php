@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('firstname'); 
             $table->string('middlename')->nullable(); 
             $table->string('lastname');
-            
             $table->string('sex')->nullable();
+            $table->string('schoolyear');
+            $table->string('quarter');
             $table->unsignedBigInteger('grade_id')->nullable();
             $table->foreign('grade_id')->references('id')->on('grade')->onDelete('set null');
             $table->unsignedBigInteger('section_id')->nullable();

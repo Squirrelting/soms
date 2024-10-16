@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('student_grade');
             $table->string('student_section');
             $table->string('student_sex')->nullable();
+            $table->string('student_schoolyear');
+            $table->string('student_quarter');
             $table->tinyInteger('sanction')->default(0);
             $table->timestamp('cleansed_date')->nullable();
 
