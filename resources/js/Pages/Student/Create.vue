@@ -4,17 +4,24 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import { ref, watch } from "vue"; 
 import axios from 'axios'; 
+import MinorMultiSelect from "@/Components/MinorMultiSelect.vue";
+import MajorMultiSelect from "@/Components/MajorMultiSelect.vue";
+
 
 const props = defineProps({
     errors: Object,
     grades: Array,
     sections: Array,
+    minorOffenses: Array,
+    majorOffenses: Array
 });
 
 const yearToday = ref(new Date().getFullYear());
 const nextYear = ref(yearToday.value + 1);
 
 const form = useForm({
+    minor_offenses: [],
+    major_offenses: [],
     lrn: "",
     firstname: "",
     middlename: "",
@@ -97,9 +104,6 @@ const saveStudent = () => {
     });
 };
 </script>
-
-
-
 
 <template>
     <Head title="Input Student" />
@@ -195,14 +199,14 @@ const saveStudent = () => {
         <div v-if="errors.quarter" class="text-red-500 mt-1 text-sm">{{ errors.quarter }}</div>
     </div>
     
-    <div class="col-span-2 mb-3">
+    <div class="col-span-4 mb-3">
     <label class="block text-gray-700 font-semibold mb-1">School Year</label>
     <input type="number" :min="new Date().getFullYear()" max="2099" step="1" v-model="form.yeartoday" 
            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
     <div v-if="errors.yeartoday" class="text-red-500 mt-1 text-sm">{{ errors.yeartoday }}</div>
 </div>
 
-<div class="col-span-2 mb-3">
+<div class="col-span-4 mb-3">
     <label class="block text-gray-700 font-semibold mb-1">To</label>
     <input type="number" :value="form.nextyear" 
            class="py-1 w-full bg-gray-200 border border-gray-500 rounded cursor-not-allowed pointer-events-none" 
@@ -210,7 +214,18 @@ const saveStudent = () => {
     <div v-if="errors.nextyear" class="text-red-500 mt-1 text-sm">{{ errors.nextyear }}</div>
 </div>
 </div>
+<div class="grid grid-cols-12 gap-4">
 
+    <div class="col-span-6 mb-3">
+
+        <MinorMultiSelect :form="form" :options="props.minorOffenses"/>
+        </div>
+
+        <div class="col-span-6 mb-3">
+
+        <MajorMultiSelect :form="form" :options="props.majorOffenses"/>
+    </div>
+</div>
         <!-- Submit Button -->
         <div class="mb-3">
             <button type="submit" :disabled="form.processing" class="bg-blue-500 text-white py-2 px-5 rounded mb-4">

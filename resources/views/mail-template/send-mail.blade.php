@@ -33,8 +33,8 @@
         <ul>
             @foreach ($submittedmajorOffenses as $majorOffense)
                 <li>
-                    Offense: {{ $majorOffense->minor_offense }}<br>
-                    Penalty: {{ $majorOffense->minor_penalty }}
+                    Offense: {{ $majorOffense->major_offense }}<br>
+                    Penalty: {{ $majorOffense->major_penalty }}
                 </li>
             @endforeach
         </ul>

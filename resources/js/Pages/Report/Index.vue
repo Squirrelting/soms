@@ -10,10 +10,6 @@ const props = defineProps({
   grade: String,
   grades: Array,
   section: String,
-  sections: {
-    type: Array,
-    default: () => [],
-  },
 });
 
 // Define refs for filters
@@ -21,7 +17,7 @@ const offenseFilter = ref("");
 const sex = ref("");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
-const sections = ref(props.sections); 
+const sections = ref([]); 
 
 // Define date range refs
 const today = new Date();
@@ -71,9 +67,14 @@ const filter = () => {
   }, { preserveScroll: true, preserveState: true });
 };
 
-// Auto-filter when inputs change
-watch([offenseFilter, sex, gradeFilter, sectionFilter, startDate, endDate], filter); // Use gradeFilter instead of grade
 
+// Watch for changes in filters and trigger the filter method
+watch(
+    [offenseFilter, gradeFilter, sectionFilter, startDate, endDate, sex],
+    () => {
+        filter();
+    }
+);
 // Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
   try {
@@ -90,8 +91,7 @@ watch(gradeFilter, (newGrade) => {
   if (newGrade) {
     fetchSections(newGrade); 
   } else {
-    sections.value = [];
-    sectionFilter.value = ""; 
+    sections.value = []; 
   }
 });
 </script>
@@ -130,6 +130,7 @@ watch(gradeFilter, (newGrade) => {
 
         <!-- Section Dropdown -->
         <select
+          :disabled="gradeFilter == ''"
           v-model="sectionFilter"
           class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
         >
@@ -137,7 +138,7 @@ watch(gradeFilter, (newGrade) => {
           <option
             v-for="section in sections"
             :key="section.id"
-            :value="section.id"
+            :value="section.section"
           >
             {{ section.section }}
           </option>
