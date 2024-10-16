@@ -83,7 +83,7 @@ public function major(Student $student)
             'student_section' => $validated['student_section'],
             'student_sex' => $validated['student_sex'],
             'student_schoolyear' => $validated['student_schoolyear'],
-            'student_quarter' => $validated['student_sex'],
+            'student_quarter' => $validated['student_quarter'],
             'major_offense' => $validated['major_offense'],
             'major_penalty' => $penalty->major_penalties, 
         ]);
