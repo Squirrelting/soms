@@ -67,7 +67,7 @@ public function index(Request $request)
             'sortOrder' => $sortOrder,
         ]);
 
-    $sections = Section::all(); // Fetch available sections for the dropdown
+    $sections = Section::all();
     $grades = Grade::all();
     
     return Inertia::render('Student/Index', [
@@ -119,10 +119,15 @@ public function index(Request $request)
 
     public function update(StudentDetailRequest $request, Student $student)
     {
-        // Update the student record with validated data from the request
-        $student->update($request->validated());
+        $yearToday = now()->year;
+        $nextYear = $yearToday + 1;
+    
+        $schoolYear = $yearToday . '-' . $nextYear;
+    
+        $studentData = array_merge($request->validated(), ['schoolyear' => $schoolYear]);
 
-        // Redirect back to the student list with a success message
+        $student->update($studentData);
+
         return redirect()->route('students.index')->with('message', 'Student updated successfully');
     }
 
@@ -145,6 +150,16 @@ public function index(Request $request)
     
         // Redirect back with success message
         return redirect()->route('students.index')->with('message', 'Student added successfully');
+    }
+
+    public function print(Student $student)
+    {
+        $signatory = Signatory::all();
+
+        return Inertia::render('Student/Print', [
+            'student' => $student,
+            'signatory' => $signatory,
+        ]);
     }
     
 }

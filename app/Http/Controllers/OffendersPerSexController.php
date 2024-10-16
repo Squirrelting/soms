@@ -15,9 +15,14 @@ class OffendersPerSexController extends Controller
 {
     public function index(Request $request)
     {
-        // Extract start and end dates
-        $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
-        $endDate   = $request->input('endDate')   ? date('Y-m-d 23:59:59', strtotime($request->input('endDate')))   : null;
+    // Set default startDate to 1 month ago and endDate to today if not provided
+    $startDate = $request->input('startDate') 
+        ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) 
+        : date('Y-m-d 00:00:00', strtotime('-1 month')); // 1 month ago
+
+    $endDate = $request->input('endDate') 
+        ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) 
+        : date('Y-m-d 23:59:59'); // Today
         $offenseFilter = $request->offenseFilter ?? "";
 
         // Fetch and group minor offenses

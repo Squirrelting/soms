@@ -140,7 +140,7 @@ const saveStudent = () => {
                 <div v-if="errors.firstname" class="text-red-500">{{ errors.firstname }}</div>
             </div>
             <div class="col-span-4 mb-3">
-                <label class="block text-gray-700 font-semibold mb-1">Student's Middle Name</label>
+                <label class="block text-gray-700 font-semibold mb-1">Student's Middle Name (Optional)</label>
                 <input type="text" v-model="form.middlename" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
                 <div v-if="errors.middlename" class="text-red-500">{{ errors.middlename }}</div>
             </div>
@@ -182,6 +182,8 @@ const saveStudent = () => {
             </div>
         </div>
 
+        <hr class="my-4 border-blue-800">
+
         <div class="grid grid-cols-12 gap-4">
     <div class="col-span-4 mb-3">
         <label class="block text-gray-700 font-semibold mb-1">Select Quarter</label>
@@ -207,7 +209,6 @@ const saveStudent = () => {
            readonly />
     <div v-if="errors.nextyear" class="text-red-500 mt-1 text-sm">{{ errors.nextyear }}</div>
 </div>
-
 </div>
 
         <!-- Submit Button -->
