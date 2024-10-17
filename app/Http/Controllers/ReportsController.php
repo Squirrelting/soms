@@ -14,15 +14,9 @@ class ReportsController extends Controller
 {
     public function index(Request $request)
     {
-    // Set default startDate to 1 month ago and endDate to today if not provided
-    $startDate = $request->input('startDate') 
-        ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) 
-        : date('Y-m-d 00:00:00', strtotime('-1 month')); // 1 month ago
-
-    $endDate = $request->input('endDate') 
-        ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) 
-        : date('Y-m-d 23:59:59'); // Today
-        
+        // Extract filter inputs
+    $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
+    $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
         $offenseFilter = $request->input('offenseFilter');
         $sex = $request->input('sex');
         $grade = $request->input('grade');
@@ -37,8 +31,8 @@ class ReportsController extends Controller
             ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
             ->map(function ($offense) { // Then map to add formatted date
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                return $offense;
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');                return $offense;
             });
     
         // Retrieve and map major offenses
@@ -50,7 +44,9 @@ class ReportsController extends Controller
             ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
             ->map(function ($offense) { // Then map to add formatted date
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+
                 return $offense;
             });
     

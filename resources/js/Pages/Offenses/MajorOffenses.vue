@@ -10,8 +10,11 @@ const props = defineProps({
     submittedmajorOffenses: Array,
 });
 
+const maxDate = new Date().toISOString().split('T')[0];
+
 // Initialize the form object
 const form = useForm({
+    committed_date: '',
     major_offense: '',
     lrn: props.student.lrn, 
     student_firstname: props.student.firstname,
@@ -172,8 +175,8 @@ const saveMajorOffense = () => {
                         <tr>
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
                             <th class="py-2 px-4 text-left border">Penalty</th>
-                            <th class="py-2 px-4 text-left border">Date Committed</th>
-                            <th class="py-2 px-4 text-left border">Sanction</th>
+                            <th class="py-2 px-4 text-left border">Committed date</th>
+                            <th class="py-2 px-4 text-left border">Recorded date</th>                            <th class="py-2 px-4 text-left border">Sanction</th>
                             <th class="py-2 px-4 text-left border">Acted Date</th>
 
                         </tr>
@@ -182,8 +185,8 @@ const saveMajorOffense = () => {
                         <tr v-for="offense in submittedmajorOffenses" :key="offense.id">
                             <td class="py-2 px-4 border">{{ offense.major_offense }}</td>
                             <td class="py-2 px-4 border">{{ offense.major_penalty }}</td>
-                            <td class="py-2 px-4 border">{{ offense.offense_date }}</td>
-                            <td class="py-2 px-4 border">
+                            <td class="py-2 px-4 border">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border">{{ offense.recorded_date }}</td>                            <td class="py-2 px-4 border">
                                 <button
                                 v-if="offense.sanction === 0"
                                 @click="Cleanse(offense.id)"
@@ -219,6 +222,11 @@ const saveMajorOffense = () => {
                                 </option>
                             </select>
                             <div v-if="errors.major_offense" class="text-red-500">{{ errors.major_offense }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Committed Date:</label>
+                            <input type="date" v-model="form.committed_date" :max="maxDate" />
+                            <div v-if="errors.committed_date" class="text-red-500">{{ errors.committed_date }}</div>
                         </div>
                         <div class="mb-3">
                             <button

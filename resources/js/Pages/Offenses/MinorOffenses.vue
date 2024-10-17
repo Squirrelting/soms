@@ -10,8 +10,11 @@ const props = defineProps({
     submittedminorOffenses: Array,
 });
 
+const maxDate = new Date().toISOString().split('T')[0];
+
 // Initialize the form object
 const form = useForm({
+    committed_date: '',
     minor_offense: '',
     lrn: props.student.lrn, 
     student_firstname: props.student.firstname,
@@ -171,6 +174,7 @@ const saveMinorOffense = () => {
                         <tr>
                             <th class="py-2 px-4 text-left border">Offense Committed</th>
                             <th class="py-2 px-4 text-left border">Penalty</th>
+                            <th class="py-2 px-4 text-left border">Committed date</th>
                             <th class="py-2 px-4 text-left border">Recorded date</th>
                             <th class="py-2 px-4 text-left border">Sanction</th>
                             <th class="py-2 px-4 text-left border">Acted Date</th>
@@ -181,7 +185,9 @@ const saveMinorOffense = () => {
                         <tr v-for="offense in submittedminorOffenses" :key="offense.id">
                             <td class="py-2 px-4 border">{{ offense.minor_offense }}</td>
                             <td class="py-2 px-4 border">{{ offense.minor_penalty }}</td>
-                            <td class="py-2 px-4 border">{{ offense.offense_date }}</td>
+                            <td class="py-2 px-4 border">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border">{{ offense.recorded_date }}</td>
+
                             <td class="py-2 px-4 border">
                                 <button
                                 v-if="offense.sanction === 0"
@@ -219,6 +225,12 @@ const saveMinorOffense = () => {
                             </select>
                             <div v-if="errors.minor_offense" class="text-red-500">{{ errors.minor_offense }}</div>
                         </div>
+                        <div class="mb-3">
+                            <label>Committed Date:</label>
+                            <input type="date" v-model="form.committed_date" :max="maxDate" />
+                            <div v-if="errors.committed_date" class="text-red-500">{{ errors.committed_date }}</div>
+                        </div>
+
                         <div class="mb-3">
                             <button
                                 type="submit"

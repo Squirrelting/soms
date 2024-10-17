@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailController extends Controller
 {
-    public function sendemail(Student $student)
+    static public function sendemail(Student $student)
     {
 
         $subject = "Notice to your Child";
@@ -23,46 +23,6 @@ class EmailController extends Controller
 
         // Send email to the student's email
         Mail::to($student->email)->send(new SendEmail($subject, $submittedminorOffenses, $submittedmajorOffenses, $student));
-    }
-
-    public function email(Student $student)
-    {
-            // Fetch the student's grade and section by resolving their foreign key relationships
-        $studentWithGradeAndSection = $student->load('grade', 'section');
-
-        $submittedminorOffenses = $student->submittedMinorOffenses()
-            ->get()
-            ->map(function($offense) {
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-
-                if ($offense->cleansed_date) {
-                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-                } else {
-                    $offense->cleansed_date = null;
-                }
-                
-                return $offense;
-            });   
-
-        $submittedmajorOffenses = $student->submittedMajorOffenses()
-            ->get()
-            ->map(function($offense) {
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-
-                if ($offense->cleansed_date) {
-                    $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-                } else {
-                    $offense->cleansed_date = null;
-                }
-
-                return $offense;
-            });
-            
-        return Inertia::render('Student/ShowEmail', [
-            'student' => $studentWithGradeAndSection,
-            'submittedminorOffenses' => $submittedminorOffenses,
-            'submittedmajorOffenses' => $submittedmajorOffenses,
-        ]);
     }
 }
 

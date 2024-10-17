@@ -31,6 +31,7 @@ class MajorOffenseDetailRequest extends FormRequest
             'student_sex' => '', 
             'student_schoolyear' => 'required|string|max:255', 
             'student_quarter' => 'required|in:firstquarter,secondquarter',
+            'committed_date' => 'required|date|before_or_equal:today', 
             'major_offense' => 'required|string|max:255', 
         ];
     }
