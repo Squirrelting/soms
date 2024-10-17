@@ -27,7 +27,8 @@ public function minor(Student $student)
         ->get()
         ->map(function($offense) {
             // Format the created_at date to "Month Day, Year"
-            $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
 
             // Format the sanction_date if it exists
             if ($offense->cleansed_date) {
@@ -85,9 +86,12 @@ public function minor(Student $student)
             'student_sex' => $validated['student_sex'],
             'student_schoolyear' => $validated['student_schoolyear'],
             'student_quarter' => $validated['student_quarter'],
+            'committed_date' => $validated['committed_date'],
             'minor_offense' => $validated['minor_offense'],
             'minor_penalty' => $penalty->minor_penalties, 
         ]);
+
+        EmailController::sendemail($student);
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');
     }
     
@@ -99,7 +103,6 @@ public function minor(Student $student)
         $offense->cleansed_date = Carbon::now();
         $offense->save();
         $student = Student::where('lrn', $offense->lrn)->first();
-    
         return Redirect::route('minor.offenses', ['student' => $student->id]);
     }
 

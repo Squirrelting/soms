@@ -31,6 +31,9 @@ const handleBlur = () => {
 const searchQuery = ref("");
 const selectedId = ref<Object[]>([]);
 
+const maxDate = new Date().toISOString().split("T")[0];
+
+
 const filteredOptions = computed(() => {
     return props.options?.filter((option) => {
         return option.major_offenses
@@ -48,7 +51,7 @@ const handleChange = (option: { id: number; major_offenses: string }) => {
     }
 };
 
-const removeItem = (index: number, item: { id: number; major_offenses: string }) => {
+const removeItem = (index: number, item: { id: number; major_offenses: string; date_committed: string}) => {
     props.form.major_offenses.splice(index, 1);
     props.options.push(item);
 };
@@ -74,12 +77,25 @@ onMounted(() => {
                     <thead>
                         <tr class="bg-gray-100">
                             <th class="p-3 text-left border-b border-gray-200">Name</th>
+                            <th class="p-3 text-left border-b border-gray-200">
+                                Date committed
+                            </th>
                             <th class="p-3 text-left border-b border-gray-200">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in props.form.major_offenses" :key="index" class="hover:bg-gray-50">
                             <td class="p-3 border-b border-gray-200">{{ item.major_offenses }}</td>
+                            <td>
+                                <input
+                                    v-model="
+                                        form.minor_offenses[index].date_committed
+                                    "
+                                    type="date"
+                                    :form="form"
+                                    :max="maxDate"
+                                />
+                            </td>
                             <td class="p-3 border-b border-gray-200">
                                 <button type="button" @click="removeItem(index, item)" class="text-red-500 hover:text-red-700">
                                     <XCircleIcon class="w-5 h-5" />

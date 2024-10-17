@@ -142,7 +142,7 @@ function hasPermission(input) {
 
               <MenuItem
                 v-if="hasPermission('Manage POD Users')"
-                :label="isSidebarCollapsed ? '' : 'Register'"
+                :label="isSidebarCollapsed ? '' : 'User'"
                 pattern="user.index"
                 route="user.index"
               >

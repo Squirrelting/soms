@@ -31,8 +31,8 @@ class ReportsController extends Controller
             ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
             ->map(function ($offense) { // Then map to add formatted date
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                return $offense;
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');                return $offense;
             });
     
         // Retrieve and map major offenses
@@ -44,7 +44,9 @@ class ReportsController extends Controller
             ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
             ->map(function ($offense) { // Then map to add formatted date
-                $offense->offense_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+
                 return $offense;
             });
     

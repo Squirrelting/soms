@@ -19,41 +19,7 @@ const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const sections = ref([]); 
 
-// Define date range refs
-const today = new Date();
-const lastMonth = new Date();
-lastMonth.setMonth(today.getMonth() - 1);
-const maxDate = today.toISOString().split('T')[0];
-const startDate = ref(lastMonth.toISOString().split("T")[0]);
-const endDate = ref(today.toISOString().split("T")[0]);
-const startDateInput = ref(null);
-const endDateInput = ref(null);
 
-// Computed properties for formatted dates
-const formattedStartDate = computed(() =>
-  new Date(startDate.value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
-);
-
-const formattedEndDate = computed(() =>
-  new Date(endDate.value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
-);
-
-// Methods to show the date pickers
-const showStartDatePicker = () => {
-  startDateInput.value?.showPicker();
-};
-
-const showEndDatePicker = () => {
-  endDateInput.value?.showPicker();
-};
 
 // Filter function
 const filter = () => {
@@ -62,15 +28,14 @@ const filter = () => {
     sex: sex.value,
     grade: gradeFilter.value, // Ensure grade is defined as gradeFilter
     section: sectionFilter.value,
-    startDate: startDate.value,
-    endDate: endDate.value,
+
   }, { preserveScroll: true, preserveState: true });
 };
 
 
 // Watch for changes in filters and trigger the filter method
 watch(
-    [offenseFilter, gradeFilter, sectionFilter, startDate, endDate, sex],
+    [offenseFilter, gradeFilter, sectionFilter, sex],
     () => {
         filter();
     }
@@ -144,41 +109,6 @@ watch(gradeFilter, (newGrade) => {
           </option>
         </select>
 
-        <!-- Start Date Picker -->
-        <div class="flex items-center space-x-1">
-          <label for="startDate" class="text-sm">Start:</label>
-          <button @click="showStartDatePicker" class="calendar-button">
-            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
-          </button>
-          <input
-            type="date"
-            id="startDate"
-            v-model="startDate"
-            ref="startDateInput"
-            :max="maxDate"
-            @change="filter"
-            class="invisible-input"
-          />
-          <span class="text-sm text-gray-700">{{ formattedStartDate }}</span>
-        </div>
-
-        <!-- End Date Picker -->
-        <div class="flex items-center space-x-1">
-          <label for="endDate" class="text-sm">End:</label>
-          <button @click="showEndDatePicker" class="calendar-button">
-            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
-          </button>
-          <input
-            type="date"
-            id="endDate"
-            v-model="endDate"
-            ref="endDateInput"
-            :max="maxDate"
-            @change="filter"
-            class="invisible-input"
-          />
-          <span class="text-sm text-gray-700">{{ formattedEndDate }}</span>
-        </div>
                 <!-- Print and Export buttons -->
                 <button @click="checkDataAndProceed('print')" class="bg-blue-500 text-white py-2 px-5 rounded">
           Print
@@ -197,48 +127,35 @@ watch(gradeFilter, (newGrade) => {
     </div>
 
     <!-- Offenders Table -->
-    <table class="w-full bg-white border shadow">
-      <thead>
-        <tr>
-          <th class="py-2 px-4 border">LRN</th>
-          <th class="py-2 px-4 border">Name</th>
-          <th class="py-2 px-4 border">Sex</th>
-          <th class="py-2 px-4 border">Grade</th>
-          <th class="py-2 px-4 border">Section</th>
-          <th class="py-2 px-4 border">Offense</th>
-          <th class="py-2 px-4 border">Date Committed</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="offense in offensesData" :key="offense.id">
-          <td class="py-2 px-4 border">{{ offense.lrn }}</td>
-          <td class="py-2 px-4 border">{{ offense.student_lastname }}, {{ offense.student_firstname }}</td>
-          <td class="py-2 px-4 border">{{ offense.student_sex }}</td>
-          <td class="py-2 px-4 border">Grade {{ offense.student_grade }}</td>
-          <td class="py-2 px-4 border">{{ offense.student_section }}</td>
-          <td class="py-2 px-4 border">{{ offense.minor_offense ? offense.minor_offense : offense.major_offense }}</td>
-          <td class="py-2 px-4 border">{{ offense.offense_date }}</td>
-        </tr>
-      </tbody>
-    </table>
+<table class="w-full bg-white border shadow">
+  <thead>
+    <tr>
+      <th class="py-1 px-2 border text-sm">LRN</th>
+      <th class="py-1 px-2 border text-sm">Name</th>
+      <th class="py-1 px-2 border text-sm">Sex</th>
+      <th class="py-1 px-2 border text-sm">Grade</th>
+      <th class="py-1 px-2 border text-sm">Section</th>
+      <th class="py-1 px-2 border text-sm">Offense</th>
+      <th class="py-1 px-2 border text-sm">Date Committed</th>
+      <th class="py-1 px-2 border text-sm">Date Recorded</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="offense in offensesData" :key="offense.id">
+      <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.student_sex }}</td>
+      <td class="py-1 px-2 border text-sm">Grade {{ offense.student_grade }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.student_section }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.minor_offense ? offense.minor_offense : offense.major_offense }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.committed_date }}</td>
+      <td class="py-1 px-2 border text-sm">{{ offense.recorded_date }}</td>
+    </tr>
+  </tbody>
+</table>
+
 
     <Pagination :pagination="offensesData" />
   </div>
 </AuthenticatedLayout>
 </template>
-
-<style scoped>
-.calendar-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-right: 8px;
-}
-
-.invisible-input {
-  opacity: 0;
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-}
-</style>
