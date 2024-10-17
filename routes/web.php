@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ViewController;
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\BarGraphController;
@@ -49,9 +50,13 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/view', [ViewController::class, 'view'])->name('students.view');
     Route::get('/print-record/{student}', [ViewController::class, 'printRecord'])->name('printrecord');
 
-    //print cgm
-    // Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
+
+Route::prefix('print')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [PrintController::class, 'index'])->name('print.index');
+    Route::get('/print-certificate/{signatory}/{firstname}/{middlename}/{lastname}', [PrintController::class, 'printcgm'])->name('print.cgm');
+});
+
 
     //add section
 Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
