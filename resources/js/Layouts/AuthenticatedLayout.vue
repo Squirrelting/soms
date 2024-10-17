@@ -159,6 +159,15 @@ function hasPermission(input) {
               </MenuItem>
 
               <MenuItem
+                v-if="hasPermission('Manage Students')"
+                :label="isSidebarCollapsed ? '' : 'Good Moral'"
+                pattern="print.index"
+                route="print.index"
+              >
+                <PencilIcon class="h-5 text-black" />
+              </MenuItem>
+
+              <MenuItem
                 v-if="hasPermission('Manage POD Users')"
                 :label="isSidebarCollapsed ? '' : 'Roles'"
                 pattern="users.roles-permissions.roles.index"

@@ -49,7 +49,7 @@
 
     <h1>Certificate of Good Moral</h1>
 
-    <p>This certifies that <strong>{{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</strong>, student of <strong>Santiago City National High
+    <p>This certifies that <strong>{{ $firstname }} {{ $middlename }} {{ $lastname }}</strong>, student of <strong>Santiago City National High
             School</strong>, has maintained good moral standing in our institution
         with exemplary conduct and dedication to upholding the values of <strong>integrity, respect, and responsibility</strong> within
         the school community. This achievement reflects not only their personal growth but also their positive influence
