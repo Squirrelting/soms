@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmailController;
-use App\Http\Controllers\PrintController;
+use App\Http\Controllers\ViewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\BarGraphController;
@@ -46,16 +46,11 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
     Route::put('/{student}', [StudentsController::class, 'update'])->name('students.update');
     Route::post('/', [StudentsController::class, 'store'])->name('students.store');
-    Route::get('/{student}/print', [StudentsController::class, 'print'])->name('students.print');
+    Route::get('/{student}/view', [ViewController::class, 'view'])->name('students.view');
+    Route::get('/print-record/{student}', [ViewController::class, 'printRecord'])->name('printrecord');
 
     //print cgm
-    Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
-});
-
-    //student send email
-Route::prefix('email')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/{student}', [EmailController::class, 'email'])->name('show.email');
-    Route::post('/{student}/send_email', [EmailController::class, 'sendemail'])->name('send.email');
+    // Route::get('/print-certificate/{signatory}/{student}', [PrintController::class, 'printcgm'])->name('printcgm');
 });
 
     //add section

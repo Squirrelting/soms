@@ -14,19 +14,19 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 Chart.register(ChartDataLabels);
 
 const props = defineProps({
-    startDate: {
+    schoolYear: {
         type: String,
         required: true,
     },
-    endDate: {
+    quarter: {
         type: String,
         required: true,
     },
 });
 
-// Reactive data structure
+// Reactive data structure for chart data
 const lineData = ref({
-    labels: [], // Empty initially
+    labels: [],
     datasets: [
         {
             label: "Minor Offenses",
@@ -51,107 +51,70 @@ const fetchChartData = () => {
     axios
         .get("/get-line-data", {
             params: {
-                start_date: props.startDate,
-                end_date: props.endDate,
+                school_year: props.schoolYear,
+                quarter: props.quarter,
             },
         })
         .then((response) => {
-            const data = response.data;
+            const minorData = response.data.minor;
+            const majorData = response.data.major;
 
-            // Clear existing data
-            lineData.value.labels = [];
-            lineData.value.datasets[0].data = [];
-            lineData.value.datasets[1].data = [];
+            // Prepare data for the chart
+            lineData.value.labels = minorData.map((item) => item.date);
+            lineData.value.datasets[0].data = minorData.map((item) => item.count);
+            lineData.value.datasets[1].data = majorData.map((item) => item.count);
 
-            // Populate minor offenses data
-            data.minor.forEach((offense) => {
-                if (!lineData.value.labels.includes(offense.date)) {
-                    lineData.value.labels.push(offense.date); // Add formatted date to labels
-                }
-                lineData.value.datasets[0].data.push(offense.count); // Add minor offense count
-            });
-
-            // Populate major offenses data
-            data.major.forEach((offense) => {
-                if (!lineData.value.labels.includes(offense.date)) {
-                    lineData.value.labels.push(offense.date); // Add formatted date to labels if not already added
-                }
-                lineData.value.datasets[1].data.push(offense.count); // Add major offense count
-            });
-
+            // Destroy previous chart instance if it exists
             if (chartInstance) {
-                chartInstance.data = lineData.value;
-                chartInstance.update();
-            } else {
-                createChart();
+                chartInstance.destroy();
             }
+
+            // Create new chart instance
+            const ctx = document.getElementById("lineChart").getContext("2d");
+            chartInstance = new Chart(ctx, {
+                type: "line",
+                data: lineData.value,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                        },
+                        datalabels: {
+                            anchor: "end",
+                            align: "end",
+                            formatter: (value) => value,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Date",
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Number of Offenses",
+                            },
+                        },
+                    },
+                },
+            });
         })
         .catch((error) => {
-            console.error("Error fetching chart data:", error);
+            console.error("Error fetching line data:", error);
         });
 };
 
+// Watch for changes in props and fetch data accordingly
+watch([() => props.schoolYear, () => props.quarter], () => {
+    fetchChartData();
+});
 
-const createChart = () => {
-    const ctx = document.getElementById("lineChart").getContext("2d");
-
-    if (chartInstance) {
-        chartInstance.destroy(); // Destroy the old chart if it exists
-    }
-
-    chartInstance = new Chart(ctx, {
-        type: "line",
-        data: lineData.value,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: "top",
-                },
-                title: {
-                    display: true,
-                    text: "Offenses Over Time",
-                },
-                datalabels: {
-                    color: "#000",
-                    anchor: "end",
-                    align: "end",
-                    font: {
-                        weight: "bold",
-                        size: 14,
-                    },
-                    formatter: (value) => `${value}`, // Show data value
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null; // Show whole numbers only
-                        },
-                        stepSize: 1, // Set step size to 1 to force whole numbers
-                    },
-                },
-            },
-        },
-    });
-};
-
-// Watch startDate and endDate changes
-watch(
-    () => [props.startDate, props.endDate],
-    () => {
-        fetchChartData();
-    },
-    { immediate: true }
-);
-
+// Fetch data when the component is mounted
 onMounted(() => {
-    createChart(); // Create the chart when mounted
+    fetchChartData();
 });
 </script>
-
-<style scoped>
-/* Add styles here if needed */
-</style>

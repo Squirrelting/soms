@@ -7,7 +7,6 @@ import axios from 'axios';
 import MinorMultiSelect from "@/Components/MinorMultiSelect.vue";
 import MajorMultiSelect from "@/Components/MajorMultiSelect.vue";
 
-
 const props = defineProps({
     errors: Object,
     grades: Array,
@@ -18,6 +17,7 @@ const props = defineProps({
 
 const yearToday = ref(new Date().getFullYear());
 const nextYear = ref(yearToday.value + 1);
+
 
 const form = useForm({
     minor_offenses: [],
@@ -219,10 +219,10 @@ const saveStudent = () => {
     <div class="col-span-6 mb-3">
 
         <MinorMultiSelect :form="form" :options="props.minorOffenses"/>
+
         </div>
 
         <div class="col-span-6 mb-3">
-
         <MajorMultiSelect :form="form" :options="props.majorOffenses"/>
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Grade;
 use App\Models\Section;
@@ -181,6 +182,7 @@ public function index(Request $request)
                         'student_sex' => $newStudent->sex,
                         'student_schoolyear' => $newStudent->schoolyear,
                         'student_quarter' => $newStudent->quarter,
+                        'committed_date' => $request->minor_offenses[$i]['date_committed'],
                         'minor_offense' => $request->minor_offenses[$i]['minor_offenses'],
                         'minor_penalty' => $minorPenalty->minor_penalties, 
                     ]);
@@ -198,6 +200,7 @@ public function index(Request $request)
                         $majorPenaltyId = 3; // Third or more offenses, third penalty
                     }
 
+
                     $majorPenalty = MajorPenalty::find($majorPenaltyId);
                     SubmittedMajorOffense::create([
                         'lrn' => $newStudent->lrn,
@@ -209,27 +212,18 @@ public function index(Request $request)
                         'student_sex' => $newStudent->sex,
                         'student_schoolyear' => $newStudent->schoolyear,
                         'student_quarter' => $newStudent->quarter,
+                        'committed_date' => $request->minor_offenses[$i]['date_committed'],
                         'major_offense' => $request->major_offenses[$i]['major_offenses'],
                         'major_penalty' => $majorPenalty->major_penalties, 
                     ]);
-               
             }
         }
+
 
         EmailController::sendemail($newStudent);
     
         // Redirect back with success message
         return redirect()->route('students.index')->with('message', 'Student added successfully');
-    }
-
-    public function print(Student $student)
-    {
-        $signatory = Signatory::all();
-
-        return Inertia::render('Student/Print', [
-            'student' => $student,
-            'signatory' => $signatory,
-        ]);
     }
     
 }

@@ -284,10 +284,6 @@ watch(gradeFilter, (newGrade) => {
                         </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border text-sm">
-                            Offenses/Penalties
-                        </th>
-                        
                         <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('email')">
                         Parent's Email
                         <span class="ml-1 text-[8px]">
@@ -295,6 +291,12 @@ watch(gradeFilter, (newGrade) => {
                             <span :class="sortColumn === 'email' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                         </span>
                         </th>
+
+                        <th class="py-2 px-2 text-left border text-sm">
+                            Offenses/Penalties
+                        </th>
+                        
+
 
                         <th class="py-2 px-2 text-left border text-sm">Actions</th>
                     </tr>
@@ -315,6 +317,13 @@ watch(gradeFilter, (newGrade) => {
                         <td class="py-2 px-2 border text-sm">
                             {{ student.section?.section ?? "N/A" }}
                         </td>
+
+                        <td class="py-2 px-4 border text-sm">
+                            <div class="px-2 py-1 text-sm bg-blue-200 text-dark p-3 rounded">
+                                    {{ student.email }}
+                            </div>
+                        </td>
+
                         <td class="py-2 px-2 border text-sm">
                             <div
                                 class="flex justify-center items-center gap-4 relative"
@@ -369,16 +378,7 @@ watch(gradeFilter, (newGrade) => {
                             </div>
                         </td>
 
-                        <td class="py-2 px-4 border text-sm">
-                            <div v-if="student.email">
-                                <Link
-                                    :href="route('show.email', student.id)"
-                                    class="px-2 py-1 text-sm bg-blue-300 text-dark p-3 rounded"
-                                >
-                                    {{ student.email }}
-                                </Link>
-                            </div>
-                        </td>
+
 
                         <td class="py-2 px-4 border text-sm">
                             <Link
@@ -387,9 +387,9 @@ watch(gradeFilter, (newGrade) => {
                                 >Edit</Link
                             >
                             <Link
-                                :href="route('students.print', student.id)"
+                                :href="route('students.view', student.id)"
                                 class="px-2 py-1 bg-blue-500 text-white p-3 rounded"
-                                >Print</Link
+                                >View</Link
                             >
                         </td>
                     </tr>
