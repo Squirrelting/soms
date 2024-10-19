@@ -15,8 +15,6 @@ class ReportsController extends Controller
     public function index(Request $request)
     {
         // Extract filter inputs
-    $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
-    $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
         $offenseFilter = $request->input('offenseFilter');
         $sex = $request->input('sex');
         $grade = $request->input('grade');
@@ -28,11 +26,11 @@ class ReportsController extends Controller
             ->when($sex, fn($q) => $q->where('student_sex', $sex))
             ->when($grade, fn($q) => $q->where('student_grade', $grade))
             ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
-            ->map(function ($offense) { // Then map to add formatted date
+            ->map(function ($offense) { 
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');                return $offense;
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                return $offense;
             });
     
         // Retrieve and map major offenses
@@ -41,9 +39,8 @@ class ReportsController extends Controller
             ->when($sex, fn($q) => $q->where('student_sex', $sex))
             ->when($grade, fn($q) => $q->where('student_grade', $grade))
             ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($startDate && $endDate, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))
             ->get() // Retrieve the results first
-            ->map(function ($offense) { // Then map to add formatted date
+            ->map(function ($offense) { 
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
 

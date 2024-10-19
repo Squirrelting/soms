@@ -13,8 +13,8 @@ import axios from "axios";
 
 // Props to pass the start and end dates
 const props = defineProps({
-    startDate: String,
-    endDate: String,
+    selectedYear: String,
+    selectedQuarter: String,
 });
 
 const chartInstance = ref(null);
@@ -29,8 +29,8 @@ const fetchBarData = async () => {
     try {
         const response = await axios.get("/get-bar-data", {
             params: {
-                start_date: props.startDate,
-                end_date: props.endDate,
+                selectedYear: props.selectedYear,
+                selectedQuarter: props.selectedQuarter,
             },
         });
 
@@ -46,8 +46,8 @@ const fetchBarData = async () => {
     }
 };
 
-// Watch for changes in startDate and endDate props
-watch([() => props.startDate, () => props.endDate], async () => {
+// Watch for changes in selectedYear and selectedQuarter props
+watch([() => props.selectedYear, () => props.selectedQuarter], async () => {
     await nextTick(); // Wait until the next DOM update cycle
     fetchBarData(); // Fetch new data whenever the dates change
 });
@@ -63,6 +63,10 @@ const renderChart = () => {
 
     if (barChartRef.value) {
         const ctx = barChartRef.value.getContext("2d"); // Access the canvas context
+
+        // Set a fixed height for the canvas
+        barChartRef.value.style.height = "150px"; // Adjust the height as needed
+        barChartRef.value.style.width = "100%"; // Set to 100% to maintain responsiveness
 
         const labels = chartData.value.map((offense) => offense.offense_name);
         const data = chartData.value.map((offense) => offense.count);
@@ -94,9 +98,17 @@ const renderChart = () => {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Allow aspect ratio to be managed by CSS
                 plugins: {
                     legend: {
                         display: false, // Remove the legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function (tooltipItems) {
+                                return tooltipItems[0].label; // Show offense name on hover
+                            },
+                        },
                     },
                 },
                 scales: {
@@ -119,7 +131,6 @@ const renderChart = () => {
                         },
                     },
                 },
-
             },
         });
     } else {
@@ -133,7 +144,3 @@ onMounted(async () => {
     fetchBarData();
 });
 </script>
-
-<style scoped>
-
-</style>

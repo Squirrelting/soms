@@ -53,27 +53,36 @@ class ViewController extends Controller
         ]);
     }
 
-  public function printRecord(Student $student)
+public function printRecord(Student $student)
 {
-    // Load student data with related models
     $studentWithGradeAndSection = $student->load('grade', 'section');
 
-    // Fetch and format minor offenses
     $submittedminorOffenses = $student->submittedMinorOffenses()
         ->get()
-        ->map([$this, 'formatOffenseDates']);
+        ->map(function($offense) {
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date 
+                ? Carbon::parse($offense->cleansed_date)->format('F d, Y') 
+                : null;
+            return $offense;
+        });
 
-    // Fetch and format major offenses
     $submittedmajorOffenses = $student->submittedMajorOffenses()
         ->get()
-        ->map([$this, 'formatOffenseDates']);
+        ->map(function($offense) {
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date 
+                ? Carbon::parse($offense->cleansed_date)->format('F d, Y') 
+                : null;
+            return $offense;
+        });
 
-    // Prepare date and image path
+    // Prepare date formats
     $imagePath = public_path('Images/SCNHS-Logo.png');
     $date = Carbon::now()->format('F j, Y');
 
-    // Generate PDF and stream it
-    ob_start();
     $pdf = Pdf::loadView('print-template.print-record', [
         'student' => $studentWithGradeAndSection,
         'submittedminorOffenses' => $submittedminorOffenses,
@@ -81,12 +90,8 @@ class ViewController extends Controller
         'imagePath' => $imagePath,
         'date' => $date,
     ]);
-    ob_end_clean();
 
-    return response($pdf->output())
-        ->header('Content-Type', 'application/pdf')
-        ->header('Content-Disposition', 'inline; filename="student-record.pdf"');
+    return $pdf->stream('student-record.pdf');
 }
 
-    
 }

@@ -23,15 +23,11 @@ class StudentsController extends Controller
 // In StudentsController.php
 public function index(Request $request)
 {
-    // Extract start and end dates
-    $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
-    $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
-
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
-    $sortColumn = $request->input('sortColumn', 'id');  // Default to 'id' if no sort column is provided
-    $sortOrder = $request->input('sortOrder', 'desc');   // Default to 'asc' order if not provided
+    $sortColumn = $request->input('sortColumn', 'id');  
+    $sortOrder = $request->input('sortOrder', 'desc');   
 
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
@@ -51,9 +47,6 @@ public function index(Request $request)
         ->when($section, function ($query, $section) {
             $query->where('section_id', $section);
         })
-        ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-        })
         ->when($search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('firstname', 'like', "%{$search}%")
@@ -62,14 +55,12 @@ public function index(Request $request)
                       ->orWhere('lrn', 'like', "%{$search}%");
             });
         })
-        ->orderBy($sortColumn, $sortOrder) // Apply sorting here
-        ->paginate(10)
+        ->orderBy($sortColumn, $sortOrder)
+        ->paginate(20)
         ->appends([
             'search' => $search,
             'grade' => $grade,
             'section' => $section,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
             'sortColumn' => $sortColumn,
             'sortOrder' => $sortOrder,
         ]);
@@ -77,6 +68,38 @@ public function index(Request $request)
     $sections = Section::all();
     $grades = Grade::all();
     
+    $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')
+            ->distinct();
+
+        // Get student_schoolyear and student_quarter from SubmittedMinorOffense and merge using union
+        $getSchoolYears = SubmittedMinorOffense::select('student_schoolyear', 'student_quarter')
+            ->distinct()
+            ->union($getMajorSchoolYears)
+            ->get();
+
+        // Process the results to group by student_schoolyear and list the quarters
+        $groupedSchoolYears = [];
+
+        foreach ($getSchoolYears as $item) {
+            $year = $item->student_schoolyear;
+            $quarter = $item->student_quarter;
+
+            // Check if the school year is already in the array
+            if (!isset($groupedSchoolYears[$year])) {
+                // Initialize with the school year and an empty quarters array
+                $groupedSchoolYears[$year] = [
+                    'student_schoolyear' => $year,
+                    'quarters' => []
+                ];
+            }
+
+            // Avoid duplicate quarters
+            if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
+                $groupedSchoolYears[$year]['quarters'][] = $quarter;
+            }
+        };
+        $finalResult = array_values($groupedSchoolYears);
+
     return Inertia::render('Student/Index', [
         'students' => $students,
         'search' => $search,
@@ -86,6 +109,8 @@ public function index(Request $request)
         'sections' => $sections,
         'sortColumn' => $sortColumn,
         'sortOrder' => $sortOrder,
+        'schoolYears' => $finalResult
+
     ]);
 }
 

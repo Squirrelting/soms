@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { Head, router, Link } from "@inertiajs/vue3";
-import { CalendarDaysIcon } from "@heroicons/vue/24/solid"; 
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -130,6 +129,7 @@ watch(gradeFilter, (newGrade) => {
 <table class="w-full bg-white border shadow">
   <thead>
     <tr>
+      <th class="py-1 px-2 border text-sm" >No.</th>
       <th class="py-1 px-2 border text-sm">LRN</th>
       <th class="py-1 px-2 border text-sm">Name</th>
       <th class="py-1 px-2 border text-sm">Sex</th>
@@ -141,7 +141,8 @@ watch(gradeFilter, (newGrade) => {
     </tr>
   </thead>
   <tbody>
-    <tr v-for="offense in offensesData" :key="offense.id">
+    <tr v-for="(offense, index) in offensesData" :key="offense.id">
+      <td class="py-1 px-2 border text-sm">{{ index + 1 }}</td>
       <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
       <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}</td>
       <td class="py-1 px-2 border text-sm">{{ offense.student_sex }}</td>
