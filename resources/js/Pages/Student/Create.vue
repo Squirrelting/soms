@@ -62,6 +62,43 @@ const fetchSections = async (gradeId) => {
     }
 };
 
+const formatName = (name) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+const previewData = () => {
+    // Convert the minor and major offenses arrays into readable strings
+    const minorOffensesString = form.minor_offenses.map(offense => offense.minor_offenses).join(", ");
+    const majorOffensesString = form.major_offenses.map(offense => offense.major_offenses).join(", ");
+    
+    Swal.fire({
+        title: "Preview Data",
+        html: `
+            <div style="text-align: left;">
+                <p><strong>LRN:</strong> ${form.lrn}</p>
+                <p><strong>Parent's Email:</strong> ${form.email}</p>
+                <p><strong>First Name:</strong> ${form.firstname}</p>
+                <p><strong>Middle Name:</strong> ${form.middlename}</p>
+                <p><strong>Last Name:</strong> ${form.lastname}</p>
+                <p><strong>Sex:</strong> ${form.sex}</p>
+                <p><strong>Grade:</strong> ${form.grade_id}</p>
+                <p><strong>Section:</strong> ${form.section_id}</p>
+                <p><strong>Quarter:</strong> ${form.quarter}</p>
+                <p><strong>School Year:</strong> ${form.yeartoday} - ${form.nextyear}</p>
+                ${minorOffensesString ? `<p><strong>Minor Offenses:</strong> ${minorOffensesString}</p>` : ""}
+                ${majorOffensesString ? `<p><strong>Major Offenses:</strong> ${majorOffensesString}</p>` : ""}
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        preConfirm: () => {
+            // Call saveStudent here to submit the form if confirmed
+            saveStudent();
+        }
+    });
+};
+
+
 const saveStudent = () => {
     Swal.fire({
         title: "Are you sure?",
@@ -80,7 +117,7 @@ const saveStudent = () => {
                 didOpen: () => {
                     Swal.showLoading();
                 },
-            });
+            }); 
             form.post(route("students.store"), {
                 onSuccess: () => {
                     Swal.fire({
@@ -136,24 +173,40 @@ const saveStudent = () => {
 
         <hr class="my-4 border-blue-800">
 
-        <!-- Second Section: Student's Name -->
-        <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-4 mb-3">
-                <label class="block text-gray-700 font-semibold mb-1">Student's First Name</label>
-                <input type="text" v-model="form.firstname" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
-                <div v-if="errors.firstname" class="text-red-500">{{ errors.firstname }}</div>
-            </div>
-            <div class="col-span-4 mb-3">
-                <label class="block text-gray-700 font-semibold mb-1">Student's Middle Name (Optional)</label>
-                <input type="text" v-model="form.middlename" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
-                <div v-if="errors.middlename" class="text-red-500">{{ errors.middlename }}</div>
-            </div>
-            <div class="col-span-4 mb-3">
-                <label class="block text-gray-700 font-semibold mb-1">Student's Last Name</label>
-                <input type="text" v-model="form.lastname" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
-                <div v-if="errors.lastname" class="text-red-500">{{ errors.lastname }}</div>
-            </div>
-        </div>
+<!-- Second Section: Student's Name -->
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-4 mb-3">
+        <label class="block text-gray-700 font-semibold mb-1">Student's First Name</label>
+        <input 
+            type="text" 
+            v-model="form.firstname" 
+            @input="form.firstname = formatName(form.firstname)" 
+            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" 
+        />
+        <div v-if="errors.firstname" class="text-red-500">{{ errors.firstname }}</div>
+    </div>
+    <div class="col-span-4 mb-3">
+        <label class="block text-gray-700 font-semibold mb-1">Student's Middle Name (Optional)</label>
+        <input 
+            type="text" 
+            v-model="form.middlename" 
+            @input="form.middlename = formatName(form.middlename)" 
+            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" 
+        />
+        <div v-if="errors.middlename" class="text-red-500">{{ errors.middlename }}</div>
+    </div>
+    <div class="col-span-4 mb-3">
+        <label class="block text-gray-700 font-semibold mb-1">Student's Last Name</label>
+        <input 
+            type="text" 
+            v-model="form.lastname" 
+            @input="form.lastname = formatName(form.lastname)" 
+            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" 
+        />
+        <div v-if="errors.lastname" class="text-red-500">{{ errors.lastname }}</div>
+    </div>
+</div>
+
 
         <hr class="my-4 border-blue-800">
 
@@ -193,8 +246,11 @@ const saveStudent = () => {
         <label class="block text-gray-700 font-semibold mb-1">Select Quarter</label>
         <select v-model="form.quarter" class="py-1 w-full bg-gray-200 border border-gray-500 rounded">
             <option value="">Select</option>
-            <option value="firstquarter">1st Quarter</option>
-            <option value="secondquarter">2nd Quarter</option>
+            <option value="1st Quarter">1st Quarter</option>
+            <option value="2nd Quarter">2nd Quarter</option>
+            <option value="3rd Quarter">3rd Quarter</option>
+            <option value="4rth Quarter">4rth Quarter</option>
+
         </select>
         <div v-if="errors.quarter" class="text-red-500 mt-1 text-sm">{{ errors.quarter }}</div>
     </div>
@@ -219,7 +275,6 @@ const saveStudent = () => {
     <div class="col-span-6 mb-3">
 
         <MinorMultiSelect :form="form" :options="props.minorOffenses"/>
-
         </div>
 
         <div class="col-span-6 mb-3">
@@ -228,16 +283,13 @@ const saveStudent = () => {
 </div>
         <!-- Submit Button -->
         <div class="mb-3">
-            <button type="submit" :disabled="form.processing" class="bg-blue-500 text-white py-2 px-5 rounded mb-4">
-                <span v-if="form.processing">Saving...</span>
-                <span v-else>Save</span>
-            </button>
-        </div>
+    <button type="button" :disabled="form.processing" @click="previewData" class="bg-blue-500 text-white py-2 px-5 rounded mb-4">
+        <span v-if="form.processing">Processing...</span>
+        <span v-else>Next</span>
+    </button>
+</div>
     </div>
 </form>
-
-
-
         </div>
     </AuthenticatedLayout>
 </template>

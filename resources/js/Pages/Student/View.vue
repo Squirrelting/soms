@@ -10,19 +10,6 @@ const props = defineProps({
     submittedmajorOffenses: Array,
 });
 
-
-const checkDataAndProceed = (action) => {
-  if (props.student.length === 0) {
-    Swal.fire({
-      icon: "warning",
-      title: "No offenses data",
-      text: "There are no offenses data to export or print.",
-    });
-  } else {
-    router.get(route("printrecord", { student: props.student.id }));
-  }
-};
-
 </script>
 
 <template>
@@ -36,12 +23,13 @@ const checkDataAndProceed = (action) => {
 
     <!-- Print and Back buttons -->
     <div class="flex space-x-2">
-        <button 
-            @click="checkDataAndProceed('print')" 
+        <a 
+            :href="route('printrecord', { student: props.student.id })"
+            target="_blank"
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"
         >
             Print
-        </button>
+        </a>
         <Link
             :href="route('students.index')"
             class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"

@@ -16,48 +16,23 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    schoolYears: Array,
+
 });
 
-// Default date values
-const today = new Date();
-const lastMonth = new Date();
-lastMonth.setMonth(today.getMonth() - 1);
+const selectedYear = ref(props.schoolYears[0].student_schoolyear) || "";
+const selectedQuarter = ref(props.schoolYears[0].quarters[0]) || "";
 
-const maxDate = today.toISOString().split('T')[0];
+const filteredQuarters = computed(() => {
+    const selectedSchoolYear = props.schoolYears.find(
+        (year) => year.student_schoolyear === selectedYear.value
+    );
+    return selectedSchoolYear ? selectedSchoolYear.quarters : [];
+});
 
-// Reactive start and end dates
-const startDate = ref(lastMonth.toISOString().split("T")[0]);
-const endDate = ref(today.toISOString().split("T")[0]);
-
-// Refs for date inputs
-const startDateInput = ref(null);
-const endDateInput = ref(null);
-
-// Methods to show the date pickers
-const showStartDatePicker = () => {
-  startDateInput.value?.showPicker();
+const filterQuarters = () => {
+    selectedQuarter.value = "";
 };
-const showEndDatePicker = () => {
-  endDateInput.value?.showPicker();
-};
-
-// Computed properties for formatted dates
-const formattedStartDate = computed(() =>
-  new Date(startDate.value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
-);
-
-const formattedEndDate = computed(() =>
-  new Date(endDate.value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
-);
-
 
 const searchQuery = ref(props.search || "");
 const gradeFilter = ref(props.grade || "");
@@ -78,7 +53,6 @@ const sortTable = (column) => {
   filter(); // Call the filter method to apply the sorting
 };
 
-// Function to filter based on search, grade, section, and date
 const filter = () => {
     router.get(
         route("students.index"),
@@ -86,8 +60,6 @@ const filter = () => {
             search: searchQuery.value,
             grade: gradeFilter.value,
             section: sectionFilter.value,
-            startDate: startDate.value,
-            endDate: endDate.value,
             sortColumn: sortColumn.value, // Pass the sorting column
             sortOrder: sortOrder.value,   // Pass the sorting order
         },
@@ -103,7 +75,7 @@ const filter = () => {
 
 // Watch for changes in filters and trigger the filter method
 watch(
-    [searchQuery, gradeFilter, sectionFilter, startDate, endDate],
+    [searchQuery, gradeFilter, sectionFilter],
     () => {
         filter();
     }
@@ -152,42 +124,35 @@ watch(gradeFilter, (newGrade) => {
         Student List
     </h5>
 
-    <!-- Start Date Picker -->
-    <div class="flex items-center space-x-1">
-        <label for="startDate" class="text-sm">Start:</label>
-        <button @click="showStartDatePicker" class="calendar-button">
-            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
-        </button>
-        <input
-            type="date"
-            id="startDate"
-            v-model="startDate"
-            ref="startDateInput"
-            :max="maxDate"
-            @change="filter"
-            class="invisible-input"
-        />
-        <span class="text-sm text-gray-700">{{ formattedStartDate }}</span>
-    </div>
-
-    <!-- End Date Picker -->
-    <div class="flex items-center space-x-1">
-        <label for="endDate" class="text-sm">End:</label>
-        <button @click="showEndDatePicker" class="calendar-button">
-            <CalendarDaysIcon class="h-5 w-5 text-gray-500" />
-        </button>
-        <input
-            type="date"
-            id="endDate"
-            v-model="endDate"
-            ref="endDateInput"
-            :max="maxDate"
-            @change="filter"
-            class="invisible-input"
-        />
-        <span class="text-sm text-gray-700">{{ formattedEndDate }}</span>
-    </div>
-
+   
+<div class="flex space-x-2">
+                <select
+                    v-model="selectedYear"
+                    @change="filterQuarters"
+                    class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
+                >
+                    <option
+                        v-for="(schoolyear, index) in props.schoolYears"
+                        :key="index"
+                        :value="schoolyear.student_schoolyear"
+                    >
+                        {{ schoolyear.student_schoolyear }}
+                    </option>
+                </select>
+                <!-- Quarters Select -->
+                <select
+                    v-model="selectedQuarter"
+                    class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
+                >
+                    <option value="">Select Quarter</option>
+                    <option
+                        v-for="(quarter, index) in filteredQuarters"
+                        :key="index"
+                    >
+                        {{ quarter }}
+                    </option>
+                </select>
+            </div>
     <!-- Search Input -->
     <input
         v-model="searchQuery"
@@ -234,16 +199,18 @@ watch(gradeFilter, (newGrade) => {
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
-                        <!-- <th class="hidden" >
+                        <th class="hidden" @click="sortTable('id')">
                             ID
-                        </th> -->
-                        <th class="py-1 px-2 text-left border cursor-pointer text-sm" @click="sortTable('id')">
-                            No.
                             <span class="ml-1 text-[8px]">
                                 <span :class="sortColumn === 'id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
                                 <span :class="sortColumn === 'id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
                             </span>
                         </th>
+
+                        <th class="py-1 px-2 text-left border cursor-pointer text-sm" >
+                            No.
+                        </th>
+
                         <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('lrn')">
                         LRN
                         <span class="ml-1 text-[8px]">
@@ -303,9 +270,9 @@ watch(gradeFilter, (newGrade) => {
                 </thead>
                 <tbody>
                     <tr v-for="(student, index) in studentsData.data" :key="student.id">
-                        <td class="py-2 px-2 border text-sm">{{ student.id }}</td>
-
-                        <!-- <td class="py-2 px-4 text-left border text-sm">{{ index + 1 }}</td> -->
+                        
+                        <td class="hidden">{{ student.id }}</td>
+                        <td class="py-2 px-4 text-left border text-sm">{{ index + 1 }}</td>
                         <td class="py-2 px-2 border text-sm">{{ student.lrn }}</td>
                         <td class="py-2 px-2 border text-sm">
                             {{ student.lastname }}, {{ student.firstname }} {{ student.middlename }}
@@ -400,18 +367,4 @@ watch(gradeFilter, (newGrade) => {
         <Pagination :pagination="studentsData" />
     </AuthenticatedLayout>
 </template>
-<style scoped>
-.calendar-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-right: 8px;
-}
 
-.invisible-input {
-  opacity: 0;
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-}
-</style>
