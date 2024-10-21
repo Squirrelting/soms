@@ -10,6 +10,8 @@ import {
   KeyIcon,
   ChatBubbleLeftEllipsisIcon,
   CalculatorIcon,
+  PowerIcon,
+  IdentificationIcon
 } from "@heroicons/vue/24/solid";
 
 // Reactive state for sidebar collapsed/expanded
@@ -72,16 +74,39 @@ function hasPermission(input) {
     <a class="btn btn-ghost text-xl">SOMS</a>
   </div>
   <div class="flex-none">
+    <div  v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-blue-200">
+            Admin Privelege
+          </div>
+          <ul tabindex="0" class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
+            <li>
+              <Link :href="route('user.index')" class="text-gray-700 hover:bg-gray-200"> <UserPlusIcon class="h-4 w-4 text-black" />User</Link>
+            </li>
+            <li>
+              <Link :href="route('signatory.index')" class="text-gray-700 hover:bg-gray-200"> <PencilIcon class="h-4 w-4 text-black" />Signatory</Link>
+            </li>
+            <li>
+              <Link :href="route('section.index')" class="text-gray-700 hover:bg-gray-200"> <ChatBubbleLeftEllipsisIcon class="h-4 w-4 text-black" />Add Section</Link>
+            </li>
+            <li>
+              <Link :href="route('minoroffense.index')" class="text-gray-700 hover:bg-gray-200"> <IdentificationIcon class="h-4 w-4 text-black" />Add Minor Offense</Link>
+            </li>
+            <li>
+              <Link :href="route('majoroffense.index')" class="text-gray-700 hover:bg-gray-200"> <IdentificationIcon class="h-4 w-4 text-black" />Add Major Offense</Link>
+            </li>
+          </ul>
+        </div>
+
     <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
             Hi, {{ $page.props.auth.user.name }}
           </div>
           <ul tabindex="0" class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
             <li>
-              <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200">Profile</Link>
+              <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200"> <UserPlusIcon class="h-4 w-4 text-black" />Profile</Link>
             </li>
             <li>
-              <button @click="logOut()" class="text-gray-700 hover:bg-gray-200">Log out</button>
+              <button @click="logOut()" class="text-gray-700 hover:bg-gray-200"><PowerIcon class="h-4 w-4 text-black" />Log out</button>
             </li>
           </ul>
         </div>
@@ -107,7 +132,7 @@ function hasPermission(input) {
               <div class="flex justify-center items-center mt-4">
                 <img
                   :class="[isSidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20']"
-                  class="rounded-full transition-all duration-300"
+                  class="rounded-full transition-all duration-900"
                   src="/Images/SCNHS-Logo.png"
                   alt="logo"
                 />
@@ -119,7 +144,7 @@ function hasPermission(input) {
                 pattern="dashboard"
                 route="dashboard"
               >
-                <HomeIcon class="h-5 text-black" />
+                <HomeIcon class="h-4 w-4 text-black" />
               </MenuItem>
 
               <MenuItem
@@ -128,7 +153,7 @@ function hasPermission(input) {
                 pattern="students.index"
                 route="students.index"
               >
-                <UsersIcon class="h-5 text-black" />
+                <UsersIcon class="h-4 w-4 text-black" />
               </MenuItem>
 
               <MenuItem
@@ -137,25 +162,7 @@ function hasPermission(input) {
                 pattern="reports.index"
                 route="reports.index"
               >
-                <CalculatorIcon class="h-5 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage POD Users')"
-                :label="isSidebarCollapsed ? '' : 'User'"
-                pattern="user.index"
-                route="user.index"
-              >
-                <UserPlusIcon class="h-5 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage Students')"
-                :label="isSidebarCollapsed ? '' : 'Signatory'"
-                pattern="signatory.index"
-                route="signatory.index"
-              >
-                <PencilIcon class="h-5 text-black" />
+                <CalculatorIcon class="h-4 w-4 text-black" />
               </MenuItem>
 
               <MenuItem
@@ -164,7 +171,7 @@ function hasPermission(input) {
                 pattern="print.index"
                 route="print.index"
               >
-                <PencilIcon class="h-5 text-black" />
+                <PencilIcon class="h-4 w-4 text-black" />
               </MenuItem>
 
               <MenuItem
@@ -173,22 +180,12 @@ function hasPermission(input) {
                 pattern="users.roles-permissions.roles.index"
                 route="users.roles-permissions.roles.index"
               >
-                <KeyIcon class="h-5 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage POD Users')"
-                :label="isSidebarCollapsed ? '' : 'Add Section'"
-                pattern="section.index"
-                route="section.index"
-              >
-                <ChatBubbleLeftEllipsisIcon class="h-5 text-black" />
+                <KeyIcon class="h-4 w-4 text-black" />
               </MenuItem>
             </ul>
           </div>
         </div>
       </nav>
-
       <section class="w-full">
         <div class="mt-5 md:mt-20 lg:mt-10 flex-1 pt-5">
           <slot />
@@ -200,6 +197,6 @@ function hasPermission(input) {
 
 <style>
 .transition-width {
-  transition: width 1s ease;
+  transition: width 2s ease;
 }
 </style>

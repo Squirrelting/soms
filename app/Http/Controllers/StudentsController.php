@@ -102,13 +102,10 @@ public function index(Request $request)
 
     return Inertia::render('Student/Index', [
         'students' => $students,
-        'search' => $search,
         'grade' => $grade,
         'grades' => $grades,
         'section' => $section,
         'sections' => $sections,
-        'sortColumn' => $sortColumn,
-        'sortOrder' => $sortOrder,
         'schoolYears' => $finalResult
 
     ]);

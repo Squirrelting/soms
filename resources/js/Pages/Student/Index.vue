@@ -4,11 +4,9 @@ import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import axios from "axios"; 
-import { CalendarDaysIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps({
     students: Object,
-    search: String,
     grade: String,
     grades: Array,
     section: String,
@@ -34,7 +32,7 @@ const filterQuarters = () => {
     selectedQuarter.value = "";
 };
 
-const searchQuery = ref(props.search || "");
+const searchQuery = ref("");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
