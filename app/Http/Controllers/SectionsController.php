@@ -65,7 +65,6 @@ class SectionsController extends Controller
     
         // Fetch sections based on the student's current grade
         $sections = Section::where('grade_id', $section->grade_id)->get();
-    
         return Inertia::render('Section/Edit', [
             'section' => $section,
             'grades' => $grades,
