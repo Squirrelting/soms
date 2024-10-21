@@ -138,7 +138,6 @@ const updateStudent = () => {
 
             <form @submit.prevent="updateStudent()">
                 <div class="col-span-12">
-                    <!-- First Section: LRN and Parent's Email -->
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-6 mb-3">
                             <label
@@ -157,7 +156,7 @@ const updateStudent = () => {
                         <div class="col-span-6 mb-3">
                             <label
                                 class="block text-gray-700 font-semibold mb-1"
-                                >Parent's Email</label
+                                >Adviser's Email</label
                             >
                             <input
                                 type="email"
