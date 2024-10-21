@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PieChart from "@/Components/PieChart.vue";
@@ -12,8 +12,9 @@ const props = defineProps({
 });
 const studentsData = ref(props.students);
 
-const selectedYear = ref(props.schoolYears[0].student_schoolyear) || "";
-const selectedQuarter = ref(props.schoolYears[0].quarters[0]) || "";
+const selectedYear = ref(props.schoolYears.length > 0 ? props.schoolYears[0].student_schoolyear : "");
+const selectedQuarter = ref(props.schoolYears.length > 0 && props.schoolYears[0].quarters.length > 0 ? props.schoolYears[0].quarters[0] : "");
+
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
@@ -21,6 +22,17 @@ const filteredQuarters = computed(() => {
     );
     return selectedSchoolYear ? selectedSchoolYear.quarters : [];
 });
+
+watch(() => props.schoolYears, (newValue) => {
+    if (newValue.length > 0) {
+        selectedYear.value = newValue[0].student_schoolyear;
+        selectedQuarter.value = newValue[0].quarters[0] || "";
+    } else {
+        selectedYear.value = "";
+        selectedQuarter.value = "";
+    }
+});
+
 
 const filterQuarters = () => {
     selectedQuarter.value = "";

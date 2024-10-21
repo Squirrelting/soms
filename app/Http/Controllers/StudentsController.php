@@ -28,6 +28,8 @@ public function index(Request $request)
     $section = $request->input('section');
     $sortColumn = $request->input('sortColumn', 'id');  
     $sortOrder = $request->input('sortOrder', 'desc');   
+    $selectedYear = $request->input('selectedYear');
+    $selectedQuarter = $request->input('selectedQuarter');
 
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
@@ -41,6 +43,12 @@ public function index(Request $request)
             'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
             'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
         ])
+        ->when($selectedYear, function ($query, $selectedYear) {
+            $query->where('schoolyear', $selectedYear); 
+        })
+        ->when($selectedQuarter, function ($query, $selectedQuarter) {
+            $query->where('quarter', $selectedQuarter); 
+        })
         ->when($grade, function ($query, $grade) {
             $query->where('grade_id', $grade);
         })
@@ -59,6 +67,8 @@ public function index(Request $request)
         ->paginate(20)
         ->appends([
             'search' => $search,
+            'selectedYear' => $selectedYear,  
+            'selectedQuarter' => $selectedQuarter,
             'grade' => $grade,
             'section' => $section,
             'sortColumn' => $sortColumn,
@@ -68,37 +78,32 @@ public function index(Request $request)
     $sections = Section::all();
     $grades = Grade::all();
     
-    $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')
-            ->distinct();
 
-        // Get student_schoolyear and student_quarter from SubmittedMinorOffense and merge using union
-        $getSchoolYears = SubmittedMinorOffense::select('student_schoolyear', 'student_quarter')
-            ->distinct()
-            ->union($getMajorSchoolYears)
-            ->get();
+    $getSchoolYears = Student::select('schoolyear', 'quarter')
+        ->distinct()
+        ->get();
 
-        // Process the results to group by student_schoolyear and list the quarters
         $groupedSchoolYears = [];
 
         foreach ($getSchoolYears as $item) {
-            $year = $item->student_schoolyear;
-            $quarter = $item->student_quarter;
-
+            $year = $item->schoolyear;
+            $quarter = $item->quarter;
+    
             // Check if the school year is already in the array
             if (!isset($groupedSchoolYears[$year])) {
                 // Initialize with the school year and an empty quarters array
                 $groupedSchoolYears[$year] = [
-                    'student_schoolyear' => $year,
-                    'quarters' => []
+                    'schoolyear' => $year,
+                    'quarter' => []
                 ];
             }
-
+    
             // Avoid duplicate quarters
-            if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
-                $groupedSchoolYears[$year]['quarters'][] = $quarter;
+            if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
+                $groupedSchoolYears[$year]['quarter'][] = $quarter;
             }
-        };
-        $finalResult = array_values($groupedSchoolYears);
+        }
+    $finalResult = array_values($groupedSchoolYears);
 
     return Inertia::render('Student/Index', [
         'students' => $students,

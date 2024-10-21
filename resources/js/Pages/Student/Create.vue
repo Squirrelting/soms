@@ -75,7 +75,7 @@ const previewData = () => {
         html: `
             <div style="text-align: left;">
                 <p><strong>LRN:</strong> ${form.lrn}</p>
-                <p><strong>Parent's Email:</strong> ${form.email}</p>
+                <p><strong>Adviser's Email:</strong> ${form.email}</p>
                 <p><strong>First Name:</strong> ${form.firstname}</p>
                 <p><strong>Middle Name:</strong> ${form.middlename}</p>
                 <p><strong>Last Name:</strong> ${form.lastname}</p>
@@ -157,7 +157,6 @@ const saveStudent = () => {
 
             <form @submit.prevent="saveStudent()">
     <div class="col-span-12">
-        <!-- First Section: LRN and Parent's Email -->
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-6 mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Student's LRN</label>
@@ -165,7 +164,7 @@ const saveStudent = () => {
                 <div v-if="errors.lrn" class="text-red-500">{{ errors.lrn }}</div>
             </div>
             <div class="col-span-6 mb-3">
-                <label class="block text-gray-700 font-semibold mb-1">Parent's Email</label>
+                <label class="block text-gray-700 font-semibold mb-1">Adviser's Email</label>
                 <input type="email" v-model="form.email" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
                 <div v-if="errors.email" class="text-red-500">{{ errors.email }}</div>
             </div>

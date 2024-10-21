@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import axios from "axios"; 
+import axios from "axios";
 
 const props = defineProps({
     students: Object,
@@ -15,57 +15,67 @@ const props = defineProps({
         default: () => [],
     },
     schoolYears: Array,
-
 });
 
-const selectedYear = ref(props.schoolYears[0].student_schoolyear) || "";
-const selectedQuarter = ref(props.schoolYears[0].quarters[0]) || "";
+const selectedYear = ref(
+    props.schoolYears.length > 0 ? props.schoolYears[0].schoolyear : ""
+);
+const selectedQuarter = ref(
+    props.schoolYears.length > 0 && props.schoolYears[0].quarter.length > 0
+        ? props.schoolYears[0].quarter[0]
+        : ""
+);
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
-        (year) => year.student_schoolyear === selectedYear.value
+        (year) => year.schoolyear === selectedYear.value
     );
-    return selectedSchoolYear ? selectedSchoolYear.quarters : [];
+    return selectedSchoolYear ? selectedSchoolYear.quarter : [];
 });
 
 const filterQuarters = () => {
     selectedQuarter.value = "";
 };
 
+const isLoading = ref(false);
 const searchQuery = ref("");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
-const sections = ref(props.sections); 
-const sortColumn = ref("id"); 
-const sortOrder = ref("desc"); 
+const sections = ref(props.sections);
+const sortColumn = ref("id");
+const sortOrder = ref("desc");
 
 // Sorting method
 const sortTable = (column) => {
-  if (sortColumn.value === column) {
-    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
-  } else {
-    sortColumn.value = column;
-    sortOrder.value = "asc"; // Set ascending as default order for new column
-  }
-  filter(); // Call the filter method to apply the sorting
+    if (sortColumn.value === column) {
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
+    } else {
+        sortColumn.value = column;
+        sortOrder.value = "asc"; // Set ascending as default order for new column
+    }
+    filter(); // Call the filter method to apply the sorting
 };
 
 const filter = () => {
+    isLoading.value = true;
     router.get(
         route("students.index"),
         {
             search: searchQuery.value,
             grade: gradeFilter.value,
             section: sectionFilter.value,
-            sortColumn: sortColumn.value, // Pass the sorting column
-            sortOrder: sortOrder.value,   // Pass the sorting order
+            sortColumn: sortColumn.value,
+            sortOrder: sortOrder.value,
+            selectedYear: selectedYear.value,
+            selectedQuarter: selectedQuarter.value,
         },
         {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
                 studentsData.value = page.props.students;
+                isLoading.value = false;
             },
         }
     );
@@ -73,7 +83,7 @@ const filter = () => {
 
 // Watch for changes in filters and trigger the filter method
 watch(
-    [searchQuery, gradeFilter, sectionFilter],
+    [searchQuery, gradeFilter, sectionFilter, selectedYear, selectedQuarter],
     () => {
         filter();
     }
@@ -82,7 +92,9 @@ watch(
 // Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
     try {
-        const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
+        const response = await axios.get(
+            `/students/sections?grade_id=${gradeId}`
+        );
         sections.value = response.data.sections; // Populate the sections dropdown
         sectionFilter.value = ""; // Reset section filter when grade changes
     } catch (error) {
@@ -93,12 +105,15 @@ const fetchSections = async (gradeId) => {
 // Watch for grade changes and fetch sections when the grade changes
 watch(gradeFilter, (newGrade) => {
     if (newGrade) {
-        fetchSections(newGrade); 
+        fetchSections(newGrade);
     } else {
-        sections.value = []; 
+        sections.value = [];
     }
 });
 
+onMounted(() => {
+    filter();
+});
 </script>
 
 <template>
@@ -111,171 +126,322 @@ watch(gradeFilter, (newGrade) => {
             role="alert"
             class="alert alert-info mt-4 mx-5 px-4 py-2"
         >
-            <span class="ml-2 text-base text-gray-800">{{ $page.props.flash.message }}</span>
+            <span class="ml-2 text-base text-gray-800">{{
+                $page.props.flash.message
+            }}</span>
         </div>
 
         <!-- Student List with Search and Filters -->
         <div class="mt-4 mx-4">
-
             <div class="flex justify-between items-center mb-2 space-x-2">
-    <h5 class="text-lg font-semibold text-gray-700">
-        Student List
-    </h5>
+                <h5 class="text-lg font-semibold text-gray-700">
+                    Student List
+                </h5>
 
-   
-<div class="flex space-x-2">
-                <select
-                    v-model="selectedYear"
-                    @change="filterQuarters"
-                    class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
-                >
-                    <option
-                        v-for="(schoolyear, index) in props.schoolYears"
-                        :key="index"
-                        :value="schoolyear.student_schoolyear"
+                <div class="flex space-x-2">
+                    <select
+                        v-model="selectedYear"
+                        @change="filterQuarters"
+                        class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
                     >
-                        {{ schoolyear.student_schoolyear }}
+                        <option value="">All year</option>
+                        <option
+                            v-for="(schoolyear, index) in props.schoolYears"
+                            :key="index"
+                            :value="schoolyear.schoolyear"
+                        >
+                            {{ schoolyear.schoolyear }}
+                        </option>
+                    </select>
+                    <!-- Quarters Select -->
+                    <select
+                        v-model="selectedQuarter"
+                        class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
+                    >
+                        <option value="">All Quarter</option>
+                        <option
+                            v-for="(quarter, index) in filteredQuarters"
+                            :key="index"
+                        >
+                            {{ quarter }}
+                        </option>
+                    </select>
+                </div>
+                <!-- Search Input -->
+                <input
+                    v-model="searchQuery"
+                    type="text"
+                    placeholder="Search by Name and LRN"
+                    class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                />
+
+                <!-- Grade Dropdown -->
+                <select
+                    v-model="gradeFilter"
+                    class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                >
+                    <option value="">All Grades</option>
+                    <option
+                        v-for="grade in grades"
+                        :key="grade.id"
+                        :value="grade.id"
+                    >
+                        Grade {{ grade.grade }}
                     </option>
                 </select>
-                <!-- Quarters Select -->
+
+                <!-- Section Dropdown -->
                 <select
-                    v-model="selectedQuarter"
-                    class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
+                    v-model="sectionFilter"
+                    class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
                 >
-                    <option value="">Select Quarter</option>
+                    <option value="">All Sections</option>
                     <option
-                        v-for="(quarter, index) in filteredQuarters"
-                        :key="index"
+                        v-for="section in sections"
+                        :key="section.id"
+                        :value="section.id"
                     >
-                        {{ quarter }}
+                        {{ section.section }}
                     </option>
                 </select>
+
+                <!-- Add Student Button -->
+                <Link
+                    :href="route('students.create')"
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150"
+                >
+                    Add Student
+                </Link>
             </div>
-    <!-- Search Input -->
-    <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search by Name and LRN"
-        class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
-    />
 
-    <!-- Grade Dropdown -->
-    <select
-        v-model="gradeFilter"
-        class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-    >
-        <option value="">All Grades</option>
-        <option v-for="grade in grades" :key="grade.id" :value="grade.id">Grade {{ grade.grade }}</option>
-
-    </select>
-
-    <!-- Section Dropdown -->
-    <select
-        v-model="sectionFilter"
-        class="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-    >
-        <option value="">All Sections</option>
-        <option
-            v-for="section in sections"
-            :key="section.id"
-            :value="section.id"
-        >
-            {{ section.section }}
-        </option>
-    </select>
-
-    <!-- Add Student Button -->
-    <Link
-        :href="route('students.create')"
-        class="bg-blue-500 hover:bg-blue-600 text-white text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150"
-    >
-        Add Student
-    </Link>
-</div>
-
-
-            <table class="w-full bg-white border border-gray-200 shadow">
+            <!-- Custom Loading Spinner -->
+            <div v-if="isLoading" class="flex justify-center items-center h-32">
+                <div class="loader"></div>
+            </div>
+            
+            <table v-else class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
                         <th class="hidden" @click="sortTable('id')">
                             ID
                             <span class="ml-1 text-[8px]">
-                                <span :class="sortColumn === 'id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                                <span :class="sortColumn === 'id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
+                                <span
+                                    :class="
+                                        sortColumn === 'id' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'id' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
                             </span>
                         </th>
 
-                        <th class="py-1 px-2 text-left border cursor-pointer text-sm" >
+                        <th
+                            class="py-1 px-2 text-left border cursor-pointer text-sm"
+                        >
                             No.
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('lrn')">
-                        LRN
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'lrn' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'lrn' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('lrn')"
+                        >
+                            LRN
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'lrn' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'lrn' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('lastname')">
-                        Student's Name
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'lastname' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'lastname' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('lastname')"
+                        >
+                            Student's Name
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'lastname' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'lastname' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('sex')">
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('sex')"
+                        >
                             Sex
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'sex' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'sex' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'sex' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'sex' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('grade_id')">
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('grade_id')"
+                        >
                             Grade
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'grade_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'grade_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'grade_id' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'grade_id' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('section_id')">
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('section_id')"
+                        >
                             Section
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'section_id' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'section_id' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'section_id' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'section_id' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm" @click="sortTable('email')">
-                        Parent's Email
-                        <span class="ml-1 text-[8px]">
-                            <span :class="sortColumn === 'email' && sortOrder === 'asc' ? 'text-black' : 'text-gray-400'">▲</span>
-                            <span :class="sortColumn === 'email' && sortOrder === 'desc' ? 'text-black' : 'text-gray-400'">▼</span>
-                        </span>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('email')"
+                        >
+                            Adviser's Email
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'email' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'email' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
                         </th>
 
                         <th class="py-2 px-2 text-left border text-sm">
                             Offenses/Penalties
                         </th>
-                        
 
-
-                        <th class="py-2 px-2 text-left border text-sm">Actions</th>
+                        <th class="py-2 px-2 text-left border text-sm">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(student, index) in studentsData.data" :key="student.id">
-                        
+                    <tr
+                        v-for="(student, index) in studentsData.data"
+                        :key="student.id"
+                    >
                         <td class="hidden">{{ student.id }}</td>
-                        <td class="py-2 px-4 text-left border text-sm">{{ index + 1 }}</td>
-                        <td class="py-2 px-2 border text-sm">{{ student.lrn }}</td>
-                        <td class="py-2 px-2 border text-sm">
-                            {{ student.lastname }}, {{ student.firstname }} {{ student.middlename }}
+                        <td class="py-2 px-4 text-left border text-sm">
+                            {{ index + 1 }}
                         </td>
-                        <td class="py-2 px-2 border text-sm">{{ student.sex }}</td>
+                        <td class="py-2 px-2 border text-sm">
+                            {{ student.lrn }}
+                        </td>
+                        <td class="py-2 px-2 border text-sm">
+                            {{ student.lastname }}, {{ student.firstname }}
+                            {{ student.middlename }}
+                        </td>
+                        <td class="py-2 px-2 border text-sm">
+                            {{ student.sex }}
+                        </td>
                         <td class="py-2 px-2 border text-sm">
                             Grade {{ student.grade?.grade ?? "N/A" }}
                         </td>
@@ -284,8 +450,10 @@ watch(gradeFilter, (newGrade) => {
                         </td>
 
                         <td class="py-2 px-4 border text-sm">
-                            <div class="px-2 py-1 text-sm bg-blue-200 text-dark p-3 rounded">
-                                    {{ student.email }}
+                            <div
+                                class="px-2 py-1 text-sm bg-blue-200 text-dark p-3 rounded"
+                            >
+                                {{ student.email }}
                             </div>
                         </td>
 
@@ -343,8 +511,6 @@ watch(gradeFilter, (newGrade) => {
                             </div>
                         </td>
 
-
-
                         <td class="py-2 px-4 border text-sm">
                             <Link
                                 :href="route('students.edit', student.id)"
@@ -365,4 +531,18 @@ watch(gradeFilter, (newGrade) => {
         <Pagination :pagination="studentsData" />
     </AuthenticatedLayout>
 </template>
+<style scoped>
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px; /* Size of the loader */
+    height: 60px; /* Size of the loader */
+    animation: spin 1s linear infinite;
+}
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
