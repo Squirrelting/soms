@@ -23,15 +23,42 @@ class StudentsController extends Controller
 // In StudentsController.php
 public function index(Request $request)
 {
-    // Extract start and end dates
-    $startDate = $request->input('startDate') ? date('Y-m-d 00:00:00', strtotime($request->input('startDate'))) : null;
-    $endDate = $request->input('endDate') ? date('Y-m-d 23:59:59', strtotime($request->input('endDate'))) : null;
-
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
-    $sortColumn = $request->input('sortColumn', 'id');  // Default to 'id' if no sort column is provided
-    $sortOrder = $request->input('sortOrder', 'desc');   // Default to 'asc' order if not provided
+    $sortColumn = $request->input('sortColumn', 'id');  
+    $sortOrder = $request->input('sortOrder', 'desc');
+    
+    $getSchoolYears = Student::select('schoolyear', 'quarter')
+    ->distinct()
+    ->get();
+
+    $groupedSchoolYears = [];
+
+    foreach ($getSchoolYears as $item) {
+        $year = $item->schoolyear;
+        $quarter = $item->quarter;
+
+        // Check if the school year is already in the array
+        if (!isset($groupedSchoolYears[$year])) {
+            // Initialize with the school year and an empty quarters array
+            $groupedSchoolYears[$year] = [
+                'schoolyear' => $year,
+                'quarter' => []
+            ];
+        }
+
+        // Avoid duplicate quarters
+        if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
+            $groupedSchoolYears[$year]['quarter'][] = $quarter;
+        }
+    }
+$finalResult = array_values($groupedSchoolYears);
+
+
+$selectedYear = $request->input('selectedYear');
+$selectedQuarter = $request->input('selectedQuarter');
+
 
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
@@ -45,14 +72,17 @@ public function index(Request $request)
             'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
             'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
         ])
+        ->when($selectedYear, function ($query, $selectedYear) {
+            $query->where('schoolyear', $selectedYear); 
+        })
+        ->when($selectedQuarter, function ($query, $selectedQuarter) {
+            $query->where('quarter', $selectedQuarter); 
+        })
         ->when($grade, function ($query, $grade) {
             $query->where('grade_id', $grade);
         })
         ->when($section, function ($query, $section) {
             $query->where('section_id', $section);
-        })
-        ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate]);
         })
         ->when($search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -62,14 +92,14 @@ public function index(Request $request)
                       ->orWhere('lrn', 'like', "%{$search}%");
             });
         })
-        ->orderBy($sortColumn, $sortOrder) // Apply sorting here
-        ->paginate(10)
+        ->orderBy($sortColumn, $sortOrder)
+        ->paginate(2)
         ->appends([
             'search' => $search,
+            'selectedYear' => $selectedYear,  
+            'selectedQuarter' => $selectedQuarter,
             'grade' => $grade,
             'section' => $section,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
             'sortColumn' => $sortColumn,
             'sortOrder' => $sortOrder,
         ]);
@@ -79,13 +109,14 @@ public function index(Request $request)
     
     return Inertia::render('Student/Index', [
         'students' => $students,
-        'search' => $search,
         'grade' => $grade,
         'grades' => $grades,
         'section' => $section,
         'sections' => $sections,
-        'sortColumn' => $sortColumn,
-        'sortOrder' => $sortOrder,
+        'schoolYears' => $finalResult,
+        'selectedYear' => $selectedYear,  
+        'selectedQuarter' => $selectedQuarter,  
+
     ]);
 }
 

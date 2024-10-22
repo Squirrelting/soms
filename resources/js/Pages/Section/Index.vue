@@ -22,7 +22,7 @@ const searchQuery = ref(props.search || "");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const sectionsData = ref(props.sectionsTable);
-const sections = ref(props.sections); // This will be populated based on the selected grade
+const sections = ref(props.sections); 
 
 // Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
@@ -57,7 +57,7 @@ watch(
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
-                    sectionsData.value = page.props.sectionsTable; // Make sure you're assigning `sections`, not `section`
+                    sectionsData.value = page.props.sectionsTable; 
                 },
             }
         );
@@ -146,7 +146,7 @@ const DeleteSection = (id) => {
                         <option value="">All Grades</option>
                         <option
                             v-for="grade in [
-                                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                 7, 8, 9, 10, 11, 12,
                             ]"
                             :key="grade"
                             :value="grade"

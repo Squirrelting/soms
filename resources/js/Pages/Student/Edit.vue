@@ -75,6 +75,11 @@ watch(
     }
 );
 
+const formatName = (name) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
+
 const updateStudent = () => {
     Swal.fire({
         title: "Are you sure?",
@@ -133,7 +138,6 @@ const updateStudent = () => {
 
             <form @submit.prevent="updateStudent()">
                 <div class="col-span-12">
-                    <!-- First Section: LRN and Parent's Email -->
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-6 mb-3">
                             <label
@@ -152,7 +156,7 @@ const updateStudent = () => {
                         <div class="col-span-6 mb-3">
                             <label
                                 class="block text-gray-700 font-semibold mb-1"
-                                >Parent's Email</label
+                                >Adviser's Email</label
                             >
                             <input
                                 type="email"
@@ -176,6 +180,7 @@ const updateStudent = () => {
                             >
                             <input
                                 type="text"
+                                @input="form.firstname = formatName(form.firstname)" 
                                 v-model="form.firstname"
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
@@ -190,6 +195,7 @@ const updateStudent = () => {
                             >
                             <input
                                 type="text"
+                                @input="form.middlename = formatName(form.middlename)" 
                                 v-model="form.middlename"
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
@@ -204,6 +210,7 @@ const updateStudent = () => {
                             >
                             <input
                                 type="text"
+                                @input="form.lastname = formatName(form.lastname)" 
                                 v-model="form.lastname"
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
@@ -293,11 +300,17 @@ const updateStudent = () => {
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             >
                                 <option value="">Select</option>
-                                <option value="firstquarter">
+                                <option value="2nd Quarter">
                                     1st Quarter
                                 </option>
-                                <option value="secondquarter">
+                                <option value="2nd Quarter">
                                     2nd Quarter
+                                </option>
+                                <option value="3rd Quarter">
+                                    3rd Quarter
+                                </option>
+                                <option value="4rth Quarter">
+                                    4rth Quarter
                                 </option>
                             </select>
                             <div

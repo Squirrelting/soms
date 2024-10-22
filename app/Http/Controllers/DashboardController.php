@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMajorOffense;
 use App\Models\SubmittedMinorOffense;
@@ -12,6 +13,9 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
+        $sortColumn = $request->input('sortColumn', 'id');  
+        $sortOrder = $request->input('sortOrder', 'desc');  
+
         $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')
             ->distinct();
 
@@ -41,13 +45,24 @@ class DashboardController extends Controller
             if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
                 $groupedSchoolYears[$year]['quarters'][] = $quarter;
             }
-        }
-
-        // Re-index the array to ensure proper numeric indexing
+        };
         $finalResult = array_values($groupedSchoolYears);
+
+        
+            // Fetch students with their grade, section, and count offenses
+    $students = Student::with(['grade', 'section'])
+    ->withCount([
+        'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
+        'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'])
+    ->orderBy($sortColumn, $sortOrder)
+    ->paginate(5);
+
+
         return Inertia::render('Dashboard', [
+            'students' => $students,
             'schoolYears' => $finalResult
         ]);
     }
 
+    
 }

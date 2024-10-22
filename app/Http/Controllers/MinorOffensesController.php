@@ -98,7 +98,6 @@ public function minor(Student $student)
     
     public function sanction(SubmittedMinorOffense $offense)
     {
-        // Update the sanction field to 1 and set the cleansed_date to the current timestamp
         $offense->sanction = 1;
         $offense->cleansed_date = Carbon::now();
         $offense->save();

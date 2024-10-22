@@ -29,7 +29,7 @@ onMounted(() => {
     >
       <slot /> <!-- Heroicon slot -->
       <span
-        :class="['pb-1 md:pb-0 text-xs md:text-base', isActive ? 'text-blue-500' : 'text-black']"
+        :class="['pb-1 md:pb-0 text-sm', isActive ? 'text-blue-500' : 'text-black']"
         class="block md:inline-block ml-2"
         >{{ props.label }}</span>
     </div>
