@@ -46,7 +46,9 @@ class DashboardController extends Controller
                 $groupedSchoolYears[$year]['quarters'][] = $quarter;
             }
         };
+        $finalResult = array_values($groupedSchoolYears);
 
+        
             // Fetch students with their grade, section, and count offenses
     $students = Student::with(['grade', 'section'])
     ->withCount([
@@ -55,8 +57,7 @@ class DashboardController extends Controller
     ->orderBy($sortColumn, $sortOrder)
     ->paginate(5);
 
-        // Re-index the array to ensure proper numeric indexing
-        $finalResult = array_values($groupedSchoolYears);
+
         return Inertia::render('Dashboard', [
             'students' => $students,
             'schoolYears' => $finalResult

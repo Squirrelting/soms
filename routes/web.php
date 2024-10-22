@@ -38,6 +38,9 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 //Reports
 Route::prefix('reports')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [ReportsController::class, 'index'])->name('reports.index');
+
+    Route::get('/print-offenses', [ReportsController::class, 'printoffenses'])->name('printoffenses');
+
 });
 
 //students

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed } from "vue";
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -15,16 +15,12 @@ const props = defineProps({
         default: () => [],
     },
     schoolYears: Array,
+    selectedYear: String,
+    selectedQuarter: String,
 });
 
-const selectedYear = ref(
-    props.schoolYears.length > 0 ? props.schoolYears[0].schoolyear : ""
-);
-const selectedQuarter = ref(
-    props.schoolYears.length > 0 && props.schoolYears[0].quarter.length > 0
-        ? props.schoolYears[0].quarter[0]
-        : ""
-);
+const selectedYear = ref(props.selectedYear || "");
+const selectedQuarter = ref(props.selectedQuarter || "");
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
@@ -37,7 +33,6 @@ const filterQuarters = () => {
     selectedQuarter.value = "";
 };
 
-const isLoading = ref(false);
 const searchQuery = ref("");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
@@ -58,7 +53,6 @@ const sortTable = (column) => {
 };
 
 const filter = () => {
-    isLoading.value = true;
     router.get(
         route("students.index"),
         {
@@ -75,7 +69,6 @@ const filter = () => {
             preserveScroll: true,
             onSuccess: (page) => {
                 studentsData.value = page.props.students;
-                isLoading.value = false;
             },
         }
     );
@@ -111,9 +104,6 @@ watch(gradeFilter, (newGrade) => {
     }
 });
 
-onMounted(() => {
-    filter();
-});
 </script>
 
 <template>
@@ -213,13 +203,8 @@ onMounted(() => {
                     Add Student
                 </Link>
             </div>
-
-            <!-- Custom Loading Spinner -->
-            <div v-if="isLoading" class="flex justify-center items-center h-32">
-                <div class="loader"></div>
-            </div>
-            
-            <table v-else class="w-full bg-white border border-gray-200 shadow">
+ 
+            <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
                         <th class="hidden" @click="sortTable('id')">
@@ -531,18 +516,3 @@ onMounted(() => {
         <Pagination :pagination="studentsData" />
     </AuthenticatedLayout>
 </template>
-<style scoped>
-.loader {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 60px; /* Size of the loader */
-    height: 60px; /* Size of the loader */
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-</style>

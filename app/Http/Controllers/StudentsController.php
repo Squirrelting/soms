@@ -27,9 +27,38 @@ public function index(Request $request)
     $grade = $request->input('grade');
     $section = $request->input('section');
     $sortColumn = $request->input('sortColumn', 'id');  
-    $sortOrder = $request->input('sortOrder', 'desc');   
-    $selectedYear = $request->input('selectedYear');
-    $selectedQuarter = $request->input('selectedQuarter');
+    $sortOrder = $request->input('sortOrder', 'desc');
+    
+    $getSchoolYears = Student::select('schoolyear', 'quarter')
+    ->distinct()
+    ->get();
+
+    $groupedSchoolYears = [];
+
+    foreach ($getSchoolYears as $item) {
+        $year = $item->schoolyear;
+        $quarter = $item->quarter;
+
+        // Check if the school year is already in the array
+        if (!isset($groupedSchoolYears[$year])) {
+            // Initialize with the school year and an empty quarters array
+            $groupedSchoolYears[$year] = [
+                'schoolyear' => $year,
+                'quarter' => []
+            ];
+        }
+
+        // Avoid duplicate quarters
+        if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
+            $groupedSchoolYears[$year]['quarter'][] = $quarter;
+        }
+    }
+$finalResult = array_values($groupedSchoolYears);
+
+
+$selectedYear = $request->input('selectedYear');
+$selectedQuarter = $request->input('selectedQuarter');
+
 
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
@@ -64,7 +93,7 @@ public function index(Request $request)
             });
         })
         ->orderBy($sortColumn, $sortOrder)
-        ->paginate(20)
+        ->paginate(2)
         ->appends([
             'search' => $search,
             'selectedYear' => $selectedYear,  
@@ -78,40 +107,15 @@ public function index(Request $request)
     $sections = Section::all();
     $grades = Grade::all();
     
-
-    $getSchoolYears = Student::select('schoolyear', 'quarter')
-        ->distinct()
-        ->get();
-
-        $groupedSchoolYears = [];
-
-        foreach ($getSchoolYears as $item) {
-            $year = $item->schoolyear;
-            $quarter = $item->quarter;
-    
-            // Check if the school year is already in the array
-            if (!isset($groupedSchoolYears[$year])) {
-                // Initialize with the school year and an empty quarters array
-                $groupedSchoolYears[$year] = [
-                    'schoolyear' => $year,
-                    'quarter' => []
-                ];
-            }
-    
-            // Avoid duplicate quarters
-            if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
-                $groupedSchoolYears[$year]['quarter'][] = $quarter;
-            }
-        }
-    $finalResult = array_values($groupedSchoolYears);
-
     return Inertia::render('Student/Index', [
         'students' => $students,
         'grade' => $grade,
         'grades' => $grades,
         'section' => $section,
         'sections' => $sections,
-        'schoolYears' => $finalResult
+        'schoolYears' => $finalResult,
+        'selectedYear' => $selectedYear,  
+        'selectedQuarter' => $selectedQuarter,  
 
     ]);
 }

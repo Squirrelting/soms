@@ -31,16 +31,16 @@ const sanction = useForm({
     id: ''
 });
 
-const Cleanse = (id) => {
+const Resolve = (id) => {
     sanction.id = id;
     Swal.fire({
         title: 'Are you sure?',
-        text: "Do you want to mark this offense as acted?",
+        text: "Do you want to mark this offense as RESOLVED?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, cleanse it!',
+        confirmButtonText: 'Yes, Resolve it!',
         cancelButtonText: 'No, cancel!',
     }).then((result) => {
         if (result.isConfirmed) {
@@ -63,7 +63,7 @@ const Cleanse = (id) => {
                     // Show a success message
                     Swal.fire(
                         'Saved!',
-                        'The offense has been marked as acted successfully.',
+                        'The offense has been marked as RESOLVED successfully.',
                         'success'
                     );
                 },
@@ -73,7 +73,7 @@ const Cleanse = (id) => {
                     // Show an error message
                     Swal.fire(
                         'Error!',
-                        'There was a problem marking the offense as acted.',
+                        'There was a problem marking the offense as Resolved.',
                         'error'
                     );
                 }
@@ -177,8 +177,7 @@ const saveMinorOffense = () => {
                             <th class="py-2 px-4 text-left border">Committed date</th>
                             <th class="py-2 px-4 text-left border">Recorded date</th>
                             <th class="py-2 px-4 text-left border">Sanction</th>
-                            <th class="py-2 px-4 text-left border">Acted Date</th>
-
+                            <th class="py-2 px-4 text-left border">Resolved Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -191,21 +190,20 @@ const saveMinorOffense = () => {
                             <td class="py-2 px-4 border">
                                 <button
                                 v-if="offense.sanction === 0"
-                                @click="Cleanse(offense.id)"
+                                @click="Resolve(offense.id)"
                                 class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded"
                             >
-                                Cleanse
+                                Unresolve
                             </button>
                             <button
                                 v-else
                                 class="px-2 py-1 text-sm bg-green-600 text-white p-3 rounded"
                                 disabled
                             >
-                                Acted
+                            Resolved
                             </button>
                             </td>
                             <td class="py-2 px-4 border">{{ offense.cleansed_date }}</td>
-
                         </tr>
                     </tbody>
                 </table>

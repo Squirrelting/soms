@@ -14,21 +14,17 @@ import {
   IdentificationIcon
 } from "@heroicons/vue/24/solid";
 
-// Reactive state for sidebar collapsed/expanded
 const isSidebarCollapsed = ref(false);
 
-// Toggle function for collapsing sidebar
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
   localStorage.setItem("isSidebarCollapsed", isSidebarCollapsed.value);
 };
 
-// Function to handle log out
 const logOut = () => {
   router.post(route("logout"));
 };
 
-// Initialize sidebar state on mount
 onMounted(() => {
   const storedState = localStorage.getItem("isSidebarCollapsed");
   if (storedState !== null) {
@@ -37,23 +33,20 @@ onMounted(() => {
 });
 
 function hasPermission(input) {
-    const permissions = usePage().props.auth.user.roles[0].permissions;
-    return (
-        Array.isArray(permissions) &&
-        permissions.some(
-            (permission) =>
-                permission.name.toLowerCase() === input.toLowerCase()
-        )
-    );
+  const permissions = usePage().props.auth.user.roles[0].permissions;
+  return (
+    Array.isArray(permissions) &&
+    permissions.some(
+      (permission) => permission.name.toLowerCase() === input.toLowerCase()
+    )
+  );
 }
-
-
 </script>
 
 <template>
   <header>
-    <div class="navbar fixed z-20 bg-gray-400" >
-  <div class="flex-none">
+    <div class="navbar fixed z-20 bg-gray-500 text-gray-800 shadow-lg">
+      <div class="flex-none">
     <button class="btn btn-square btn-ghost"
     @click="toggleSidebar"
     >
@@ -70,10 +63,11 @@ function hasPermission(input) {
       </svg>
     </button>
   </div>
-  <div class="flex-1">
-    <a class="btn btn-ghost text-xl">SOMS</a>
-  </div>
-  <div class="flex-none">
+
+      <div class="flex-1">
+        <a class="text-2xl font-bold text-gray-800">SOMS</a>
+      </div>
+      <div class="flex-none">
     <div  v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-blue-200">
             Admin Privelege
@@ -87,12 +81,6 @@ function hasPermission(input) {
             </li>
             <li>
               <Link :href="route('section.index')" class="text-gray-700 hover:bg-gray-200"> <ChatBubbleLeftEllipsisIcon class="h-4 w-4 text-black" />Add Section</Link>
-            </li>
-            <li>
-              <Link :href="route('minoroffense.index')" class="text-gray-700 hover:bg-gray-200"> <IdentificationIcon class="h-4 w-4 text-black" />Add Minor Offense</Link>
-            </li>
-            <li>
-              <Link :href="route('majoroffense.index')" class="text-gray-700 hover:bg-gray-200"> <IdentificationIcon class="h-4 w-4 text-black" />Add Major Offense</Link>
             </li>
           </ul>
         </div>
@@ -111,92 +99,58 @@ function hasPermission(input) {
           </ul>
         </div>
   </div>
-</div>
+    </div>
   </header>
 
-  <main>
-    <div class="flex flex-col md:flex-row">
-      <nav aria-label="alternative nav">
-        <div
-          id="sidebar"
-          :class="[ 
-            'bg-gray-300 shadow-xl fixed bottom-0 mt-12 md:relative md:h-screen z-10 content-center transition-all duration-300',
-            isSidebarCollapsed ? 'md:w-16' : 'md:w-36'
-          ]"
-        >
-          <div class="md:mt-14 md:fixed md:left-0 md:top-0 content-center md:content-start text-left justify-between">
-            <ul class="list-reset flex flex-row md:flex-col pt-3 md:py-3 px-1 md:px-2 text-center md:text-left">
-
-
-              <!-- Logo and Menu Items -->
-              <div class="flex justify-center items-center mt-4">
-                <img
-                  :class="[isSidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20']"
-                  class="rounded-full transition-all duration-900"
-                  src="/Images/SCNHS-Logo.png"
-                  alt="logo"
-                />
-              </div>
-
-              <MenuItem
-                v-if="hasPermission('Manage Students')"
-                :label="isSidebarCollapsed ? '' : 'Dashboard'"
-                pattern="dashboard"
-                route="dashboard"
-              >
-                <HomeIcon class="h-4 w-4 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage Students')"
-                :label="isSidebarCollapsed ? '' : 'Students'"
-                pattern="students.index"
-                route="students.index"
-              >
-                <UsersIcon class="h-4 w-4 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage Students')"
-                :label="isSidebarCollapsed ? '' : 'Reports'"
-                pattern="reports.index"
-                route="reports.index"
-              >
-                <CalculatorIcon class="h-4 w-4 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage Students')"
-                :label="isSidebarCollapsed ? '' : 'Good Moral'"
-                pattern="print.index"
-                route="print.index"
-              >
-                <PencilIcon class="h-4 w-4 text-black" />
-              </MenuItem>
-
-              <MenuItem
-                v-if="hasPermission('Manage POD Users')"
-                :label="isSidebarCollapsed ? '' : 'Roles'"
-                pattern="users.roles-permissions.roles.index"
-                route="users.roles-permissions.roles.index"
-              >
-                <KeyIcon class="h-4 w-4 text-black" />
-              </MenuItem>
-            </ul>
+  <main class="flex">
+    <nav>
+      <div id="sidebar" :class="[
+          'bg-gray-300 text-gray-800 fixed md:relative z-10 transition-all duration-300 h-screen',
+          isSidebarCollapsed ? 'w-16' : 'w-36'
+        ]">
+        <div class="mt-16">
+          <div class="flex justify-center items-center">
+            <img :class="[isSidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20']" class="rounded-full transition-all duration-700 mt-5" src="/Images/SCNHS-Logo.png" alt="logo" />
           </div>
+          <ul class="p-2">
+            <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Dashboard'" pattern="dashboard" route="dashboard">
+              <HomeIcon class="h-4 w-4 text-gray-800" />
+            </MenuItem>
+            <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Students'" pattern="students.index" route="students.index">
+              <UsersIcon class="h-4 w-4 text-gray-800" />
+            </MenuItem>
+            <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Reports'" pattern="reports.index" route="reports.index">
+              <CalculatorIcon class="h-4 w-4 text-gray-800" />
+            </MenuItem>
+            <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Good Moral'" pattern="print.index" route="print.index">
+              <PencilIcon class="h-4 w-4 text-gray-800" />
+            </MenuItem>
+            <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Roles'" pattern="users.roles-permissions.roles.index" route="users.roles-permissions.roles.index">
+              <KeyIcon class="h-4 w-4 text-gray-800" />
+            </MenuItem>
+
+            <details close class="bg-gray-300 rounded-lg mt-4">
+              <summary class="p-2 text-gray-800 text-xs cursor-pointer">Add Offense</summary>
+              <ul class="pl-4">
+                <li>
+                  <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Minor Offense'" pattern="minoroffense.index" route="minoroffense.index">
+                    <IdentificationIcon class="h-4 w-4 text-gray-800" />
+                  </MenuItem>
+                </li>
+                <li>
+                  <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Major Offense'" pattern="majoroffense.index" route="majoroffense.index">
+                    <IdentificationIcon class="h-4 w-4 text-gray-800" />
+                  </MenuItem>
+                </li>
+              </ul>
+            </details>
+          </ul>
         </div>
-      </nav>
-      <section class="w-full">
-        <div class="mt-5 md:mt-20 lg:mt-10 flex-1 pt-5">
-          <slot />
-        </div>
-      </section>
-    </div>
+      </div>
+    </nav>
+
+    <section class="w-full mt-5 md:mt-20 lg:mt-10 flex-1 pt-7">
+      <slot />
+    </section>
   </main>
 </template>
-
-<style>
-.transition-width {
-  transition: width 2s ease;
-}
-</style>
