@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div>
+        <div class="chart-container">
             <canvas ref="barChart"></canvas>
         </div>
     </div>
@@ -64,10 +64,6 @@ const renderChart = () => {
     if (barChartRef.value) {
         const ctx = barChartRef.value.getContext("2d"); // Access the canvas context
 
-        // Set a fixed height for the canvas
-        barChartRef.value.style.height = "150px"; // Adjust the height as needed
-        barChartRef.value.style.width = "100%"; // Set to 100% to maintain responsiveness
-
         const labels = chartData.value.map((offense) => offense.offense_name);
         const data = chartData.value.map((offense) => offense.count);
 
@@ -103,6 +99,17 @@ const renderChart = () => {
                     legend: {
                         display: false, // Remove the legend
                     },
+                    title: {
+                        display: true,
+                        text: '5 Most Committed Offenses',
+                        font: {
+                            size: 18, // Title font size
+                            family: 'Arial', // Font family
+                            weight: 'bold', // Font weight
+                        },
+                        color: 'black', // Title color
+                        align: 'center', // Center the title text
+                    },
                     tooltip: {
                         callbacks: {
                             title: function (tooltipItems) {
@@ -117,9 +124,6 @@ const renderChart = () => {
                     },
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: false, // Remove Y axis title
-                        },
                         ticks: {
                             callback: function (value) {
                                 return Number.isInteger(value) ? value : null; // Show whole numbers only
@@ -144,3 +148,11 @@ onMounted(async () => {
     fetchBarData();
 });
 </script>
+  
+<style scoped>
+.chart-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+</style>

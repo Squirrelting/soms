@@ -13,7 +13,7 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $sortColumn = $request->input('sortColumn', 'id');  
+        $sortColumn = $request->input('sortColumn', 'updated_at');  
         $sortOrder = $request->input('sortOrder', 'desc');  
 
         $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')

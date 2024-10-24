@@ -26,7 +26,7 @@ public function index(Request $request)
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
-    $sortColumn = $request->input('sortColumn', 'id');  
+    $sortColumn = $request->input('sortColumn', 'updated_at');  
     $sortOrder = $request->input('sortOrder', 'desc');
     
     $getSchoolYears = Student::select('schoolyear', 'quarter')
@@ -63,7 +63,7 @@ $selectedQuarter = $request->input('selectedQuarter');
     // Define the allowed columns for sorting to avoid SQL injection
     $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
     if (!in_array($sortColumn, $allowedSortColumns)) {
-        $sortColumn = 'id'; // Fallback to default if invalid column is passed
+        $sortColumn = 'updated_at'; // Fallback to default if invalid column is passed
     }
 
     // Fetch students with their grade, section, and count offenses
@@ -116,7 +116,6 @@ $selectedQuarter = $request->input('selectedQuarter');
         'schoolYears' => $finalResult,
         'selectedYear' => $selectedYear,  
         'selectedQuarter' => $selectedQuarter,  
-
     ]);
 }
 
