@@ -35,7 +35,7 @@
 
     <h1>List of Offenses</h1>
     <p><strong>Date: {{ $date }}</strong></p>
-    <p><strong>Selected Offense Type: {{ $offenseFilter ? ucfirst($offenseFilter) : 'All Offenses' }}</strong></p>
+    {{-- <p><strong>Selected Offense Type: {{ $offenseFilter ? ucfirst($offenseFilter) : 'All Offenses' }}</strong></p> --}}
     <table>
         <thead>
             <tr>
@@ -56,7 +56,7 @@
                 <tr>
                     <td class="py-1 px-2 border text-sm">{{ $index + 1 }}</td>
                     <td class="py-1 px-2 border text-sm">{{ $offense->lrn }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->student_lastname }}, {{ $offense->student_firstname }}</td>
+                    <td class="py-1 px-2 border text-sm">{{ $offense->student_lastname }}, {{ $offense->student_firstname }}, {{ $offense->student_middlename }}</td>
                     <td class="py-1 px-2 border text-sm">{{ $offense->student_sex }}</td>
                     <td class="py-1 px-2 border text-sm">Grade {{ $offense->student_grade }}</td>
                     <td class="py-1 px-2 border text-sm">{{ $offense->student_section }}</td>

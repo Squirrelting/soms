@@ -38,7 +38,7 @@ const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const studentsData = ref(props.students);
 const sections = ref(props.sections);
-const sortColumn = ref("id");
+const sortColumn = ref("updated_at");
 const sortOrder = ref("desc");
 
 // Sorting method
@@ -207,12 +207,12 @@ watch(gradeFilter, (newGrade) => {
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>
-                        <th class="hidden" @click="sortTable('id')">
-                            ID
+                        <th class="hidden" @click="sortTable('updated_at')">
+                            updated_at
                             <span class="ml-1 text-[8px]">
                                 <span
                                     :class="
-                                        sortColumn === 'id' &&
+                                        sortColumn === 'updated_at' &&
                                         sortOrder === 'asc'
                                             ? 'text-black'
                                             : 'text-gray-400'
@@ -221,7 +221,7 @@ watch(gradeFilter, (newGrade) => {
                                 >
                                 <span
                                     :class="
-                                        sortColumn === 'id' &&
+                                        sortColumn === 'updated_at' &&
                                         sortOrder === 'desc'
                                             ? 'text-black'
                                             : 'text-gray-400'
@@ -413,7 +413,7 @@ watch(gradeFilter, (newGrade) => {
                         v-for="(student, index) in studentsData.data"
                         :key="student.id"
                     >
-                        <td class="hidden">{{ student.id }}</td>
+                        <td class="hidden">{{ student.updated_at }}</td>
                         <td class="py-2 px-4 text-left border text-sm">
                             {{ index + 1 }}
                         </td>

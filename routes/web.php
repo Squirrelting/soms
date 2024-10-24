@@ -5,7 +5,6 @@ use App\Http\Controllers\AddMajorOffensesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ViewController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportsController;
@@ -18,7 +17,6 @@ use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\RegisteredUserController;
-use App\Http\Controllers\OffendersPerSexController;
 use App\Http\Controllers\MinorOffensesController;    
 
 //Dashboard Graphs
@@ -28,11 +26,6 @@ Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('ge
 
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/offenders', [OffendersPerSexController::class, 'index'])->name('offenders.index');
-    //print offenders male/female
-    Route::get('/print-offenders', [OffendersPerSexController::class, 'printoffenders'])->name('printoffenders');
-    Route::get('/export-excel', [OffendersPerSexController::class, 'exportExcel'])->name('exportexcel');
-
 });
 
 //Reports
@@ -40,7 +33,7 @@ Route::prefix('reports')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [ReportsController::class, 'index'])->name('reports.index');
 
     Route::get('/print-offenses', [ReportsController::class, 'printoffenses'])->name('printoffenses');
-
+    Route::get('/export-excel', [ReportsController::class, 'exportExcel'])->name('exportexcel');
 });
 
 //students
