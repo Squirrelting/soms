@@ -89,7 +89,7 @@ public function printRecord(Student $student)
         'submittedmajorOffenses' => $submittedmajorOffenses,
         'imagePath' => $imagePath,
         'date' => $date,
-    ]);
+    ])->setPaper('legal', 'landscape');
 
     return $pdf->stream('student-record.pdf');
 }

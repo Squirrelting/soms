@@ -20,7 +20,6 @@ use App\Http\Requests\StudentDetailRequest;
 
 class StudentsController extends Controller
 {
-// In StudentsController.php
 public function index(Request $request)
 {
     $search = $request->input('search');
@@ -132,12 +131,14 @@ $selectedQuarter = $request->input('selectedQuarter');
     public function create(Request $request)
     {
         // Fetch all grades
+        $studentsData = Student::all();
         $grades = Grade::all();
         $minorOffenses = MinorOffense::all();
         $majorOffenses = MajorOffense::all();
 
         // Pass only the grades, sections are fetched dynamically
         return Inertia::render('Student/Create', [
+            'studentsData' => $studentsData,
             'grades' => $grades,
             'minorOffenses' => $minorOffenses,
             'majorOffenses' => $majorOffenses
@@ -173,87 +174,92 @@ $selectedQuarter = $request->input('selectedQuarter');
     }
 
 
-
     public function store(StudentDetailRequest $request)
     {
-        // Get the current year and next year
         $yearToday = now()->year;
         $nextYear = $yearToday + 1;
-    
-        // Concatenate the years to form the school year
         $schoolYear = $yearToday . '-' . $nextYear;
     
-        // Merge the school year with the validated data
         $studentData = array_merge($request->validated(), ['schoolyear' => $schoolYear]);
+        $existingStudent = Student::where('lrn', $request->lrn)->first();
     
-        // Create the student record and store in the database
-        $newStudent = Student::create($studentData);
+        if ($existingStudent) {
+            $existingStudent->update($studentData);
+            $student = $existingStudent;
+        } else {
+            $student = Student::create($studentData);
+        }
+    
+        $section = Section::where('id', $student->section_id)->first();
+    
+        // Fetch current offense count
+        $existingMinorOffensesCount = SubmittedMinorOffense::where('lrn', $student->lrn)->count();
+    
+        if (count($request->minor_offenses) > 0) {
+            for ($i = 0; $i < count($request->minor_offenses); $i++) {
 
-        $section = Section::where('id', $newStudent->section_id)->first();
-
-        if(count($request->minor_offenses) > 0){
-            for($i = 0; $i < count($request->minor_offenses); $i++){
-                $minorPenaltyId = 1; // Default to the first penalty
-        
-                if ($i == 1) {
-                    $minorPenaltyId = 2; // Second offense, second penalty
-                } elseif ($i >= 2) {
-                    $minorPenaltyId = 3; // Third or more offenses, third penalty
+                $minorPenaltyId = 1;
+                if ($existingMinorOffensesCount + $i == 1) {
+                    $minorPenaltyId = 2;
+                } elseif ($existingMinorOffensesCount + $i >= 2) {
+                    $minorPenaltyId = 3;
                 }
-        
-                $minorPenalty = MinorPenalty::find($minorPenaltyId);
-                    SubmittedMinorOffense::create([
-                        'lrn' => $newStudent->lrn,
-                        'student_firstname' => $newStudent->firstname,
-                        'student_middlename' => $newStudent->middlename,
-                        'student_lastname' => $newStudent->lastname,
-                        'student_grade' => $newStudent->grade_id,
-                        'student_section' => $section->section,
-                        'student_sex' => $newStudent->sex,
-                        'student_schoolyear' => $newStudent->schoolyear,
-                        'student_quarter' => $newStudent->quarter,
-                        'committed_date' => $request->minor_offenses[$i]['date_committed'],
-                        'minor_offense' => $request->minor_offenses[$i]['minor_offenses'],
-                        'minor_penalty' => $minorPenalty->minor_penalties, 
-                    ]);
-            }
-        }
-
-        if(count($request->major_offenses) > 0){
-            for($i = 0; $i < count($request->major_offenses); $i++){
-              
-                    $majorPenaltyId = 1; // Default to the first penalty
-                    
-                    if ($i == 1) {
-                        $majorPenaltyId = 2; // Second offense, second penalty
-                    } elseif ($i >= 2) {
-                        $majorPenaltyId = 3; // Third or more offenses, third penalty
-                    }
-
-
-                    $majorPenalty = MajorPenalty::find($majorPenaltyId);
-                    SubmittedMajorOffense::create([
-                        'lrn' => $newStudent->lrn,
-                        'student_firstname' => $newStudent->firstname,
-                        'student_middlename' => $newStudent->middlename,
-                        'student_lastname' => $newStudent->lastname,
-                        'student_grade' => $newStudent->grade_id,
-                        'student_section' => $section->section,
-                        'student_sex' => $newStudent->sex,
-                        'student_schoolyear' => $newStudent->schoolyear,
-                        'student_quarter' => $newStudent->quarter,
-                        'committed_date' => $request->minor_offenses[$i]['date_committed'],
-                        'major_offense' => $request->major_offenses[$i]['major_offenses'],
-                        'major_penalty' => $majorPenalty->major_penalties, 
-                    ]);
-            }
-        }
-
-
-        EmailController::sendemail($newStudent);
     
-        // Redirect back with success message
-        return redirect()->route('students.index')->with('message', 'Student added successfully');
+                $minorPenalty = MinorPenalty::find($minorPenaltyId);
+    
+                SubmittedMinorOffense::create([
+                    'lrn' => $student->lrn,
+                    'student_firstname' => $student->firstname,
+                    'student_middlename' => $student->middlename,
+                    'student_lastname' => $student->lastname,
+                    'student_grade' => $student->grade_id,
+                    'student_section' => $section->section,
+                    'student_sex' => $student->sex,
+                    'student_schoolyear' => $student->schoolyear,
+                    'student_quarter' => $student->quarter,
+                    'committed_date' => $request->minor_offenses[$i]['date_committed'],
+                    'minor_offense' => $request->minor_offenses[$i]['minor_offenses'],
+                    'minor_penalty' => $minorPenalty->minor_penalties,
+                ]);
+            }
+        }
+    
+        // Fetch current offense count
+        $existingMajorOffensesCount = SubmittedMajorOffense::where('lrn', $student->lrn)->count();
+
+        if (count($request->major_offenses) > 0) {
+            for ($i = 0; $i < count($request->major_offenses); $i++) {
+
+                $majorPenaltyId = 1;
+                if ($existingMajorOffensesCount + $i == 1) {
+                    $majorPenaltyId = 2;
+                } elseif ($existingMajorOffensesCount + $i >= 2) {
+                    $majorPenaltyId = 3;
+                }
+    
+                $majorPenalty = MajorPenalty::find($majorPenaltyId);
+                SubmittedMajorOffense::create([
+                    'lrn' => $student->lrn,
+                    'student_firstname' => $student->firstname,
+                    'student_middlename' => $student->middlename,
+                    'student_lastname' => $student->lastname,
+                    'student_grade' => $student->grade_id,
+                    'student_section' => $section->section,
+                    'student_sex' => $student->sex,
+                    'student_schoolyear' => $student->schoolyear,
+                    'student_quarter' => $student->quarter,
+                    'committed_date' => $request->major_offenses[$i]['date_committed'],
+                    'major_offense' => $request->major_offenses[$i]['major_offenses'],
+                    'major_penalty' => $majorPenalty->major_penalties,
+                ]);
+            }
+        }
+    
+        EmailController::sendemail($student);
+    
+        return redirect()->route('students.index')->with('message', $existingStudent ? 'Student updated successfully' : 'Student added successfully');
     }
+    
+    
     
 }

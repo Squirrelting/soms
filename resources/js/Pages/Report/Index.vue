@@ -5,17 +5,31 @@ import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
-    offenses: Object,
+    offenders: Object,
     grades: Array,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
 });
 
-const offensesData = ref(props.offenses);
+const offendersData = ref(props.offenders);
 
 const selectedYear = ref(props.selectedYear || "");
 const selectedQuarter = ref(props.selectedQuarter || "");
+
+const sortColumn = ref("updated_at");
+const sortOrder = ref("desc");
+
+// Sorting method
+const sortTable = (column) => {
+    if (sortColumn.value === column) {
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
+    } else {
+        sortColumn.value = column;
+        sortOrder.value = "asc"; // Set ascending as default order for new column
+    }
+    filter(); // Call the filter method to apply the sorting
+};
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
@@ -45,12 +59,14 @@ const filter = () => {
             section: sectionFilter.value,
             selectedYear: selectedYear.value,
             selectedQuarter: selectedQuarter.value,
+            sortColumn: sortColumn.value,
+            sortOrder: sortOrder.value,
         },
         {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                offensesData.value = page.props.offenses;
+                offendersData.value = page.props.offenders;
             },
         }
     );
@@ -96,7 +112,7 @@ watch(gradeFilter, (newGrade) => {
 
 // Computed property for print URL
 const printUrl = computed(() => {
-  return route("printoffenses", {
+  return route("printoffenders", {
             search: searchQuery.value,
             sanction: sanction.value,
             sex: sex.value,
@@ -124,11 +140,11 @@ const exportExcel = computed(() => {
 
 // Check if there is data, if not, show SweetAlert and prevent navigation
 const checkDataAndProceed = (action) => {
-  if (props.offenses.length === 0) {
+  if (props.offenders.length === 0) {
     Swal.fire({
       icon: "warning",
-      title: "No offenses data",
-      text: "There are no offenses data to export or print.",
+      title: "No offenders data",
+      text: "There are no offenders data to export or print.",
     });
   } else {
     // Perform the action (either export or print)
@@ -147,7 +163,7 @@ const checkDataAndProceed = (action) => {
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
             <div class="flex justify-between items-center mb-2 space-x-2">
-                <h5 class="text-lg font-semibold text-gray-700">List of Offenses</h5>
+                <h5 class="text-lg font-semibold text-gray-700">List of Offenders</h5>
 
                 <div class="flex justify-between items-center mb-4">
                 <input
@@ -167,7 +183,7 @@ const checkDataAndProceed = (action) => {
                             :key="index"
                             :value="schoolyear.student_schoolyear"
                         >
-                            {{ schoolyear.student_schoolyear }}
+                           S.Y. {{ schoolyear.student_schoolyear }}
                         </option>
                     </select>
 
@@ -267,23 +283,228 @@ const checkDataAndProceed = (action) => {
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>
-                        <th class="py-1 px-2 border text-sm">No.</th>
-                        <th class="py-1 px-2 border text-sm">LRN</th>
-                        <th class="py-1 px-2 border text-sm">Name</th>
-                        <th class="py-1 px-2 border text-sm">Sex</th>
-                        <th class="py-1 px-2 border text-sm">Grade</th>
-                        <th class="py-1 px-2 border text-sm">Section</th>
-                        <th class="py-1 px-2 border text-sm">Offense</th>
-                        <th class="py-1 px-2 border text-sm">Penalty</th>
+                        <th class="hidden" @click="sortTable('updated_at')">
+                            updated_at
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'updated_at' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'updated_at' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>
+
+                        <th class="py-1 px-2 text-left border cursor-pointer text-sm">
+                            No.
+                        </th>
+                                                
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('lrn')"
+                        >
+                            LRN
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'lrn' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'lrn' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('student_lastname')"
+                        >
+                            Student's Name
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'student_lastname' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'student_lastname' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>
+
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('student_sex')"
+                        >
+                            Sex
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'student_sex' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'student_sex' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>                        
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('student_grade')"
+                        >
+                            Grade
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'student_grade' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'student_grade' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>                        
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('student_section')"
+                        >
+                            Section
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'student_section' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'student_section' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>                        
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('offense')"
+                        >
+                            Offense
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'offense' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'offense' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>                           
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                            @click="sortTable('penalty')"
+                        >
+                            Penalty
+                            <span class="ml-1 text-[8px]">
+                                <span
+                                    :class="
+                                        sortColumn === 'penalty' &&
+                                        sortOrder === 'asc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▲</span
+                                >
+                                <span
+                                    :class="
+                                        sortColumn === 'penalty' &&
+                                        sortOrder === 'desc'
+                                            ? 'text-black'
+                                            : 'text-gray-400'
+                                    "
+                                    >▼</span
+                                >
+                            </span>
+                        </th>                        
                         <th class="py-1 px-2 border text-sm">Date Committed</th>
                         <th class="py-1 px-2 border text-sm">Date Recorded</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr
-                        v-for="(offense, index) in offensesData.data"
+                        v-for="(offense, index) in offendersData.data"
                         :key="offense.id || index"
                     >
+                        <td class="hidden">{{ offense.updated_at }}</td>
+
                         <td class="py-1 px-2 border text-sm">{{ index + 1 }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}, {{ offense.student_middlename }}</td>
@@ -298,7 +519,7 @@ const checkDataAndProceed = (action) => {
                 </tbody>
             </table>
 
-            <Pagination :pagination="offensesData" />
+            <Pagination :pagination="offendersData" />
         </div>
     </AuthenticatedLayout>
 </template>
