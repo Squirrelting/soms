@@ -13,7 +13,7 @@ class EmailController extends Controller
     static public function sendemail(Student $student)
     {
 
-        $subject = "Notice to your Child";
+        $subject = "Notice to your Advisory Student";
 
         // Fetch submitted minor offenses related to the student
         $submittedminorOffenses = $student->submittedMinorOffenses()->get();

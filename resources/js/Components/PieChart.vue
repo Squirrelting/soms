@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <canvas id="pieChart" width="400" height="400"></canvas> <!-- Set dimensions -->
+    <canvas id="pieChart"></canvas>
   </div>
 </template>
 
@@ -8,9 +8,6 @@
 import { ref, onMounted, watch } from 'vue';
 import { Chart } from 'chart.js/auto';
 import axios from 'axios';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-Chart.register(ChartDataLabels);
 
 const props = defineProps({
   selectedYear: {
@@ -28,9 +25,9 @@ const pieData = ref({
   datasets: [
     {
       label: 'Offenders by Sex',
-      data: [0, 0],
-      backgroundColor: ['rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-      borderColor: ['rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+      data: [1, 0], 
+      backgroundColor: ['#00FFFF', '#FFC0CB'], // Light pink and cyan colors
+      borderColor: ['#00FFFF', '#FFC0CB'], 
       borderWidth: 1,
     },
   ],
@@ -39,24 +36,25 @@ const pieData = ref({
 let chartInstance = null;
 
 const fetchChartData = () => {
-  axios.get(`/get-pie-data`, {
-    params: {
-      selectedYear: props.selectedYear,
-      selectedQuarter: props.selectedQuarter,
-    },
-  })
-  .then((response) => {
-    const data = response.data;
-    pieData.value.datasets[0].data = [data.male, data.female];
+  axios
+    .get(`/get-pie-data`, {
+      params: {
+        selectedYear: props.selectedYear,
+        selectedQuarter: props.selectedQuarter,
+      },
+    })
+    .then((response) => {
+      const data = response.data;
+      pieData.value.datasets[0].data = [data.male, data.female];
 
-    if (chartInstance) {
-      chartInstance.data = pieData.value;
-      chartInstance.update();
-    }
-  })
-  .catch((error) => {
-    console.error('Error fetching chart data:', error);
-  });
+      if (chartInstance) {
+        chartInstance.data = pieData.value;
+        chartInstance.update();
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching chart data:', error);
+    });
 };
 
 const createChart = () => {
@@ -67,18 +65,40 @@ const createChart = () => {
   }
 
   chartInstance = new Chart(ctx, {
-    type: 'pie',
+    type: 'doughnut',
     data: pieData.value,
     options: {
       responsive: true,
-      maintainAspectRatio: false, // Adjusts to fit the container
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top',
+          position: 'right',
+          labels: {
+            boxWidth: 16,
+            font: {
+              size: 12, // Normal font size for labels
+            },
+            generateLabels: (chart) => {
+              const data = chart.data;
+              return data.labels.map((label, index) => ({
+                text: `${label} - ${data.datasets[0].data[index]}`, // Format as 'Male - 1' and 'Female - 0'
+                fillStyle: data.datasets[0].backgroundColor[index],
+                strokeStyle: data.datasets[0].borderColor[index],
+                lineWidth: data.datasets[0].borderWidth,
+              }));
+            },
+          },
         },
         title: {
           display: true,
           text: 'Offenders by Sex',
+          font: {
+            size: 18, // Title text size
+            family: 'Arial', // Font family (optional)
+            weight: 'bold', // Font weight (optional)
+          },
+          color: 'black', // Title color
+          align: 'center', // Center the text
         },
       },
     },
@@ -101,7 +121,7 @@ onMounted(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 200px; /* Set height for the chart container */
-  overflow: hidden; /* Hide overflow if necessary */
+  height: 200px; 
+  overflow: hidden;
 }
 </style>

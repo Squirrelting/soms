@@ -40,12 +40,17 @@
         </ul>
     @endif 
 
-    <h4>Dear Parent/Guardian</h4>
-    <p style="color: gray;"> CONFIDENTIALITY NOTICE: We hope this message finds you well. It is with a sense of responsibility that we bring to your attention certain incidents involving your child within the premises of SANTIAGO CITY NATIONAL HIGH SCHOOL.
-        As part of our commitment to maintaining a safe and conducive learning environment, we feel it is essential to inform you about the circumstances. Please be assured that this communication is intended solely for your awareness and cooperation.
-        We have documented the details of the incidents, which include both minor and major offenses. Our purpose in sharing this information is to foster open communication and collaboration between the university and parents to ensure the overall well-being and academic success of your child.
-        We kindly request your understanding and cooperation in addressing these matters. If you have any concerns or would like to discuss these incidents further, please do not hesitate to contact us. Together, we can work towards creating a positive and supportive learning environment for all students.
-        <p>
+    <h4>To Adviser/Teacher</h4>
+    <p style="color: gray;">
+        CONFIDENTIALITY NOTICE: We hope this message finds you well. We wish to bring to your attention certain incidents involving one of your advisory students at Santiago City National High School. 
+    
+        As part of our commitment to upholding a safe and conducive environment for learning, we feel it is crucial to keep you informed about these occurrences. This communication is intended solely for your awareness and collaboration in addressing these matters.
+    
+        The incidents have been documented and include both minor and major offenses. By sharing this information, we aim to foster open communication and cooperation between the school and parents/guardians to support the student's overall well-being and academic success.
+    
+        We kindly ask for your assistance and understanding in addressing these matters. If you would like to discuss the details further or have any concerns, please feel free to reach out. Together, we can work towards maintaining a positive and supportive learning environment for all our students.
+    </p>
+    
 
 </body>
 </html>

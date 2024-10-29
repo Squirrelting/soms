@@ -8,6 +8,7 @@ import MinorMultiSelect from "@/Components/MinorMultiSelect.vue";
 import MajorMultiSelect from "@/Components/MajorMultiSelect.vue";
 
 const props = defineProps({
+    studentsData: Array,
     errors: Object,
     grades: Array,
     sections: Array,
@@ -56,11 +57,47 @@ const fetchSections = async (gradeId) => {
     try {
         const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
         sections.value = response.data.sections;
-        form.section_id = ""; 
+
+        // Only reset section_id if it's not already set by the student autofill
+        if (!form.section_id) {
+            form.section_id = "";
+        }
     } catch (error) {
         console.error('Error fetching sections:', error);
     }
 };
+
+
+const studentsData = ref(props.studentsData);
+
+watch(() => props.studentsData, (newData) => {
+    studentsData.value = newData;
+}, { immediate: true });
+
+
+watch(() => form.lrn, (newLrn) => {
+    const student = studentsData.value.find(student => student.lrn === parseInt(newLrn, 10));
+
+    if (student) {
+        form.firstname = student.firstname;
+        form.middlename = student.middlename;
+        form.lastname = student.lastname;
+        form.sex = student.sex;
+        form.grade_id = student.grade_id;
+        form.section_id = student.section_id; // Prefill section_id here
+        form.email = student.email;
+
+        // Trigger fetchSections for the grade, which may update sections in the dropdown
+        if (student.grade_id) {
+            fetchSections(student.grade_id);
+        }
+    } else {
+        console.log("No student found with that LRN:", newLrn);
+    }
+});
+
+
+
 
 const formatName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -248,7 +285,7 @@ const saveStudent = () => {
             <option value="1st Quarter">1st Quarter</option>
             <option value="2nd Quarter">2nd Quarter</option>
             <option value="3rd Quarter">3rd Quarter</option>
-            <option value="4rth Quarter">4rth Quarter</option>
+            <option value="4th Quarter">4th Quarter</option>
 
         </select>
         <div v-if="errors.quarter" class="text-red-500 mt-1 text-sm">{{ errors.quarter }}</div>

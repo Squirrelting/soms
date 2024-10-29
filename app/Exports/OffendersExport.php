@@ -7,53 +7,50 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class OffendersExport implements FromCollection, WithHeadings
 {
-    protected $offensesData;
-    protected $date;
-    protected $selectedDate;
-    protected $offenseFilter;
+    protected $offendersData;
 
-    public function __construct($offensesData, $date, $selectedDate, $offenseFilter)
+    public function __construct($offendersData)
     {
-        $this->offensesData = $offensesData;
-        $this->date = $date;
-        $this->selectedDate = $selectedDate;
-        $this->offenseFilter = $offenseFilter;
+        $this->offendersData = $offendersData;
     }
 
     /**
-     * Return a collection of offenses to be exported
+     * Return a collection of offenders to be exported
      */
     public function collection()
     {
         // Format the data for Excel export as a collection
-        return collect($this->offensesData->map(function ($offense) {
-            // Adjust the offense name according to its type
-            $offenseName = $offense->type === 'Minor' ? $offense->minor_offense : $offense->major_offense;
-
-            // Debugging: Check if offense names are set correctly
-            if (!isset($offense->minor_offense) && !isset($offense->major_offense)) {
-                dd('No offense name found for:', $offense);
-            }
-
+        return collect($this->offendersData->map(function ($offense) {
             return [
-                'offense_name' => $offenseName,
-                'male_count' => $offense->male_count ?? 0,
-                'female_count' => $offense->female_count ?? 0,
-                'total' => ($offense->male_count ?? 0) + ($offense->female_count ?? 0),
+                'LRN' => $offense->lrn,
+                'Last Name' => $offense->student_lastname,
+                'First Name' => $offense->student_firstname,
+                'Middle Name' => $offense->student_middlename,
+                'Sex' => $offense->student_sex,
+                'Grade' => 'Grade ' . $offense->student_grade,
+                'Section' => $offense->student_section,
+                'Offense' => $offense->minor_offense ?? $offense->major_offense ?? 'N/A',
+                'Penalty' => $offense->minor_penalty ?? $offense->major_penalty ?? 'N/A',
+                'Date Committed' => $offense->committed_date,
+                'Date Recorded' => $offense->recorded_date,
             ];
         }));
     }
 
-    /**
-     * Define the headings for the Excel sheet
-     */
     public function headings(): array
     {
         return [
-            'Offense Name',
-            'Male Count',
-            'Female Count',
-            'Total',
+            'LRN',
+            'Last Name',
+            'First Name',
+            'Middle Name',
+            'Sex',
+            'Grade',
+            'Section',
+            'Offense',
+            'Penalty',
+            'Date Committed',
+            'Date Recorded',
         ];
     }
 }
