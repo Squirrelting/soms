@@ -5,22 +5,22 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class OffensesExport implements FromCollection, WithHeadings
+class OffendersExport implements FromCollection, WithHeadings
 {
-    protected $offensesData;
+    protected $offendersData;
 
-    public function __construct($offensesData)
+    public function __construct($offendersData)
     {
-        $this->offensesData = $offensesData;
+        $this->offendersData = $offendersData;
     }
 
     /**
-     * Return a collection of offenses to be exported
+     * Return a collection of offenders to be exported
      */
     public function collection()
     {
         // Format the data for Excel export as a collection
-        return collect($this->offensesData->map(function ($offense) {
+        return collect($this->offendersData->map(function ($offense) {
             return [
                 'LRN' => $offense->lrn,
                 'Last Name' => $offense->student_lastname,

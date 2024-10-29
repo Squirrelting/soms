@@ -7,7 +7,7 @@ use Inertia\Inertia;
 use App\Models\Grade;
 use App\Models\Section;
 use Illuminate\Http\Request;
-use App\Exports\OffensesExport;
+use App\Exports\offendersExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\SubmittedMajorOffense;
@@ -26,7 +26,7 @@ class ReportsController extends Controller
         $section = $request->input('section');
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
-        $perPage = 1; 
+        $perPage = 3; 
         
         // Retrieve and map minor offenses with pagination
         $submittedminorOffenses = SubmittedMinorOffense::query()
@@ -77,17 +77,17 @@ class ReportsController extends Controller
             });
 
         // Determine which offenses to return based on filter
-        $offensesData = collect();
+        $offendersData = collect();
         if ($offenseFilter === 'Minor') {
-            $offensesData = $submittedminorOffenses;
+            $offendersData = $submittedminorOffenses;
         } elseif ($offenseFilter === 'Major') {
-            $offensesData = $submittedmajorOffenses;
+            $offendersData = $submittedmajorOffenses;
         } else {
             // Merging paginated collections
             $mergedOffenses = $submittedminorOffenses->getCollection()->merge($submittedmajorOffenses->getCollection());
     
             // Create a new paginator for the merged collection
-            $offensesData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $offendersData = new \Illuminate\Pagination\LengthAwarePaginator(
                 $mergedOffenses, 
                 max($submittedminorOffenses->total(), $submittedmajorOffenses->total()), // Use the maximum total count
                 $perPage,
@@ -129,13 +129,13 @@ class ReportsController extends Controller
     $finalResult = array_values($groupedSchoolYears);
     
         return Inertia::render('Report/Index', [
-            'offenses' => $offensesData,
+            'offenders' => $offendersData,
             'grades' => Grade::all(),
             'schoolYears' => $finalResult
         ]);
     }
     
-    public function printoffenses(Request $request)
+    public function printoffenders(Request $request)
     {
         // Extract filter inputs
         $search = $request->input('search');
@@ -197,25 +197,25 @@ class ReportsController extends Controller
 
 
         if ($offenseFilter === 'Minor') {
-            $offensesData = $submittedminorOffenses;
+            $offendersData = $submittedminorOffenses;
         } elseif ($offenseFilter === 'Major') {
-            $offensesData = $submittedmajorOffenses;
+            $offendersData = $submittedmajorOffenses;
         } else {
             // Merging paginated collections
-            $offensesData = $submittedminorOffenses->merge($submittedmajorOffenses);
+            $offendersData = $submittedminorOffenses->merge($submittedmajorOffenses);
     
             
         $imagePath = public_path('Images/SCNHS-Logo.png');
         $date = Carbon::now()->format('F j, Y');
 
-        $pdf = Pdf::loadView('print-template.print-offenses', [
-            'offensesData'   => $offensesData,
+        $pdf = Pdf::loadView('print-template.print-offenders', [
+            'offendersData'   => $offendersData,
             'imagePath'      => $imagePath,
             'date'           => $date,
             'offenseFilter'  => $offenseFilter,
         ])->setPaper('legal', 'landscape'); 
 
-        return $pdf->stream('List-of-Offenses.pdf');
+        return $pdf->stream('List-of-Offenders.pdf');
     }
 }
 
@@ -281,16 +281,16 @@ public function exportExcel(Request $request)
 
     // Determine which offenses to export based on the filter
     if ($offenseFilter === 'Minor') {
-        $offensesData = $submittedminorOffenses;
+        $offendersData = $submittedminorOffenses;
     } elseif ($offenseFilter === 'Major') {
-        $offensesData = $submittedmajorOffenses;
+        $offendersData = $submittedmajorOffenses;
     } else {
         // Merge both minor and major offenses if no specific filter is applied
-        $offensesData = $submittedminorOffenses->merge($submittedmajorOffenses);
+        $offendersData = $submittedminorOffenses->merge($submittedmajorOffenses);
     }
 
     // Use a custom Excel export class to download the file
-    return Excel::download(new OffensesExport($offensesData), 'List-of-Offenses.xlsx');
+    return Excel::download(new offendersExport($offendersData), 'List-of-Offenders.xlsx');
 }
 
 }

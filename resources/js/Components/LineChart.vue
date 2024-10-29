@@ -34,6 +34,7 @@
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 2,
+        tension: 0.3,
       },
       {
         label: "Major Offenses",
@@ -41,6 +42,7 @@
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 2,
+        tension: 0.3,
       },
     ],
   });
@@ -188,7 +190,6 @@
   <style scoped>
   .chart-container {
     position: relative;
-    height: 200px;
     overflow: hidden;
   }
   </style>

@@ -25,9 +25,9 @@ const pieData = ref({
   datasets: [
     {
       label: 'Offenders by Sex',
-      data: [1, 0], // Initial data for Male - 1, Female - 0
+      data: [1, 0], 
       backgroundColor: ['#00FFFF', '#FFC0CB'], // Light pink and cyan colors
-      borderColor: ['#00FFFF', '#FFC0CB'], // Same as background for solid color effect
+      borderColor: ['#00FFFF', '#FFC0CB'], 
       borderWidth: 1,
     },
   ],
@@ -76,7 +76,7 @@ const createChart = () => {
           labels: {
             boxWidth: 16,
             font: {
-              size: 18, // Normal font size for labels
+              size: 12, // Normal font size for labels
             },
             generateLabels: (chart) => {
               const data = chart.data;

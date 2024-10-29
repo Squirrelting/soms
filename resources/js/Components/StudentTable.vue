@@ -20,7 +20,6 @@ const props = defineProps({
                 <th class="py-2 px-2 text-left border text-sm">Sex</th>
                 <th class="py-2 px-2 text-left border text-sm">Grade</th>
                 <th class="py-2 px-2 text-left border text-sm">Section</th>
-                <th class="py-2 px-2 text-left border text-sm">Parent's Email</th>
                 <th class="py-2 px-2 text-left border text-sm">Offenses/Penalties</th>
                 <th class="py-2 px-2 text-left border text-sm">Actions</th>
             </tr>
@@ -36,9 +35,6 @@ const props = defineProps({
                 <td class="py-2 px-2 border text-sm">{{ student.sex }}</td>
                 <td class="py-2 px-2 border text-sm">Grade {{ student.grade?.grade ?? "N/A" }}</td>
                 <td class="py-2 px-2 border text-sm">{{ student.section?.section ?? "N/A" }}</td>
-                <td class="py-2 px-4 border text-sm">
-                    <div class="px-2 py-1 text-sm bg-blue-200 text-dark p-3 rounded">{{ student.email }}</div>
-                </td>
                 <td class="py-2 px-2 border text-sm">
                     <div class="flex justify-center items-center gap-4 relative">
                         <div class="relative">

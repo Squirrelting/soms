@@ -436,7 +436,6 @@ watch(gradeFilter, (newGrade) => {
 
                         <td class="py-2 px-4 border text-sm">
                             <div
-                                class="px-2 py-1 text-sm bg-blue-200 text-dark p-3 rounded"
                             >
                                 {{ student.email }}
                             </div>

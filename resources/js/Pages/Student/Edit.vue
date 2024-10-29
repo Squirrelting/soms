@@ -309,8 +309,8 @@ const updateStudent = () => {
                                 <option value="3rd Quarter">
                                     3rd Quarter
                                 </option>
-                                <option value="4rth Quarter">
-                                    4rth Quarter
+                                <option value="4th Quarter">
+                                    4th Quarter
                                 </option>
                             </select>
                             <div

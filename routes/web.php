@@ -32,7 +32,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 Route::prefix('reports')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [ReportsController::class, 'index'])->name('reports.index');
 
-    Route::get('/print-offenses', [ReportsController::class, 'printoffenses'])->name('printoffenses');
+    Route::get('/print-offenders', [ReportsController::class, 'printoffenders'])->name('printoffenders');
     Route::get('/export-excel', [ReportsController::class, 'exportExcel'])->name('exportexcel');
 });
 
