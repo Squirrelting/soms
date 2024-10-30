@@ -6,11 +6,17 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
     offenders: Object,
+    offenses: Object,
     grades: Array,
+    grade: String,
+    section: String,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
 });
+
+const offenses = ref(props.offenses);
+const selectedOffense = ref("");  
 
 const offendersData = ref(props.offenders);
 
@@ -30,8 +36,8 @@ const searchQuery = ref("");
 const sanction = ref("");
 const offenseFilter = ref("");
 const sex = ref("");
-const gradeFilter = ref("");
-const sectionFilter = ref("");
+const gradeFilter = ref(props.grade || "");
+const sectionFilter = ref(props.section || "");
 const sections = ref([]);
 
 const filter = () => {
@@ -95,51 +101,17 @@ watch(gradeFilter, (newGrade) => {
     }
 });
 
-// Computed property for print URL
-const printUrl = computed(() => {
-  return route("printoffenders", {
-            search: searchQuery.value,
-            sanction: sanction.value,
-            sex: sex.value,
-            offenseFilter: offenseFilter.value,
-            grade: gradeFilter.value,
-            section: sectionFilter.value,
-            selectedYear: selectedYear.value,
-            selectedQuarter: selectedQuarter.value,
-  });
-});
-
-// Computed property for print URL
-const exportExcel = computed(() => {
-  return route("exportexcel", {
-            search: searchQuery.value,
-            sanction: sanction.value,
-            sex: sex.value,
-            offenseFilter: offenseFilter.value,
-            grade: gradeFilter.value,
-            section: sectionFilter.value,
-            selectedYear: selectedYear.value,
-            selectedQuarter: selectedQuarter.value,
-  });
-});
-
-// Check if there is data, if not, show SweetAlert and prevent navigation
-const checkDataAndProceed = (action) => {
-  if (props.offenders.length === 0) {
-    Swal.fire({
-      icon: "warning",
-      title: "No offenders data",
-      text: "There are no offenders data to export or print.",
-    });
-  } else {
-    // Perform the action (either export or print)
-    if (action === "print") {
-      window.open(printUrl.value, "_blank");
-    } else if (action === "export") {
-      window.location.href = exportExcel.value;
+// Watcher to filter offenses based on offense type
+watch(offenseFilter, () => {
+    if (offenseFilter.value === "Minor") {
+        offenses.value = props.offenses.minor_offenses; 
+    } else if (offenseFilter.value === "Major") {
+        offenses.value = props.offenses.major_offenses; 
+    } else {
+        offenses.value = props.offenses.all_offenses; 
     }
-  }
-};
+}, { immediate: true }); // Run the watcher immediately on load
+
 
 </script>
 
@@ -150,7 +122,7 @@ const checkDataAndProceed = (action) => {
             <div class="flex justify-between items-center mb-2 space-x-2">
                 <h5 class="text-lg font-semibold text-gray-700">List of Offenders</h5>
 
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-4">
                 <input
                     v-model="searchQuery"
                     type="text"
@@ -184,14 +156,6 @@ const checkDataAndProceed = (action) => {
                             {{ quarter }}
                         </option>
                         
-                    </select>
-                    <select
-                        v-model="offenseFilter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Offenses</option>
-                        <option value="Minor">Minor Offense</option>
-                        <option value="Major">Major Offense</option>
                     </select>
 
                     <select
@@ -234,7 +198,7 @@ const checkDataAndProceed = (action) => {
                         <option value="">All Sections</option>
                         <option
                             v-for="section in sections"
-                            :key="section.id"
+                            :key="section.section"
                             :value="section.section"
                         >
                             {{ section.section }}
@@ -253,18 +217,33 @@ const checkDataAndProceed = (action) => {
                     >
                         Export to Excel
                     </button>
-
-                    <div class="flex items-center">
-                        <Link
-                            :href="route('dashboard')"
-                            class="bg-red-600 text-white py-1 px-3 inline-block rounded text-sm"
-                        >
-                            Back
-                        </Link>
-                    </div>
                 </div>
+               
             </div>
+            <div class="flex space-x-1 mb-2">
+                    <select
+                        v-model="offenseFilter"
+                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    >
+                        <option value="">All Offenses</option>
+                        <option value="Minor">Minor Offense</option>
+                        <option value="Major">Major Offense</option>
+                    </select>
+                    <select
+                        v-model="selectedOffense"
+                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    >
+                        <option value="">Select Offenses</option>
+                        <option
+                            v-for="(offense, index) in offenses"
+                            :key="index"
+                            :value="offense"
+                        >
+                            {{ offense }}
+                        </option>
+                    </select>
 
+                </div>
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>

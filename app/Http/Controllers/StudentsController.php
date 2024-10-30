@@ -27,6 +27,7 @@ public function index(Request $request)
     $section = $request->input('section');
     $sortColumn = $request->input('sortColumn', 'updated_at');  
     $sortOrder = $request->input('sortOrder', 'desc');
+    $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
     
     $getSchoolYears = Student::select('schoolyear', 'quarter')
     ->distinct()
@@ -37,22 +38,27 @@ public function index(Request $request)
     foreach ($getSchoolYears as $item) {
         $year = $item->schoolyear;
         $quarter = $item->quarter;
-
-        // Check if the school year is already in the array
+    
         if (!isset($groupedSchoolYears[$year])) {
-            // Initialize with the school year and an empty quarters array
             $groupedSchoolYears[$year] = [
                 'schoolyear' => $year,
                 'quarter' => []
             ];
         }
-
-        // Avoid duplicate quarters
+    
         if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
             $groupedSchoolYears[$year]['quarter'][] = $quarter;
         }
     }
-$finalResult = array_values($groupedSchoolYears);
+    
+    // Sort the quarters in each school year
+    foreach ($groupedSchoolYears as &$schoolYear) {
+        usort($schoolYear['quarter'], function ($a, $b) use ($quarterOrder) {
+            return array_search($a, $quarterOrder) - array_search($b, $quarterOrder);
+        });
+    }
+    
+    $finalResult = array_values($groupedSchoolYears);
 
 
 $selectedYear = $request->input('selectedYear');

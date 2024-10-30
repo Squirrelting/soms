@@ -19,7 +19,7 @@ class StudentSeeder extends Seeder
         // Insert students data
         DB::table('students')->insert([
             [
-                'lrn' => '20240001',
+                'lrn' => '202400011111',
                 'firstname' => 'John',
                 'middlename' => 'Li',
                 'lastname' => 'Doe',
@@ -33,7 +33,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240002',
+                'lrn' => '202400022222',
                 'firstname' => 'Jane',
                 'middlename' => 'Dy',
                 'lastname' => 'Smith',
@@ -47,7 +47,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240003',
+                'lrn' => '202400033333',
                 'firstname' => 'Alice',
                 'middlename' => 'Go',
                 'lastname' => 'Johnson',
@@ -61,7 +61,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240004',
+                'lrn' => '202400044444',
                 'firstname' => 'Bob',
                 'middlename' => 'So',
                 'lastname' => 'Williams',
@@ -75,7 +75,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240005',
+                'lrn' => '202400055555',
                 'firstname' => 'Emma',
                 'middlename' => 'Vi',
                 'lastname' => 'Davis',
@@ -89,7 +89,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240006',
+                'lrn' => '202400066666',
                 'firstname' => 'Liam',
                 'middlename' => 'Si',
                 'lastname' => 'Brown',
@@ -103,7 +103,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240007',
+                'lrn' => '202400077777',
                 'firstname' => 'Olivia',
                 'middlename' => 'Sy',
                 'lastname' => 'Martinez',
@@ -117,7 +117,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240008',
+                'lrn' => '202400088888',
                 'firstname' => 'Noah',
                 'middlename' => 'Lo',
                 'lastname' => 'Wilson',
@@ -131,7 +131,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240009',
+                'lrn' => '202400099999',
                 'firstname' => 'Sophia',
                 'middlename' => 'Li',
                 'lastname' => 'Lee',
@@ -145,7 +145,7 @@ class StudentSeeder extends Seeder
                 'updated_at' => $timestamp,
             ],
             [
-                'lrn' => '20240010',
+                'lrn' => '202400100000',
                 'firstname' => 'Jackson',
                 'middlename' => 'So',
                 'lastname' => 'Taylor',

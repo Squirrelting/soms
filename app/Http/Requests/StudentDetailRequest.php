@@ -22,7 +22,7 @@ class StudentDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lrn' => 'required|integer|digits_between:1,8',
+            'lrn' => 'required|integer|min:11',
             'firstname' => 'required|string|max:255',
             'middlename' => 'nullable|string|max:255',
             'lastname' => 'required|string|max:255',
