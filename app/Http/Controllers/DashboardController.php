@@ -15,6 +15,7 @@ class DashboardController extends Controller
     {
         $sortColumn = $request->input('sortColumn', 'updated_at');  
         $sortOrder = $request->input('sortOrder', 'desc');  
+        $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
     
     // Fetch offenses per grade
     $offensesPerGrade = Student::select('grade_id')
@@ -49,18 +50,26 @@ class DashboardController extends Controller
         foreach ($getSchoolYears as $item) {
             $year = $item->student_schoolyear;
             $quarter = $item->student_quarter;
-    
+        
             if (!isset($groupedSchoolYears[$year])) {
                 $groupedSchoolYears[$year] = [
                     'student_schoolyear' => $year,
                     'quarters' => []
                 ];
             }
-    
+        
             if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
                 $groupedSchoolYears[$year]['quarters'][] = $quarter;
             }
         }
+        
+        // Sort the quarters in each school year
+        foreach ($groupedSchoolYears as &$schoolYear) {
+            usort($schoolYear['quarters'], function ($a, $b) use ($quarterOrder) {
+                return array_search($a, $quarterOrder) - array_search($b, $quarterOrder);
+            });
+        }
+        
         $finalResult = array_values($groupedSchoolYears);
     
         // Fetch students with their grade, section, and count offenses

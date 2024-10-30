@@ -128,7 +128,7 @@ watch(gradeFilter, (newGrade) => {
                     Student List
                 </h5>
 
-                <div class="flex space-x-2">
+                <div class="flex space-x-1">
                     <select
                         v-model="selectedYear"
                         @change="filterQuarters"
@@ -140,7 +140,7 @@ watch(gradeFilter, (newGrade) => {
                             :key="index"
                             :value="schoolyear.schoolyear"
                         >
-                            {{ schoolyear.schoolyear }}
+                            S.Y. {{ schoolyear.schoolyear }}
                         </option>
                     </select>
                     <!-- Quarters Select -->
@@ -157,14 +157,8 @@ watch(gradeFilter, (newGrade) => {
                         </option>
                     </select>
                 </div>
-                <!-- Search Input -->
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search by Name and LRN"
-                    class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                />
 
+                <div class="flex space-x-1">
                 <!-- Grade Dropdown -->
                 <select
                     v-model="gradeFilter"
@@ -194,7 +188,15 @@ watch(gradeFilter, (newGrade) => {
                         {{ section.section }}
                     </option>
                 </select>
+            </div>
 
+            <!-- Search Input -->
+            <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search by Name and LRN"
+            class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                />
                 <!-- Add Student Button -->
                 <Link
                     :href="route('students.create')"
