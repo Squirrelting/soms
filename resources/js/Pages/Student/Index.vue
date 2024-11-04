@@ -44,12 +44,12 @@ const sortOrder = ref("desc");
 // Sorting method
 const sortTable = (column) => {
     if (sortColumn.value === column) {
-        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
     } else {
         sortColumn.value = column;
-        sortOrder.value = "asc"; // Set ascending as default order for new column
+        sortOrder.value = "asc"; 
     }
-    filter(); // Call the filter method to apply the sorting
+    filter(); 
 };
 
 const filter = () => {
