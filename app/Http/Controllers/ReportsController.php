@@ -28,7 +28,8 @@ class ReportsController extends Controller
         $section = $request->input('section');
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
-        $perPage = 2; // Items per page
+        $selectedOffense = $request->input('selectedOffense');
+        $perPage = 2; 
         $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
 
         // Retrieve and filter minor offenses
@@ -39,6 +40,7 @@ class ReportsController extends Controller
             ->when($sex, fn($q) => $q->where('student_sex', $sex))
             ->when($grade, fn($q) => $q->where('student_grade', $grade))
             ->when($section, fn($q) => $q->where('student_section', $section))
+            ->when($selectedOffense, fn($q) => $q->where('minor_offense', $selectedOffense))
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('student_firstname', 'like', "%{$search}%")
@@ -63,6 +65,7 @@ class ReportsController extends Controller
             ->when($sex, fn($q) => $q->where('student_sex', $sex))
             ->when($grade, fn($q) => $q->where('student_grade', $grade))
             ->when($section, fn($q) => $q->where('student_section', $section))
+            ->when($selectedOffense, fn($q) => $q->where('major_offense', $selectedOffense))
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('student_firstname', 'like', "%{$search}%")
@@ -79,19 +82,26 @@ class ReportsController extends Controller
                 return $offense;
             });
 
-        // Combine minor and major offenses
-        $combinedOffenses = $minorOffenses->concat($majorOffenses);
+            $offenderData = collect();
+            if ($offenseFilter === 'Minor') {
+                $offenderData = $minorOffenses;
+            } elseif ($offenseFilter === 'Major') {
+                $offenderData = $majorOffenses;
+            } else {
+        $offenderData = $minorOffenses->concat($majorOffenses);
+    }
 
         // Paginate the combined collection
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         
         $offendersData = new LengthAwarePaginator(
-            $combinedOffenses->forPage($currentPage, $perPage),
-            $combinedOffenses->count(),
+            $offenderData->forPage($currentPage, $perPage),
+            $offenderData->count(),
             $perPage,
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
+
 
         
         // Retrieve distinct school years and quarters
@@ -131,7 +141,6 @@ class ReportsController extends Controller
             'major_offenses' => MajorOffense::pluck('major_offenses')->toArray(),
         ];
 
-        // dd($combinedOffenses);
         return Inertia::render('Report/Index', [
             'offendersData' => $offendersData,
             'grades' => Grade::all(),

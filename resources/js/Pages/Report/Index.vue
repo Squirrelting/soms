@@ -16,9 +16,7 @@ const props = defineProps({
 });
 
 const offenses = ref(props.offenses);
-const selectedOffense = ref("");  
 const offendersData = ref(props.offendersData);
-
 
 const selectedYear = ref(props.selectedYear || "");
 const selectedQuarter = ref(props.selectedQuarter || "");
@@ -31,6 +29,10 @@ const filteredQuarters = computed(() => {
     return selectedSchoolYear ? selectedSchoolYear.quarters : [];
 });
 
+const filterQuarters = () => {
+    selectedQuarter.value = "";
+};
+
 // Define refs for filters
 const searchQuery = ref("");
 const sanction = ref("");
@@ -39,6 +41,8 @@ const sex = ref("");
 const gradeFilter = ref(props.grade || "");
 const sectionFilter = ref(props.section || "");
 const sections = ref([]);
+const selectedOffense = ref("");  
+
 
 const filter = () => {
     router.get(
@@ -52,6 +56,7 @@ const filter = () => {
             section: sectionFilter.value,
             selectedYear: selectedYear.value,
             selectedQuarter: selectedQuarter.value,
+            selectedOffense: selectedOffense.value,
         },
         {
             preserveState: true,
@@ -73,6 +78,7 @@ watch(
         sex,
         selectedYear,
         selectedQuarter,
+        selectedOffense,
     ],
     () => {
         filter();
