@@ -7,10 +7,17 @@ const props = defineProps({
 </script>
 
 <template>
-    <h2 class="text-sm font-semibold mb-2">Offenses per Grade</h2>
-    <ul>
-        <li v-for="gradeData in offensesPerGrade" :key="gradeData.grade_id" class="mb-1 p-1 bg-white rounded-lg shadow text-sm">
-            Grade {{ gradeData.grade_id }} - {{ gradeData.offense_count }} Offenders
-        </li>
-    </ul>
+    <div class="text-center">
+        <h2 class="text-lg font-semibold mb-4">Offenders</h2>
+        <ul>
+            <li 
+                v-for="gradeData in offensesPerGrade" 
+                :key="gradeData.grade_id" 
+                class="mb-2 p-3 bg-white rounded-lg shadow text-base text-center"
+            >
+                Grade {{ gradeData.grade_id }} <br>
+                <span class="font-bold text-xl text-red-500">{{ gradeData.offense_count }}</span>
+            </li>
+        </ul>
+    </div>
 </template>

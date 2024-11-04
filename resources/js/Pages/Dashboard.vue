@@ -99,8 +99,7 @@ const filterQuarters = () => {
             </div>
 
             <!-- Vertical Card Section -->
-            <div class="w-full lg:w-1/6 bg-gray-100 rounded-lg p-2 mt-2 lg:mt-0 lg:ml-2">
-
+            <div class="flex">
                 <OffensesPerGrade :offensesPerGrade="offensesPerGrade" />
             </div>
         </div>
