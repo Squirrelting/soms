@@ -19,8 +19,8 @@ class PieChartController extends Controller
                 return $query->where('quarter', $selectedQuarter);
             })
             ->whereHas('submittedMinorOffenses')
-            ->groupBy('firstname', 'middlename', 'lastname') // Group by full name
-            ->count(); // Count the number of unique groups
+            ->groupBy('lrn') 
+            ->count(); 
 
         $femaleOffendersMinor = Student::where('sex', 'Female')
             ->where('schoolyear', $selectedYear)
@@ -28,8 +28,8 @@ class PieChartController extends Controller
                 return $query->where('quarter', $selectedQuarter);
             })
             ->whereHas('submittedMinorOffenses')
-            ->groupBy('firstname', 'middlename', 'lastname') // Group by full name
-            ->count(); // Count the number of unique groups
+            ->groupBy('lrn') 
+            ->count(); 
 
         $maleOffendersMajor = Student::where('sex', 'Male')
             ->where('schoolyear', $selectedYear)
@@ -37,8 +37,8 @@ class PieChartController extends Controller
                 return $query->where('quarter', $selectedQuarter);
             })
             ->whereHas('submittedMajorOffenses')
-            ->groupBy('firstname', 'middlename', 'lastname') // Group by full name
-            ->count(); // Count the number of unique groups
+            ->groupBy('lrn') 
+            ->count(); 
 
         $femaleOffendersMajor = Student::where('sex', 'Female')
             ->where('schoolyear', $selectedYear)
@@ -46,12 +46,12 @@ class PieChartController extends Controller
                 return $query->where('quarter', $selectedQuarter);
             })
             ->whereHas('submittedMajorOffenses')
-            ->groupBy('firstname', 'middlename', 'lastname') // Group by full name
-            ->count(); // Count the number of unique groups
+            ->groupBy('lrn') 
+            ->count(); 
 
 
 
-        // Prepare data for the frontend
+
         $offenseData = [
             'male' => $maleOffendersMinor + $maleOffendersMajor,
             'female' => $femaleOffendersMinor + $femaleOffendersMajor

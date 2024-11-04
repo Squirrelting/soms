@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { Head, router, Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -57,10 +57,14 @@ const filter = () => {
             selectedYear: selectedYear.value,
             selectedQuarter: selectedQuarter.value,
             selectedOffense: selectedOffense.value,
+            page: offendersData.value.current_page // Maintain the current page number
+
+
         },
         {
             preserveState: true,
             preserveScroll: true,
+            replace: true, // Update URL without adding history entry
             onSuccess: (page) => {
                 offendersData.value = page.props.offendersData;
             },
@@ -91,8 +95,8 @@ const fetchSections = async (gradeId) => {
         const response = await axios.get(
             `/students/sections?grade_id=${gradeId}`
         );
-        sections.value = response.data.sections; // Populate the sections dropdown
-        sectionFilter.value = ""; // Reset section filter when grade changes
+        sections.value = response.data.sections; 
+        sectionFilter.value = ""; 
     } catch (error) {
         console.error("Error fetching sections:", error);
     }
@@ -116,8 +120,13 @@ watch(offenseFilter, () => {
     } else {
         offenses.value = props.offenses.all_offenses; 
     }
-}, { immediate: true }); // Run the watcher immediately on load
+}, { immediate: true }); 
 
+onMounted(() => {
+    selectedYear.value = props.selectedYear || new URLSearchParams(window.location.search).get("selectedYear") || "";
+    selectedQuarter.value = props.selectedQuarter || new URLSearchParams(window.location.search).get("selectedQuarter") || "";
+    // Repeat this for other filters (sanction, sex, offenseFilter, etc.)
+});
 
 </script>
 
