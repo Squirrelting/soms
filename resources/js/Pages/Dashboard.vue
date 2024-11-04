@@ -4,12 +4,14 @@ import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PieChart from "@/Components/PieChart.vue";
 import StudentTable from "@/Components/StudentTable.vue";
+import OffensesPerGrade from "@/Components/OffensesPerGrade.vue";
 import LineChart from "@/Components/LineChart.vue";
 import BarGraph from "@/Components/BarGraph.vue";
 
 const props = defineProps({
     students: Object,
     schoolYears: Array,
+    offensesPerGrade: Array,
 });
 const studentsData = ref(props.students);
 
@@ -90,23 +92,16 @@ const filterQuarters = () => {
                     <div class="bg-white rounded-lg p-2 w-full lg:w-64" style="height: 225px">
                         <PieChart :selectedYear="selectedYear" :selectedQuarter="selectedQuarter" />
                     </div>
-                </div>
 
+                </div>
                 <!-- Table Section -->
                 <StudentTable :students="studentsData.data" />
             </div>
 
             <!-- Vertical Card Section -->
             <div class="w-full lg:w-1/6 bg-gray-100 rounded-lg p-2 mt-2 lg:mt-0 lg:ml-2">
-                <h2 class="text-sm font-semibold mb-2">Offenses per Grade</h2>
-                <ul>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 7</li>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 8</li>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 9</li>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 10</li>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 11</li>
-                    <li class="mb-1 p-1 bg-white rounded-lg shadow text-sm">Grade 12</li>
-                </ul>
+
+                <OffensesPerGrade :offensesPerGrade="offensesPerGrade" />
             </div>
         </div>
     </AuthenticatedLayout>

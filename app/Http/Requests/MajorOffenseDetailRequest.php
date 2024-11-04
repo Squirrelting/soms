@@ -22,7 +22,7 @@ class MajorOffenseDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lrn' => 'required|integer|digits_between:1,8|exists:students,lrn', 
+            'lrn' => 'required|integer|min:11|exists:students,lrn', 
             'student_firstname' => 'required|string|max:255',
             'student_middlename' => '', 
             'student_lastname' => 'required|string|max:255', 

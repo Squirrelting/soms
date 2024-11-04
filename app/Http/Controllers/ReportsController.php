@@ -6,18 +6,20 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Grade;
 use App\Models\Section;
+use App\Models\MajorOffense;
+use App\Models\MinorOffense;
 use Illuminate\Http\Request;
-use App\Exports\offendersExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\offendersExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\SubmittedMajorOffense;
 use App\Models\SubmittedMinorOffense;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ReportsController extends Controller
 {
     public function index(Request $request)
     {
-        // Extract filter inputs
         $search = $request->input('search');
         $sanction = $request->input('sanction');
         $offenseFilter = $request->input('offenseFilter');
@@ -26,271 +28,117 @@ class ReportsController extends Controller
         $section = $request->input('section');
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
-        $perPage = 3; 
+        $perPage = 2; // Items per page
+        $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
+
+        // Retrieve and filter minor offenses
+        $minorOffenses = SubmittedMinorOffense::query()
+            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
+            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
+            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
+            ->when($sex, fn($q) => $q->where('student_sex', $sex))
+            ->when($grade, fn($q) => $q->where('student_grade', $grade))
+            ->when($section, fn($q) => $q->where('student_section', $section))
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('student_firstname', 'like', "%{$search}%")
+                          ->orWhere('student_middlename', 'like', "%{$search}%")
+                          ->orWhere('student_lastname', 'like', "%{$search}%")
+                          ->orWhere('lrn', 'like', "%{$search}%");
+                });
+            })
+            ->get()            
+            ->map(function ($offense) {
+                $offense->offense_type = 'Minor';
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                return $offense;
+            });
+
+        // Retrieve and filter major offenses
+        $majorOffenses = SubmittedMajorOffense::query()
+            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
+            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
+            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
+            ->when($sex, fn($q) => $q->where('student_sex', $sex))
+            ->when($grade, fn($q) => $q->where('student_grade', $grade))
+            ->when($section, fn($q) => $q->where('student_section', $section))
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('student_firstname', 'like', "%{$search}%")
+                          ->orWhere('student_middlename', 'like', "%{$search}%")
+                          ->orWhere('student_lastname', 'like', "%{$search}%")
+                          ->orWhere('lrn', 'like', "%{$search}%");
+                });
+            })
+            ->get()  
+            ->map(function ($offense) {
+                $offense->offense_type = 'Major';
+                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                return $offense;
+            });
+
+        // Combine minor and major offenses
+        $combinedOffenses = $minorOffenses->concat($majorOffenses);
+
+        // Paginate the combined collection
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
         
-        // Retrieve and map minor offenses with pagination
-        $submittedminorOffenses = SubmittedMinorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($offenseFilter === 'Minor', fn($q) => $q->whereNotNull('minor_offense'))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->paginate($perPage) // Use paginate instead of get
-            ->through(function ($offense) { // Use through() for mapped values
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                return $offense;
-            });
-    
-        // Retrieve and map major offenses with pagination
-        $submittedmajorOffenses = SubmittedMajorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($offenseFilter === 'Major', fn($q) => $q->whereNotNull('major_offense'))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->paginate($perPage) // Use paginate instead of get
-            ->through(function ($offense) { 
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                return $offense;
-            });
+        $offendersData = new LengthAwarePaginator(
+            $combinedOffenses->forPage($currentPage, $perPage),
+            $combinedOffenses->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
-        // Determine which offenses to return based on filter
-        $offendersData = collect();
-        if ($offenseFilter === 'Minor') {
-            $offendersData = $submittedminorOffenses;
-        } elseif ($offenseFilter === 'Major') {
-            $offendersData = $submittedmajorOffenses;
-        } else {
-            // Merging paginated collections
-            $mergedOffenses = $submittedminorOffenses->getCollection()->merge($submittedmajorOffenses->getCollection());
-    
-            // Create a new paginator for the merged collection
-            $offendersData = new \Illuminate\Pagination\LengthAwarePaginator(
-                $mergedOffenses, 
-                max($submittedminorOffenses->total(), $submittedmajorOffenses->total()), // Use the maximum total count
-                $perPage,
-                $request->input('page', 1), // Current page
-                ['path' => $request->url(), 'query' => $request->query()] // Preserve query parameters
-            );
+        
+        // Retrieve distinct school years and quarters
+        $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')->distinct();
+        $getSchoolYears = SubmittedMinorOffense::select('student_schoolyear', 'student_quarter')
+            ->distinct()
+            ->union($getMajorSchoolYears)
+            ->get();
+
+        $groupedSchoolYears = [];
+        foreach ($getSchoolYears as $item) {
+            $year = $item->student_schoolyear;
+            $quarter = $item->student_quarter;
+            if (!isset($groupedSchoolYears[$year])) {
+                $groupedSchoolYears[$year] = [
+                    'student_schoolyear' => $year,
+                    'quarters' => []
+                ];
+            }
+            if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
+                $groupedSchoolYears[$year]['quarters'][] = $quarter;
+            }
         }
 
-        $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')
-        ->distinct();
-
-    // Get student_schoolyear and student_quarter from SubmittedMinorOffense and merge using union
-    $getSchoolYears = SubmittedMinorOffense::select('student_schoolyear', 'student_quarter')
-        ->distinct()
-        ->union($getMajorSchoolYears)
-        ->get();
-
-    // Process the results to group by student_schoolyear and list the quarters
-    $groupedSchoolYears = [];
-
-    foreach ($getSchoolYears as $item) {
-        $year = $item->student_schoolyear;
-        $quarter = $item->student_quarter;
-
-        // Check if the school year is already in the array
-        if (!isset($groupedSchoolYears[$year])) {
-            // Initialize with the school year and an empty quarters array
-            $groupedSchoolYears[$year] = [
-                'student_schoolyear' => $year,
-                'quarters' => []
-            ];
+        foreach ($groupedSchoolYears as &$schoolYear) {
+            usort($schoolYear['quarters'], fn($a, $b) => array_search($a, $quarterOrder) - array_search($b, $quarterOrder));
         }
 
-        // Avoid duplicate quarters
-        if (!in_array($quarter, $groupedSchoolYears[$year]['quarters'])) {
-            $groupedSchoolYears[$year]['quarters'][] = $quarter;
-        }
-    };
-    $finalResult = array_values($groupedSchoolYears);
-    
+        $finalResult = array_values($groupedSchoolYears);
+
+        $offenseList = [
+            'all_offenses' => array_merge(
+                MinorOffense::pluck('minor_offenses')->toArray(),
+                MajorOffense::pluck('major_offenses')->toArray()
+            ),
+            'minor_offenses' => MinorOffense::pluck('minor_offenses')->toArray(),
+            'major_offenses' => MajorOffense::pluck('major_offenses')->toArray(),
+        ];
+
+        // dd($combinedOffenses);
         return Inertia::render('Report/Index', [
-            'offenders' => $offendersData,
+            'offendersData' => $offendersData,
             'grades' => Grade::all(),
-            'schoolYears' => $finalResult
+            'schoolYears' => $finalResult,
+            'offenses' => $offenseList,
+            'grade' => $grade,
+            'section' => $section,
         ]);
     }
-    
-    public function printoffenders(Request $request)
-    {
-        // Extract filter inputs
-        $search = $request->input('search');
-        $sanction = $request->input('sanction');
-        $offenseFilter = $request->input('offenseFilter');
-        $sex = $request->input('sex');
-        $grade = $request->input('grade');
-        $section = $request->input('section');
-        $selectedYear = $request->input('selectedYear');
-        $selectedQuarter = $request->input('selectedQuarter');
-        
-        // Retrieve and map minor offenses with pagination
-        $submittedminorOffenses = SubmittedMinorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($offenseFilter === 'Minor', fn($q) => $q->whereNotNull('minor_offense'))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()
-            ->map(function ($offense) { // Use through() for mapped values
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                return $offense;
-            });
-    
-        // Retrieve and map major offenses with pagination
-        $submittedmajorOffenses = SubmittedMajorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($offenseFilter === 'Major', fn($q) => $q->whereNotNull('major_offense'))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()
-            ->map(function ($offense) { 
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                return $offense;
-            });
-
-
-        if ($offenseFilter === 'Minor') {
-            $offendersData = $submittedminorOffenses;
-        } elseif ($offenseFilter === 'Major') {
-            $offendersData = $submittedmajorOffenses;
-        } else {
-            // Merging paginated collections
-            $offendersData = $submittedminorOffenses->merge($submittedmajorOffenses);
-    
-            
-        $imagePath = public_path('Images/SCNHS-Logo.png');
-        $date = Carbon::now()->format('F j, Y');
-
-        $pdf = Pdf::loadView('print-template.print-offenders', [
-            'offendersData'   => $offendersData,
-            'imagePath'      => $imagePath,
-            'date'           => $date,
-            'offenseFilter'  => $offenseFilter,
-        ])->setPaper('legal', 'landscape'); 
-
-        return $pdf->stream('List-of-Offenders.pdf');
-    }
-}
-
-public function exportExcel(Request $request)
-{
-    // Extract filter inputs
-    $search = $request->input('search');
-    $sanction = $request->input('sanction');
-    $offenseFilter = $request->input('offenseFilter');
-    $sex = $request->input('sex');
-    $grade = $request->input('grade');
-    $section = $request->input('section');
-    $selectedYear = $request->input('selectedYear');
-    $selectedQuarter = $request->input('selectedQuarter');
-    
-    // Retrieve and map minor offenses
-    $submittedminorOffenses = SubmittedMinorOffense::query()
-        ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-        ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-        ->when($offenseFilter === 'Minor', fn($q) => $q->whereNotNull('minor_offense'))
-        ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-        ->when($sex, fn($q) => $q->where('student_sex', $sex))
-        ->when($grade, fn($q) => $q->where('student_grade', $grade))
-        ->when($section, fn($q) => $q->where('student_section', $section))
-        ->when($search, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('student_firstname', 'like', "%{$search}%")
-                      ->orWhere('student_middlename', 'like', "%{$search}%")
-                      ->orWhere('student_lastname', 'like', "%{$search}%")
-                      ->orWhere('lrn', 'like', "%{$search}%");
-            });
-        })
-        ->get()
-        ->map(function ($offense) {
-            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-            return $offense;
-        });
-
-    // Retrieve and map major offenses
-    $submittedmajorOffenses = SubmittedMajorOffense::query()
-        ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-        ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-        ->when($offenseFilter === 'Major', fn($q) => $q->whereNotNull('major_offense'))
-        ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction)) 
-        ->when($sex, fn($q) => $q->where('student_sex', $sex))
-        ->when($grade, fn($q) => $q->where('student_grade', $grade))
-        ->when($section, fn($q) => $q->where('student_section', $section))
-        ->when($search, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('student_firstname', 'like', "%{$search}%")
-                      ->orWhere('student_middlename', 'like', "%{$search}%")
-                      ->orWhere('student_lastname', 'like', "%{$search}%")
-                      ->orWhere('lrn', 'like', "%{$search}%");
-            });
-        })
-        ->get()
-        ->map(function ($offense) {
-            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-            return $offense;
-        });
-
-    // Determine which offenses to export based on the filter
-    if ($offenseFilter === 'Minor') {
-        $offendersData = $submittedminorOffenses;
-    } elseif ($offenseFilter === 'Major') {
-        $offendersData = $submittedmajorOffenses;
-    } else {
-        // Merge both minor and major offenses if no specific filter is applied
-        $offendersData = $submittedminorOffenses->merge($submittedmajorOffenses);
-    }
-
-    // Use a custom Excel export class to download the file
-    return Excel::download(new offendersExport($offendersData), 'List-of-Offenders.xlsx');
-}
-
 }

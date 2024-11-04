@@ -134,11 +134,11 @@
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom", // Move the legend to the bottom
+            position: "bottom",
           },
           title: {
             display: true,
-            text: "Offenders by Sex",
+            text: "Offenses Trends",
             font: {
               size: 18,
               family: "Arial",
@@ -155,7 +155,7 @@
               weight: "bold",
               size: 10,
             },
-            formatter: (value) => `${value}`, // Show data value
+            formatter: (value) => `${value}`,
           },
         },
         scales: {
@@ -163,9 +163,9 @@
             beginAtZero: true,
             ticks: {
               callback: function (value) {
-                return Number.isInteger(value) ? value : null; // Show whole numbers only
+                return Number.isInteger(value) ? value : null;
               },
-              stepSize: 1, // Ensure step size of 1
+              stepSize: 1,
             },
           },
         },

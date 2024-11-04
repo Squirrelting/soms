@@ -5,31 +5,24 @@ import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
-    offenders: Object,
+    offendersData: Object,
+    offenses: Object,
     grades: Array,
+    grade: String,
+    section: String,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
 });
 
-const offendersData = ref(props.offenders);
+const offenses = ref(props.offenses);
+const selectedOffense = ref("");  
+const offendersData = ref(props.offendersData);
+
 
 const selectedYear = ref(props.selectedYear || "");
 const selectedQuarter = ref(props.selectedQuarter || "");
 
-const sortColumn = ref("updated_at");
-const sortOrder = ref("desc");
-
-// Sorting method
-const sortTable = (column) => {
-    if (sortColumn.value === column) {
-        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"; // Toggle sorting order
-    } else {
-        sortColumn.value = column;
-        sortOrder.value = "asc"; // Set ascending as default order for new column
-    }
-    filter(); // Call the filter method to apply the sorting
-};
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
@@ -43,8 +36,8 @@ const searchQuery = ref("");
 const sanction = ref("");
 const offenseFilter = ref("");
 const sex = ref("");
-const gradeFilter = ref("");
-const sectionFilter = ref("");
+const gradeFilter = ref(props.grade || "");
+const sectionFilter = ref(props.section || "");
 const sections = ref([]);
 
 const filter = () => {
@@ -59,14 +52,12 @@ const filter = () => {
             section: sectionFilter.value,
             selectedYear: selectedYear.value,
             selectedQuarter: selectedQuarter.value,
-            sortColumn: sortColumn.value,
-            sortOrder: sortOrder.value,
         },
         {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                offendersData.value = page.props.offenders;
+                offendersData.value = page.props.offendersData;
             },
         }
     );
@@ -110,51 +101,17 @@ watch(gradeFilter, (newGrade) => {
     }
 });
 
-// Computed property for print URL
-const printUrl = computed(() => {
-  return route("printoffenders", {
-            search: searchQuery.value,
-            sanction: sanction.value,
-            sex: sex.value,
-            offenseFilter: offenseFilter.value,
-            grade: gradeFilter.value,
-            section: sectionFilter.value,
-            selectedYear: selectedYear.value,
-            selectedQuarter: selectedQuarter.value,
-  });
-});
-
-// Computed property for print URL
-const exportExcel = computed(() => {
-  return route("exportexcel", {
-            search: searchQuery.value,
-            sanction: sanction.value,
-            sex: sex.value,
-            offenseFilter: offenseFilter.value,
-            grade: gradeFilter.value,
-            section: sectionFilter.value,
-            selectedYear: selectedYear.value,
-            selectedQuarter: selectedQuarter.value,
-  });
-});
-
-// Check if there is data, if not, show SweetAlert and prevent navigation
-const checkDataAndProceed = (action) => {
-  if (props.offenders.length === 0) {
-    Swal.fire({
-      icon: "warning",
-      title: "No offenders data",
-      text: "There are no offenders data to export or print.",
-    });
-  } else {
-    // Perform the action (either export or print)
-    if (action === "print") {
-      window.open(printUrl.value, "_blank");
-    } else if (action === "export") {
-      window.location.href = exportExcel.value;
+// Watcher to filter offenses based on offense type
+watch(offenseFilter, () => {
+    if (offenseFilter.value === "Minor") {
+        offenses.value = props.offenses.minor_offenses; 
+    } else if (offenseFilter.value === "Major") {
+        offenses.value = props.offenses.major_offenses; 
+    } else {
+        offenses.value = props.offenses.all_offenses; 
     }
-  }
-};
+}, { immediate: true }); // Run the watcher immediately on load
+
 
 </script>
 
@@ -165,7 +122,7 @@ const checkDataAndProceed = (action) => {
             <div class="flex justify-between items-center mb-2 space-x-2">
                 <h5 class="text-lg font-semibold text-gray-700">List of Offenders</h5>
 
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-4">
                 <input
                     v-model="searchQuery"
                     type="text"
@@ -199,14 +156,6 @@ const checkDataAndProceed = (action) => {
                             {{ quarter }}
                         </option>
                         
-                    </select>
-                    <select
-                        v-model="offenseFilter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Offenses</option>
-                        <option value="Minor">Minor Offense</option>
-                        <option value="Major">Major Offense</option>
                     </select>
 
                     <select
@@ -249,7 +198,7 @@ const checkDataAndProceed = (action) => {
                         <option value="">All Sections</option>
                         <option
                             v-for="section in sections"
-                            :key="section.id"
+                            :key="section.section"
                             :value="section.section"
                         >
                             {{ section.section }}
@@ -268,232 +217,44 @@ const checkDataAndProceed = (action) => {
                     >
                         Export to Excel
                     </button>
-
-                    <div class="flex items-center">
-                        <Link
-                            :href="route('dashboard')"
-                            class="bg-red-600 text-white py-1 px-3 inline-block rounded text-sm"
-                        >
-                            Back
-                        </Link>
-                    </div>
                 </div>
+               
             </div>
+            <div class="flex space-x-1 mb-2">
+                    <select
+                        v-model="offenseFilter"
+                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    >
+                        <option value="">All Offenses</option>
+                        <option value="Minor">Minor Offense</option>
+                        <option value="Major">Major Offense</option>
+                    </select>
+                    <select
+                        v-model="selectedOffense"
+                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    >
+                        <option value="">Select Offenses</option>
+                        <option
+                            v-for="(offense, index) in offenses"
+                            :key="index"
+                            :value="offense"
+                        >
+                            {{ offense }}
+                        </option>
+                    </select>
 
+                </div>
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>
-                        <th class="hidden" @click="sortTable('updated_at')">
-                            updated_at
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'updated_at' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'updated_at' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>
-
-                        <th class="py-1 px-2 text-left border cursor-pointer text-sm">
-                            No.
-                        </th>
-                                                
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('lrn')"
-                        >
-                            LRN
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'lrn' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'lrn' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('student_lastname')"
-                        >
-                            Student's Name
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'student_lastname' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'student_lastname' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>
-
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('student_sex')"
-                        >
-                            Sex
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'student_sex' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'student_sex' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>                        
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('student_grade')"
-                        >
-                            Grade
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'student_grade' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'student_grade' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>                        
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('student_section')"
-                        >
-                            Section
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'student_section' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'student_section' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>                        
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('offense')"
-                        >
-                            Offense
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'offense' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'offense' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>                           
-                        <th
-                            class="py-2 px-2 text-left border cursor-pointer text-sm"
-                            @click="sortTable('penalty')"
-                        >
-                            Penalty
-                            <span class="ml-1 text-[8px]">
-                                <span
-                                    :class="
-                                        sortColumn === 'penalty' &&
-                                        sortOrder === 'asc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▲</span
-                                >
-                                <span
-                                    :class="
-                                        sortColumn === 'penalty' &&
-                                        sortOrder === 'desc'
-                                            ? 'text-black'
-                                            : 'text-gray-400'
-                                    "
-                                    >▼</span
-                                >
-                            </span>
-                        </th>                        
+                        <th class="py-1 px-2 text-left border cursor-pointer text-sm">No.</th>                       
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">LRN</th>
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Student's Name</th>
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Sex</th>                        
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Grade</th>                        
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Section</th>                        
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Offense</th>                           
+                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Penalty</th>                        
                         <th class="py-1 px-2 border text-sm">Date Committed</th>
                         <th class="py-1 px-2 border text-sm">Date Recorded</th>
                     </tr>
@@ -501,11 +262,9 @@ const checkDataAndProceed = (action) => {
                 <tbody>
                     <tr
                         v-for="(offense, index) in offendersData.data"
-                        :key="offense.id || index"
+                        :key="offense.id"
                     >
-                        <td class="hidden">{{ offense.updated_at }}</td>
-
-                        <td class="py-1 px-2 border text-sm">{{ index + 1 }}</td>
+                        <td class="py-1 px-2 border text-sm">{{ parseInt(index) + 1 }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}, {{ offense.student_middlename }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.student_sex }}</td>

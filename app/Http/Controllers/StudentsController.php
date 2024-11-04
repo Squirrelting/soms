@@ -17,17 +17,58 @@ use App\Models\SubmittedMajorOffense;
 use App\Models\SubmittedMinorOffense;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\StudentDetailRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class StudentsController extends Controller
 {
 public function index(Request $request)
 {
+    // Fetch necessary data as you already have it here
     $search = $request->input('search');
     $grade = $request->input('grade');
     $section = $request->input('section');
-    $sortColumn = $request->input('sortColumn', 'updated_at');  
+    $sortColumn = $request->input('sortColumn', 'updated_at');
     $sortOrder = $request->input('sortOrder', 'desc');
+    $selectedYear = $request->input('selectedYear');
+    $selectedQuarter = $request->input('selectedQuarter');
     
+    $perPage = 2;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+    $studentsQuery = Student::with(['grade', 'section'])
+        ->withCount([
+            'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
+            'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
+        ])
+        ->when($selectedYear, fn($query) => $query->where('schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
+        ->when($grade, fn($query) => $query->where('grade_id', $grade))
+        ->when($section, fn($query) => $query->where('section_id', $section))
+        ->when($search, fn($query) => $query->where(function ($query) use ($search) {
+            $query->where('firstname', 'like', "%{$search}%")
+                  ->orWhere('middlename', 'like', "%{$search}%")
+                  ->orWhere('lastname', 'like', "%{$search}%")
+                  ->orWhere('lrn', 'like', "%{$search}%");
+        }))
+        ->orderBy($sortColumn, $sortOrder);
+
+
+    // Apply limit and offset for manual pagination
+    $students = $studentsQuery
+        ->get();
+
+    // Create the LengthAwarePaginator instance
+    $students = new LengthAwarePaginator(
+        $students->forPage($currentPage, $perPage),
+        $students->count(),
+        $perPage,
+        $currentPage,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
+
+
+    $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
     $getSchoolYears = Student::select('schoolyear', 'quarter')
     ->distinct()
     ->get();
@@ -37,72 +78,27 @@ public function index(Request $request)
     foreach ($getSchoolYears as $item) {
         $year = $item->schoolyear;
         $quarter = $item->quarter;
-
-        // Check if the school year is already in the array
+    
         if (!isset($groupedSchoolYears[$year])) {
-            // Initialize with the school year and an empty quarters array
             $groupedSchoolYears[$year] = [
                 'schoolyear' => $year,
                 'quarter' => []
             ];
         }
-
-        // Avoid duplicate quarters
+    
         if (!in_array($quarter, $groupedSchoolYears[$year]['quarter'])) {
             $groupedSchoolYears[$year]['quarter'][] = $quarter;
         }
     }
-$finalResult = array_values($groupedSchoolYears);
-
-
-$selectedYear = $request->input('selectedYear');
-$selectedQuarter = $request->input('selectedQuarter');
-
-
-    // Define the allowed columns for sorting to avoid SQL injection
-    $allowedSortColumns = ['lrn', 'lastname', 'grade_id', 'section_id', 'sex', 'email'];
-    if (!in_array($sortColumn, $allowedSortColumns)) {
-        $sortColumn = 'updated_at'; // Fallback to default if invalid column is passed
+    
+    // Sort the quarters in each school year
+    foreach ($groupedSchoolYears as &$schoolYear) {
+        usort($schoolYear['quarter'], function ($a, $b) use ($quarterOrder) {
+            return array_search($a, $quarterOrder) - array_search($b, $quarterOrder);
+        });
     }
-
-    // Fetch students with their grade, section, and count offenses
-    $students = Student::with(['grade', 'section'])
-        ->withCount([
-            'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
-            'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
-        ])
-        ->when($selectedYear, function ($query, $selectedYear) {
-            $query->where('schoolyear', $selectedYear); 
-        })
-        ->when($selectedQuarter, function ($query, $selectedQuarter) {
-            $query->where('quarter', $selectedQuarter); 
-        })
-        ->when($grade, function ($query, $grade) {
-            $query->where('grade_id', $grade);
-        })
-        ->when($section, function ($query, $section) {
-            $query->where('section_id', $section);
-        })
-        ->when($search, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('firstname', 'like', "%{$search}%")
-                      ->orWhere('middlename', 'like', "%{$search}%")
-                      ->orWhere('lastname', 'like', "%{$search}%")
-                      ->orWhere('lrn', 'like', "%{$search}%");
-            });
-        })
-        ->orderBy($sortColumn, $sortOrder)
-        ->paginate(2)
-        ->appends([
-            'search' => $search,
-            'selectedYear' => $selectedYear,  
-            'selectedQuarter' => $selectedQuarter,
-            'grade' => $grade,
-            'section' => $section,
-            'sortColumn' => $sortColumn,
-            'sortOrder' => $sortOrder,
-        ]);
-
+    
+    $finalResult = array_values($groupedSchoolYears);
     $sections = Section::all();
     $grades = Grade::all();
     
