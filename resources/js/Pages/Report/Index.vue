@@ -5,7 +5,7 @@ import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
-    offenders: Object,
+    offendersData: Object,
     offenses: Object,
     grades: Array,
     grade: String,
@@ -17,8 +17,8 @@ const props = defineProps({
 
 const offenses = ref(props.offenses);
 const selectedOffense = ref("");  
+const offendersData = ref(props.offendersData);
 
-const offendersData = ref(props.offenders);
 
 const selectedYear = ref(props.selectedYear || "");
 const selectedQuarter = ref(props.selectedQuarter || "");
@@ -57,7 +57,7 @@ const filter = () => {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                offendersData.value = page.props.offenders;
+                offendersData.value = page.props.offendersData;
             },
         }
     );
@@ -262,9 +262,9 @@ watch(offenseFilter, () => {
                 <tbody>
                     <tr
                         v-for="(offense, index) in offendersData.data"
-                        :key="offense.id || index"
+                        :key="offense.id"
                     >
-                        <td class="py-1 px-2 border text-sm">{{ index + 1 }}</td>
+                        <td class="py-1 px-2 border text-sm">{{ parseInt(index) + 1 }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}, {{ offense.student_middlename }}</td>
                         <td class="py-1 px-2 border text-sm">{{ offense.student_sex }}</td>

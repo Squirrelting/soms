@@ -417,7 +417,7 @@ watch(gradeFilter, (newGrade) => {
                     >
                         <td class="hidden">{{ student.updated_at }}</td>
                         <td class="py-2 px-4 text-left border text-sm">
-                            {{ index + 1 }}
+                            {{ parseInt(index) + 1 }}
                         </td>
                         <td class="py-2 px-2 border text-sm">
                             {{ student.lrn }}

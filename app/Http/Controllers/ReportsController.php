@@ -47,7 +47,7 @@ class ReportsController extends Controller
                           ->orWhere('lrn', 'like', "%{$search}%");
                 });
             })
-            ->get()
+            ->get()            
             ->map(function ($offense) {
                 $offense->offense_type = 'Minor';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
@@ -71,7 +71,7 @@ class ReportsController extends Controller
                           ->orWhere('lrn', 'like', "%{$search}%");
                 });
             })
-            ->get()
+            ->get()  
             ->map(function ($offense) {
                 $offense->offense_type = 'Major';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
@@ -80,10 +80,11 @@ class ReportsController extends Controller
             });
 
         // Combine minor and major offenses
-        $combinedOffenses = $minorOffenses->merge($majorOffenses);
+        $combinedOffenses = $minorOffenses->concat($majorOffenses);
 
         // Paginate the combined collection
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        
         $offendersData = new LengthAwarePaginator(
             $combinedOffenses->forPage($currentPage, $perPage),
             $combinedOffenses->count(),
@@ -130,8 +131,9 @@ class ReportsController extends Controller
             'major_offenses' => MajorOffense::pluck('major_offenses')->toArray(),
         ];
 
+        // dd($combinedOffenses);
         return Inertia::render('Report/Index', [
-            'offenders' => $offendersData,
+            'offendersData' => $offendersData,
             'grades' => Grade::all(),
             'schoolYears' => $finalResult,
             'offenses' => $offenseList,
