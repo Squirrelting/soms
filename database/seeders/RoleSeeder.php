@@ -18,7 +18,7 @@ class RoleSeeder extends Seeder
         // Permissions
         Permission::create(['name' => 'Manage Students']);
         Permission::create(['name' => 'Manage POD Users']);
-        Permission::create(['name' => 'Manage Roles']);  // Add Manage Roles permission
+        Permission::create(['name' => 'Manage Roles']);  
 
         // Create roles and assign permissions
         Role::create(['name' => 'super-admin'])->givePermissionTo(['Manage Students', 'Manage POD Users', 'Manage Roles']);
