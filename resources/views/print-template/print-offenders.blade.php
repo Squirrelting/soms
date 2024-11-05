@@ -7,12 +7,25 @@
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
-            margin: 40px;
             line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            margin-top: -30px;
         }
         h1 {
+            text-align: center;
+            margin: 10px 0 20px;
             font-size: 24px;
-            margin-bottom: 20px;
+        }
+        .filter, .footer, .date {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin: 10px 0;
+            width: 100%;
         }
         table {
             width: 100%;
@@ -26,48 +39,73 @@
             padding: 8px;
             text-align: left;
         }
+
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 14px;
+        }
+        .date {
+            text-align: right;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="logo" style="text-align: center;">
+    <div class="header">
         <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath)) }}" alt="Logo" width="100" height="100">
     </div>
 
     <h1>List of Offenders</h1>
-    <p><strong>Date: {{ $date }}</strong></p>
-    {{-- <p><strong>Selected Offense Type: {{ $offenseFilter ? ucfirst($offenseFilter) : 'All Offenders' }}</strong></p> --}}
+
+    <div class="filter">  
+        Status: {{ $sanction == 0 ? 'Unresolve' : ($sanction == 1 ? 'Resolve' : 'N/A') }} |
+        Offense Filter: {{ $offenseFilter ?? 'All Offenses' }} |
+        Sex: {{ $sex ?? 'All' }} |
+        School Year: {{ $selectedYear ?? 'N/A' }}, Quarter: {{ $selectedQuarter ?? 'N/A' }} |
+        Grade: {{ $grade ?? 'All' }}, Section: {{ $section ?? 'All' }} |
+        Offense: {{ $selectedOffense ?? 'All Offenses' }}
+    </div>
+
     <table>
         <thead>
             <tr>
-                <th class="py-1 px-2 border text-sm">No.</th>
-                <th class="py-1 px-2 border text-sm">LRN</th>
-                <th class="py-1 px-2 border text-sm">Name</th>
-                <th class="py-1 px-2 border text-sm">Sex</th>
-                <th class="py-1 px-2 border text-sm">Grade</th>
-                <th class="py-1 px-2 border text-sm">Section</th>
-                <th class="py-1 px-2 border text-sm">Offense</th>
-                <th class="py-1 px-2 border text-sm">Penalty</th>
-                <th class="py-1 px-2 border text-sm">Date Committed</th>
-                <th class="py-1 px-2 border text-sm">Date Recorded</th>
+                <th>No.</th>
+                <th>LRN</th>
+                <th>Name</th>
+                <th>Sex</th>
+                <th>Grade</th>
+                <th>Section</th>
+                <th>Offense</th>
+                <th>Penalty</th>
+                <th>Date Committed</th>
+                <th>Date Recorded</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($offendersData as $index => $offense)
                 <tr>
-                    <td class="py-1 px-2 border text-sm">{{ $index + 1 }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->lrn }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->student_lastname }}, {{ $offense->student_firstname }}, {{ $offense->student_middlename }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->student_sex }}</td>
-                    <td class="py-1 px-2 border text-sm">Grade {{ $offense->student_grade }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->student_section }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->minor_offense ?? $offense->major_offense }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->minor_penalty ?? $offense->major_penalty }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->committed_date }}</td>
-                    <td class="py-1 px-2 border text-sm">{{ $offense->recorded_date }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $offense->lrn }}</td>
+                    <td>{{ $offense->student_lastname }}, {{ $offense->student_firstname }}, {{ $offense->student_middlename }}</td>
+                    <td>{{ $offense->student_sex }}</td>
+                    <td>Grade {{ $offense->student_grade }}</td>
+                    <td>{{ $offense->student_section }}</td>
+                    <td>{{ $offense->minor_offense ?? $offense->major_offense }}</td>
+                    <td>{{ $offense->minor_penalty ?? $offense->major_penalty }}</td>
+                    <td>{{ $offense->committed_date }}</td>
+                    <td>{{ $offense->recorded_date }}</td>
                 </tr>
             @endforeach
         </tbody>
-        
     </table>
+
+    <div class="footer">
+        Printed by: {{ $userName }}, {{ $userRole }}
+    </div>
+    <div class="date">
+        Date: {{ $date }}
+    </div>
 </body>
 </html>

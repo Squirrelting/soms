@@ -67,7 +67,7 @@ const filterQuarters = () => {
                         v-model="selectedQuarter"
                         class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
                     >
-                        <option value="">Select Quarter</option>
+                        <option value="">All Quarter</option>
                         <option
                             v-for="(quarter, index) in filteredQuarters"
                             :key="index"
