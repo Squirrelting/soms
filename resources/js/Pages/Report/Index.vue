@@ -207,17 +207,11 @@ const checkDataAndProceed = (action) => {
                     List of Offenders
                 </h5>
 
-                <div class="flex space-x-4">
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Search by Name and LRN"
-                        class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    />
+                <div class="flex space-x-1">
                     <select
                         v-model="selectedYear"
                         @change="filterQuarters"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All year</option>
                         <option
@@ -231,7 +225,7 @@ const checkDataAndProceed = (action) => {
 
                     <select
                         v-model="selectedQuarter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Quarter</option>
                         <option
@@ -241,28 +235,12 @@ const checkDataAndProceed = (action) => {
                             {{ quarter }}
                         </option>
                     </select>
+                    </div>
 
-                    <select
-                        v-model="sanction"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">Status</option>
-                        <option value="0">Unresolve</option>
-                        <option value="1">Resolved</option>
-                    </select>
-
-                    <select
-                        v-model="sex"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Genders</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-
+                    <div class="flex space-x-1">
                     <select
                         v-model="gradeFilter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Grades</option>
                         <option
@@ -276,7 +254,7 @@ const checkDataAndProceed = (action) => {
 
                     <select
                         v-model="sectionFilter"
-                        class="border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Sections</option>
                         <option
@@ -287,6 +265,29 @@ const checkDataAndProceed = (action) => {
                             {{ section.section }}
                         </option>
                     </select>
+                    </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full max-w-xs">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search"
+                        class="input border-gray-300 rounded-lg text-sm h-10 pl-9 pr-3 w-full focus:border-blue-200 focus:ring focus:ring-blue-200 focus:outline-none"
+                    />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 opacity-70 pointer-events-none"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                </div>
 
                     <button
                         @click="checkDataAndProceed('print')"
@@ -301,19 +302,35 @@ const checkDataAndProceed = (action) => {
                         Export to Excel
                     </button>
                 </div>
-            </div>
             <div class="flex space-x-1 mb-2">
                 <select
+                        v-model="sex"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                    >
+                        <option value="">All Sex</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+
+                <select
+                        v-model="sanction"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                    >
+                        <option value="">Status</option>
+                        <option value="0">Unresolve</option>
+                        <option value="1">Resolved</option>
+                    </select>
+                <select
                     v-model="offenseFilter"
-                    class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                >
+                    class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                    >
                     <option value="">All Offenses</option>
                     <option value="Minor">Minor Offense</option>
                     <option value="Major">Major Offense</option>
                 </select>
                 <select
                     v-model="selectedOffense"
-                    class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                    class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[46rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                 >
                     <option value="">Select All Offenses</option>
                     <option
