@@ -1,28 +1,34 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { Head, router, Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import Swal from "sweetalert2";
 
 const props = defineProps({
     offendersData: Object,
     offenses: Object,
     grades: Array,
+    sections: {
+        type: Array,
+        default: () => [],
+    },
     grade: String,
     section: String,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
+    sanction: String,
+    sex: String,
+    offenseFilter: String,
+    selectedOffense: String,
 });
 
 const offenses = ref(props.offenses);
-const selectedOffense = ref("");  
 const offendersData = ref(props.offendersData);
-
 
 const selectedYear = ref(props.selectedYear || "");
 const selectedQuarter = ref(props.selectedQuarter || "");
-
 
 const filteredQuarters = computed(() => {
     const selectedSchoolYear = props.schoolYears.find(
@@ -31,14 +37,18 @@ const filteredQuarters = computed(() => {
     return selectedSchoolYear ? selectedSchoolYear.quarters : [];
 });
 
-// Define refs for filters
+const filterQuarters = () => {
+    selectedQuarter.value = "";
+};
+
 const searchQuery = ref("");
-const sanction = ref("");
-const offenseFilter = ref("");
-const sex = ref("");
+const sanction = ref(props.sanction || "");
+const offenseFilter = ref(props.offenseFilter || "");
+const sex = ref(props.sex || "");
 const gradeFilter = ref(props.grade || "");
-const sectionFilter = ref(props.section || "");
-const sections = ref([]);
+const sectionFilter = ref(props.section || ""); 
+const sections = ref(props.sections);
+const selectedOffense = ref(props.selectedOffense || "");
 
 const filter = () => {
     router.get(
@@ -49,13 +59,16 @@ const filter = () => {
             sex: sex.value,
             offenseFilter: offenseFilter.value,
             grade: gradeFilter.value,
-            section: sectionFilter.value,
+            section: sectionFilter.value, 
             selectedYear: selectedYear.value,
             selectedQuarter: selectedQuarter.value,
+            selectedOffense: selectedOffense.value,
+            page: offendersData.value.current_page,
         },
         {
             preserveState: true,
             preserveScroll: true,
+            replace: true,
             onSuccess: (page) => {
                 offendersData.value = page.props.offendersData;
             },
@@ -65,34 +78,32 @@ const filter = () => {
 
 // Watch for changes in filters and trigger the filter method
 watch(
-    [   searchQuery,
+    [
+        searchQuery,
         sanction,
         offenseFilter,
         gradeFilter,
-        sectionFilter,
+        sectionFilter, 
         sex,
         selectedYear,
         selectedQuarter,
+        selectedOffense,
     ],
     () => {
         filter();
     }
 );
 
-// Fetch sections based on selected grade
 const fetchSections = async (gradeId) => {
     try {
-        const response = await axios.get(
-            `/students/sections?grade_id=${gradeId}`
-        );
-        sections.value = response.data.sections; // Populate the sections dropdown
-        sectionFilter.value = ""; // Reset section filter when grade changes
+        const response = await axios.get(`/students/sections?grade_id=${gradeId}`);
+        sections.value = response.data.sections;
+        sectionFilter.value = ""; 
     } catch (error) {
         console.error("Error fetching sections:", error);
     }
 };
 
-// Watch for grade changes and fetch sections when the grade changes
 watch(gradeFilter, (newGrade) => {
     if (newGrade) {
         fetchSections(newGrade);
@@ -101,38 +112,106 @@ watch(gradeFilter, (newGrade) => {
     }
 });
 
-// Watcher to filter offenses based on offense type
-watch(offenseFilter, () => {
-    if (offenseFilter.value === "Minor") {
-        offenses.value = props.offenses.minor_offenses; 
-    } else if (offenseFilter.value === "Major") {
-        offenses.value = props.offenses.major_offenses; 
-    } else {
-        offenses.value = props.offenses.all_offenses; 
+watch(
+    offenseFilter,
+    () => {
+        if (offenseFilter.value === "Minor") {
+            offenses.value = props.offenses.minor_offenses;
+        } else if (offenseFilter.value === "Major") {
+            offenses.value = props.offenses.major_offenses;
+        } else {
+            offenses.value = props.offenses.all_offenses;
+        }
+    },
+    { immediate: true }
+);
+
+onMounted(() => {
+    selectedYear.value =
+        props.selectedYear ||
+        new URLSearchParams(window.location.search).get("selectedYear") ||
+        "";
+    selectedQuarter.value =
+        props.selectedQuarter ||
+        new URLSearchParams(window.location.search).get("selectedQuarter") ||
+        "";
+    sanction.value =
+        props.sanction || new URLSearchParams(window.location.search).get("sanction") || "";
+    sex.value = props.sex || new URLSearchParams(window.location.search).get("sex") || "";
+    sectionFilter.value =
+        props.section || new URLSearchParams(window.location.search).get("section") || ""; 
+    offenseFilter.value =
+        props.offenseFilter || new URLSearchParams(window.location.search).get("offenseFilter") || "";
+    selectedOffense.value =
+        props.selectedOffense || new URLSearchParams(window.location.search).get("selectedOffense") || "";
+});
+
+// Computed property for print URL with filters
+const printUrl = computed(() => {
+  return route("printoffenders", {
+    search: searchQuery.value,
+    sanction: sanction.value,
+    sex: sex.value,
+    offenseFilter: offenseFilter.value,
+    grade: gradeFilter.value,
+    section: sectionFilter.value,
+    selectedYear: selectedYear.value,
+    selectedQuarter: selectedQuarter.value,
+    selectedOffense: selectedOffense.value,
+  });
+});
+
+// Computed property for export Excel URL with filters
+const exportExcel = computed(() => {
+  return route("exportexcel", {
+    search: searchQuery.value,
+    sanction: sanction.value,
+    sex: sex.value,
+    offenseFilter: offenseFilter.value,
+    grade: gradeFilter.value,
+    section: sectionFilter.value,
+    selectedYear: selectedYear.value,
+    selectedQuarter: selectedQuarter.value,
+    selectedOffense: selectedOffense.value,
+  });
+});
+
+
+// Check if there is data, if not, show SweetAlert and prevent navigation
+const checkDataAndProceed = (action) => {
+  if (!offendersData.value.data || offendersData.value.data.length === 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "No offenses data",
+      text: "There are no offenses data to export or print.",
+    });
+  } else {
+    // Perform the action (either export or print)
+    if (action === "print") {
+      window.open(printUrl.value, "_blank");
+    } else if (action === "export") {
+      window.location.href = exportExcel.value;
     }
-}, { immediate: true }); // Run the watcher immediately on load
-
-
+  }
+};
 </script>
+
+
 
 <template>
     <Head title="Reports" />
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
             <div class="flex justify-between items-center mb-2 space-x-2">
-                <h5 class="text-lg font-semibold text-gray-700">List of Offenders</h5>
+                <h5 class="text-lg font-semibold text-gray-700">
+                    List of Offenders
+                </h5>
 
-                <div class="flex space-x-4">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search by Name and LRN"
-                    class="border border-gray-300 rounded-lg p-1 w-44 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                />
+                <div class="flex space-x-1">
                     <select
                         v-model="selectedYear"
                         @change="filterQuarters"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All year</option>
                         <option
@@ -140,45 +219,28 @@ watch(offenseFilter, () => {
                             :key="index"
                             :value="schoolyear.student_schoolyear"
                         >
-                           S.Y. {{ schoolyear.student_schoolyear }}
+                            S.Y. {{ schoolyear.student_schoolyear }}
                         </option>
                     </select>
 
                     <select
                         v-model="selectedQuarter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
-                        <option value="">Select Quarter</option>
+                        <option value="">All Quarter</option>
                         <option
                             v-for="(quarter, index) in filteredQuarters"
                             :key="index"
                         >
                             {{ quarter }}
                         </option>
-                        
                     </select>
+                    </div>
 
-                    <select
-                        v-model="sanction"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">Status</option>
-                        <option value="0">Unresolve</option>
-                        <option value="1">Resolved</option>
-                    </select>
-
-                    <select
-                        v-model="sex"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Genders</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-
+                    <div class="flex space-x-1">
                     <select
                         v-model="gradeFilter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Grades</option>
                         <option
@@ -191,9 +253,8 @@ watch(offenseFilter, () => {
                     </select>
 
                     <select
-                        :disabled="gradeFilter == ''"
                         v-model="sectionFilter"
-                        class="border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Sections</option>
                         <option
@@ -204,6 +265,29 @@ watch(offenseFilter, () => {
                             {{ section.section }}
                         </option>
                     </select>
+                    </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full max-w-xs">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search"
+                        class="input border-gray-300 rounded-lg text-sm h-10 pl-9 pr-3 w-full focus:border-blue-200 focus:ring focus:ring-blue-200 focus:outline-none"
+                    />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 opacity-70 pointer-events-none"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                </div>
 
                     <button
                         @click="checkDataAndProceed('print')"
@@ -218,43 +302,89 @@ watch(offenseFilter, () => {
                         Export to Excel
                     </button>
                 </div>
-               
-            </div>
             <div class="flex space-x-1 mb-2">
-                    <select
-                        v-model="offenseFilter"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+                <select
+                        v-model="sex"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
-                        <option value="">All Offenses</option>
-                        <option value="Minor">Minor Offense</option>
-                        <option value="Major">Major Offense</option>
-                    </select>
-                    <select
-                        v-model="selectedOffense"
-                        class="pl-2 border border-gray-300 rounded p-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">Select Offenses</option>
-                        <option
-                            v-for="(offense, index) in offenses"
-                            :key="index"
-                            :value="offense"
-                        >
-                            {{ offense }}
-                        </option>
+                        <option value="">All Sex</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
 
-                </div>
+                <select
+                        v-model="sanction"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                    >
+                        <option value="">Status</option>
+                        <option value="0">Unresolve</option>
+                        <option value="1">Resolved</option>
+                    </select>
+                <select
+                    v-model="offenseFilter"
+                    class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                    >
+                    <option value="">All Offenses</option>
+                    <option value="Minor">Minor Offense</option>
+                    <option value="Major">Major Offense</option>
+                </select>
+                <select
+                    v-model="selectedOffense"
+                    class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[46rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                >
+                    <option value="">Select All Offenses</option>
+                    <option
+                        v-for="(offense, index) in offenses"
+                        :key="index"
+                        :value="offense"
+                    >
+                        {{ offense }}
+                    </option>
+                </select>
+            </div>
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>
-                        <th class="py-1 px-2 text-left border cursor-pointer text-sm">No.</th>                       
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">LRN</th>
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Student's Name</th>
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Sex</th>                        
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Grade</th>                        
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Section</th>                        
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Offense</th>                           
-                        <th class="py-2 px-2 text-left border cursor-pointer text-sm">Penalty</th>                        
+                        <th
+                            class="py-1 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            No.
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            LRN
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Student's Name
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Sex
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Grade
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Section
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Offense
+                        </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Penalty
+                        </th>
                         <th class="py-1 px-2 border text-sm">Date Committed</th>
                         <th class="py-1 px-2 border text-sm">Date Recorded</th>
                     </tr>
@@ -264,16 +394,38 @@ watch(offenseFilter, () => {
                         v-for="(offense, index) in offendersData.data"
                         :key="offense.id"
                     >
-                        <td class="py-1 px-2 border text-sm">{{ parseInt(index) + 1 }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.lrn }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.student_lastname }}, {{ offense.student_firstname }}, {{ offense.student_middlename }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.student_sex }}</td>
-                        <td class="py-1 px-2 border text-sm">Grade {{ offense.student_grade }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.student_section }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.minor_offense || offense.major_offense }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.minor_penalty || offense.major_penalty }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.committed_date }}</td>
-                        <td class="py-1 px-2 border text-sm">{{ offense.recorded_date }}</td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ parseInt(index) + 1 }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.lrn }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.student_lastname }},
+                            {{ offense.student_firstname }},
+                            {{ offense.student_middlename }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.student_sex }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            Grade {{ offense.student_grade }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.student_section }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.minor_offense || offense.major_offense }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.minor_penalty || offense.major_penalty }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.committed_date }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.recorded_date }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -282,4 +434,3 @@ watch(offenseFilter, () => {
         </div>
     </AuthenticatedLayout>
 </template>
-
