@@ -1,5 +1,6 @@
 <template>
-    <div class="chart-container">
+    <div class="chart-container flex flex-col items-center justify-center">
+      <span v-if="isLoading" class="loading loading-dots loading-sm"></span>
       <canvas id="lineChart"></canvas>
     </div>
   </template>
@@ -12,6 +13,8 @@
   
   // Register the plugin
   Chart.register(ChartDataLabels);
+
+
   
   const props = defineProps({
     selectedYear: {
@@ -23,6 +26,7 @@
       required: true,
     },
   });
+  const isLoading = ref(false);
   
   // Reactive data structure
   const lineData = ref({
@@ -58,6 +62,7 @@
   
   // Fetch chart data from the API
   const fetchChartData = () => {
+    isLoading.value = true;
     axios
       .get("/get-line-data", {
         params: {
@@ -110,8 +115,10 @@
         if (chartInstance) {
           chartInstance.data = lineData.value;
           chartInstance.update();
+          isLoading.value = false;
         } else {
           createChart();
+          isLoading.value = false;
         }
       })
       .catch((error) => {

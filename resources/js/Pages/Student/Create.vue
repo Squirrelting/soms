@@ -16,8 +16,8 @@ const props = defineProps({
     majorOffenses: Array
 });
 
-const yearToday = ref(new Date().getFullYear());
-const nextYear = ref(yearToday.value + 1);
+const yearToday = ref(new Date().getFullYear() || "");
+const nextYear = ref(yearToday.value + 1 || "");
 
 
 const form = useForm({
@@ -293,7 +293,7 @@ const saveStudent = () => {
     
     <div class="col-span-4 mb-3">
     <label class="block text-gray-700 font-semibold mb-1">School Year</label>
-    <input type="number" :min="new Date().getFullYear()" max="2099" step="1" v-model="form.yeartoday" 
+    <input type="number" :max="new Date().getFullYear() + 1" step="1" v-model="form.yeartoday" 
            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
     <div v-if="errors.yeartoday" class="text-red-500 mt-1 text-sm">{{ errors.yeartoday }}</div>
 </div>

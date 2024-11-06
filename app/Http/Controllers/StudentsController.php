@@ -157,8 +157,8 @@ public function index(Request $request)
 
     public function update(StudentDetailRequest $request, Student $student)
     {
-        $yearToday = now()->year;
-        $nextYear = $yearToday + 1;
+        $yearToday = $request->yeartoday; 
+        $nextYear = $request->nextyear; 
     
         $schoolYear = $yearToday . '-' . $nextYear;
     
@@ -172,8 +172,9 @@ public function index(Request $request)
 
     public function store(StudentDetailRequest $request)
     {
-        $yearToday = now()->year;
-        $nextYear = $yearToday + 1;
+        $yearToday = $request->yeartoday; 
+        $nextYear = $request->nextyear; 
+
         $schoolYear = $yearToday . '-' . $nextYear;
     
         $studentData = array_merge($request->validated(), ['schoolyear' => $schoolYear]);
