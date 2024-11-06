@@ -12,27 +12,17 @@ class PieChartController extends Controller
         $selectedYear = $request->selectedYear;
         $selectedQuarter = $request->selectedQuarter;
 
-        // Get the unique counts of male offenders for minor offenses
+        // Get distinct LRN of male offenders for minor offenses
         $maleOffendersMinor = Student::where('sex', 'Male')
             ->where('schoolyear', $selectedYear)
             ->when($selectedQuarter, function ($query) use ($selectedQuarter) {
                 return $query->where('quarter', $selectedQuarter);
             })
             ->whereHas('submittedMinorOffenses')
-            ->distinct('lrn') // Count unique lrn values
-            ->count('lrn'); // Count unique lrn directly
-
-        // Get the unique counts of female offenders for minor offenses
-        $femaleOffendersMinor = Student::where('sex', 'Female')
-            ->where('schoolyear', $selectedYear)
-            ->when($selectedQuarter, function ($query) use ($selectedQuarter) {
-                return $query->where('quarter', $selectedQuarter);
-            })
-            ->whereHas('submittedMinorOffenses')
             ->distinct('lrn')
-            ->count('lrn');
+            ->pluck('lrn');
 
-        // Get the unique counts of male offenders for major offenses
+        // Get distinct LRN of male offenders for major offenses
         $maleOffendersMajor = Student::where('sex', 'Male')
             ->where('schoolyear', $selectedYear)
             ->when($selectedQuarter, function ($query) use ($selectedQuarter) {
@@ -40,9 +30,22 @@ class PieChartController extends Controller
             })
             ->whereHas('submittedMajorOffenses')
             ->distinct('lrn')
-            ->count('lrn');
+            ->pluck('lrn');
 
-        // Get the unique counts of female offenders for major offenses
+        // Combine and get unique male offenders by LRN
+        $uniqueMaleOffenders = $maleOffendersMinor->merge($maleOffendersMajor)->unique()->count();
+
+        // Get distinct LRN of female offenders for minor offenses
+        $femaleOffendersMinor = Student::where('sex', 'Female')
+            ->where('schoolyear', $selectedYear)
+            ->when($selectedQuarter, function ($query) use ($selectedQuarter) {
+                return $query->where('quarter', $selectedQuarter);
+            })
+            ->whereHas('submittedMinorOffenses')
+            ->distinct('lrn')
+            ->pluck('lrn');
+
+        // Get distinct LRN of female offenders for major offenses
         $femaleOffendersMajor = Student::where('sex', 'Female')
             ->where('schoolyear', $selectedYear)
             ->when($selectedQuarter, function ($query) use ($selectedQuarter) {
@@ -50,14 +53,18 @@ class PieChartController extends Controller
             })
             ->whereHas('submittedMajorOffenses')
             ->distinct('lrn')
-            ->count('lrn');
+            ->pluck('lrn');
 
-        // Combine the results
+        // Combine and get unique female offenders by LRN
+        $uniqueFemaleOffenders = $femaleOffendersMinor->merge($femaleOffendersMajor)->unique()->count();
+
+        // Combine the results for the pie chart
         $offenseData = [
-            'male' => $maleOffendersMinor + $maleOffendersMajor,
-            'female' => $femaleOffendersMinor + $femaleOffendersMajor
+            'male' => $uniqueMaleOffenders,
+            'female' => $uniqueFemaleOffenders
         ];
 
         return response()->json($offenseData);
     }
+
 }

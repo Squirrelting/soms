@@ -300,7 +300,7 @@ const updateStudent = () => {
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             >
                                 <option value="">Select</option>
-                                <option value="2nd Quarter">
+                                <option value="1st Quarter">
                                     1st Quarter
                                 </option>
                                 <option value="2nd Quarter">
@@ -328,8 +328,7 @@ const updateStudent = () => {
                             >
                             <input
                                 type="number"
-                                :min="new Date().getFullYear()"
-                                max="2099"
+                                :max="new Date().getFullYear() + 1"
                                 step="1"
                                 v-model="form.yeartoday"
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
