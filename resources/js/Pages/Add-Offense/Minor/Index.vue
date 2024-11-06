@@ -102,12 +102,12 @@ const DeleteMinorOffense = (id) => {
         <div
             v-if="$page.props.flash.message"
             role="alert"
-            class="alert alert-info mt-4 mx-5 px-4 py-2"
+            class="alert alert-info mx-5 px-4 py-2"
         >
             <span>{{ $page.props.flash.message }}</span>
         </div>
 
-        <div class="mt-4 mx-4">
+        <div class="mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h5 class="text-xl font-semibold text-gray-700">
                     Minor Offenses Table

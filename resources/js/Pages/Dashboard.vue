@@ -46,13 +46,13 @@ const filterQuarters = () => {
         <div class="m-4 flex flex-col lg:flex-row lg:space-x-4">
             <!-- Main Content Section -->
             <div class="flex-grow">
-                <div class="flex flex-wrap space-x-2 mb-4">
+                <div class="flex flex-wrap space-x-2 mb-2">
                     <!-- School Year Selector -->
-                    <select
+                    <select 
                         v-model="selectedYear"
                         @change="filterQuarters"
-                        class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
-                    >
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                        >
                         <option
                             v-for="(schoolyear, index) in props.schoolYears"
                             :key="index"
@@ -65,7 +65,7 @@ const filterQuarters = () => {
                     <!-- Quarters Select -->
                     <select
                         v-model="selectedQuarter"
-                        class="border border-gray-300 rounded-lg p-1 text-xs focus:outline-none focus:ring focus:border-blue-300"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Quarter</option>
                         <option
