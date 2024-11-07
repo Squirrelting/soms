@@ -26,6 +26,10 @@ const handlePrint = () => {
     }
 };
 
+const formatName = (name) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
 </script>
 
 <template>
@@ -33,23 +37,28 @@ const handlePrint = () => {
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
 
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
         <form @submit.prevent="handlePrint">
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12">
                     <div class="grid grid-cols-12 gap-4">
             <div class="col-span-4 mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Student's First Name</label>
-                <input type="text" v-model="form.firstname" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
+                <input type="text" v-model="form.firstname" @input="form.firstname = formatName(form.firstname)" 
+                class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
                 <div v-if="errors.firstname" class="text-red-500">{{ errors.firstname }}</div>
             </div>
             <div class="col-span-4 mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Student's Middle Name (Optional)</label>
-                <input type="text" v-model="form.middlename" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
+                <input type="text" v-model="form.middlename" @input="form.middlename = formatName(form.middlename)" 
+                class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
                 <div v-if="errors.middlename" class="text-red-500">{{ errors.middlename }}</div>
             </div>
             <div class="col-span-4 mb-3">
                 <label class="block text-gray-700 font-semibold mb-1">Student's Last Name</label>
-                <input type="text" v-model="form.lastname" class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
+                <input type="text" v-model="form.lastname" @input="form.lastname = formatName(form.lastname)" 
+                class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
                 <div v-if="errors.lastname" class="text-red-500">{{ errors.lastname }}</div>
             </div>
         </div>
@@ -84,6 +93,7 @@ const handlePrint = () => {
                 </div>
             </div>
         </form>
+    </div>
     </div>
     </AuthenticatedLayout>
 </template>

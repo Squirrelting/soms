@@ -84,7 +84,7 @@ const Resolve = (id) => {
 
 // Function to save a minor offense
 const saveMinorOffense = () => {
-    if (form.minor_offense === '') {
+    if (form.minor_offense === '' || form.committed_date ==='') {
         form.post(route('minor.store'));
     } else {
         Swal.fire({
@@ -144,104 +144,102 @@ const saveMinorOffense = () => {
 };
 </script>
 <template>
-<Head title="Minor Offenses" />
+    <Head title="Minor Offenses" />
     <AuthenticatedLayout>
-        <div class="mt-4 mx-4">
-            <div class="flex justify-between">
-                <h5 class="m-4">Student</h5>
-                <Link :href="route('students.index')" class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4">Back</Link>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12">
-                    <div class="mb-3">
-                        {{ student.lrn }},
-                        {{ student.firstname }},
-                        {{ student.middlename }}
-                        {{ student.lastname }},
-                        {{ student.sex }},
-                        Grade {{ student.grade?.grade??'N/A' }}, <!-- Auto-filled from props -->
-                        {{ student.section?.section??'N/A'}} <!-- Auto-filled from props -->
-                    </div>
-                </div>
-            </div>
 
-            <div class="mt-4 mx-4">
-                <div class="flex justify-between">
-                    <h5 class="m-4">Minor Offense</h5>
-                </div>
-                <table class="w-full bg-white border border-gray-200 shadow">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4 text-left border">Offense Committed</th>
-                            <th class="py-2 px-4 text-left border">Penalty</th>
-                            <th class="py-2 px-4 text-left border">Committed date</th>
-                            <th class="py-2 px-4 text-left border">Recorded date</th>
-                            <th class="py-2 px-4 text-left border">Sanction</th>
-                            <th class="py-2 px-4 text-left border">Resolved Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="offense in submittedminorOffenses" :key="offense.id">
-                            <td class="py-2 px-4 border">{{ offense.minor_offense }}</td>
-                            <td class="py-2 px-4 border">{{ offense.minor_penalty }}</td>
-                            <td class="py-2 px-4 border">{{ offense.committed_date }}</td>
-                            <td class="py-2 px-4 border">{{ offense.recorded_date }}</td>
+        <div class="mt-4 mx-4 space-y-6">
 
-                            <td class="py-2 px-4 border">
-                                <button
-                                v-if="offense.sanction === 0"
-                                @click="Resolve(offense.id)"
-                                class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded"
-                            >
-                                Unresolve
-                            </button>
-                            <button
-                                v-else
-                                class="px-2 py-1 text-sm bg-green-600 text-white p-3 rounded"
-                                disabled
-                            >
-                            Resolved
-                            </button>
-                            </td>
-                            <td class="py-2 px-4 border">{{ offense.cleansed_date }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Wrapper Section with White Background -->
+<div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
 
-            <form @submit.prevent="saveMinorOffense()">
-                <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-12">
-                        <div class="mb-3">
-                            <label>Select Minor Offenses</label>
-                            <select v-model="form.minor_offense" class="py-1 w-full">
-                                <option value="">Select Minor Offense</option>
-                                <!-- Loop through the minorOffenses prop to populate the select -->
-                                <option v-for="offense in minorOffenses" :key="offense.id" :value="offense.minor_offenses">
-                                    {{ offense.minor_offenses }}
-                                </option>
-                            </select>
-                            <div v-if="errors.minor_offense" class="text-red-500">{{ errors.minor_offense }}</div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Committed Date:</label>
-                            <input type="date" v-model="form.committed_date" :max="maxDate" />
-                            <div v-if="errors.committed_date" class="text-red-500">{{ errors.committed_date }}</div>
-                        </div>
+<!-- Header Section -->
+<div class="flex flex-col space-y-2">
+    <h3 class="text-lg font-bold text-gray-800">Minor Offense</h3>
+    <div class="text-gray-600 text-sm ml-1">
+        <span class="font-semibold">Student:</span> {{ student.lrn }} |
+        {{ student.firstname }} {{ student.middlename }} {{ student.lastname }} |
+        {{ student.sex }} | Grade {{ student.grade?.grade ?? 'N/A' }} | Section {{ student.section?.section ?? 'N/A' }}
+    </div>
+</div>
 
-                        <div class="mb-3">
-                            <button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="bg-blue-500 text-white py-2 px-5 rounded mb-4"
-                            >
-                                <span v-if="form.processing">Saving...</span>
-                                <span v-else>Save</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
+<!-- Minor Offense Section -->
+<table class="w-full bg-white border border-gray-200 shadow rounded-lg">
+    <thead>
+        <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Sanction</th>
+            <th class="py-2 px-4 text-left border-b">Resolved Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="offense in submittedminorOffenses" :key="offense.id" class="hover:bg-gray-50 text-sm text-gray-800">
+            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_offense }}</td>
+            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_penalty }}</td>
+            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
+            <td class="py-2 px-4 border-b border-r border-gray-200">
+                <button
+                    v-if="offense.sanction === 0"
+                    @click="Resolve(offense.id)"
+                    class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                    Unresolved
+                </button>
+                <button
+                    v-else
+                    class="px-2 py-1 text-xs bg-green-600 text-white rounded cursor-not-allowed"
+                    disabled
+                >
+                    Resolved
+                </button>
+            </td>
+            <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+
+
+<!-- Form Section -->
+<form @submit.prevent="saveMinorOffense()" class="bg-white p-6 rounded shadow-sm">
+    <div class="grid grid-cols-10 gap-4">
+        <!-- Select Minor Offenses (70% width) -->
+        <div class="col-span-7">
+            <label class="block text-sm font-medium mb-1">Select Minor Offenses</label>
+            <select v-model="form.minor_offense" class="py-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Select Minor Offense</option>
+                <option v-for="offense in minorOffenses" :key="offense.id" :value="offense.minor_offenses">
+                    {{ offense.minor_offenses }}
+                </option>
+            </select>
+            <div v-if="errors.minor_offense" class="text-red-500 text-sm mt-1">{{ errors.minor_offense }}</div>
+        </div>
+        
+        <!-- Committed Date (30% width) -->
+        <div class="col-span-3">
+            <label class="block text-sm font-medium mb-1">Committed Date</label>
+            <input type="date" v-model="form.committed_date" :max="maxDate" class="py-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div v-if="errors.committed_date" class="text-red-500 text-sm mt-1">{{ errors.committed_date }}</div>
+        </div>
+    </div>
+    
+    <!-- Save Button -->
+    <div class="mt-4">
+        <button
+            type="submit"
+            :disabled="form.processing"
+            class="bg-blue-600 text-white py-2 px-5 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <span v-if="form.processing">Saving...</span>
+            <span v-else>Save</span>
+        </button>
+    </div>
+</form>
+
         </div>
     </AuthenticatedLayout>
 </template>

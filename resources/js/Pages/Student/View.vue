@@ -16,117 +16,94 @@ const props = defineProps({
     <Head title="Show Student" />
 
     <AuthenticatedLayout>
-        <div class="mt-4 mx-4">
-            <div class="flex items-center justify-between mb-4">
-    <!-- Student title -->
-    <h5 class="text-xl font-semibold text-gray-700">Student</h5>
-
-    <!-- Print and Back buttons -->
-    <div class="flex space-x-2">
-        <a 
-            :href="route('printrecord', { student: props.student.id })"
-            target="_blank"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"
-        >
-            Print
-        </a>
-        <Link
-            :href="route('students.index')"
-            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"
-        >
-            Back
-        </Link>
-    </div>
-</div>
-
-
-            <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12">
-                    <div class="mb-3">
-                        {{ student.lrn }}, 
-                        {{ student.firstname }},
-                        {{ student.middlename }},
-                        {{ student.lastname }},
-                        {{ student.sex }},
-                        Grade {{ student.grade?.grade??'N/A' }},
-                        {{ student.section?.section??'N/A' }}
-                    </div>
-                </div>
+        <div class="my-6 mx-6 space-y-6">
+            
+            <!-- Header Section -->
+            <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-lg">
+            <!-- Student Information Section -->
+            <div class=" text-gray-800">
+                <span class="font-semibold">Student:</span> 
+                {{ student.lrn }} | 
+                {{ student.firstname }} {{ student.middlename }} {{ student.lastname }} |
+                {{ student.sex }} |
+                Grade {{ student.grade?.grade ?? 'N/A' }} |
+                Section {{ student.section?.section ?? 'N/A' }}
             </div>
 
-            <!-- Conditionally display Minor Offense table -->
-            <div v-if="submittedminorOffenses.length" class="mt-4 mx-4">
-                <div class="flex justify-between">
-                    <h5 class="m-4">Minor Offense</h5>
-                </div>
-                <table class="w-full bg-white border border-gray-200 shadow">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4 text-left border">
-                                Offense Committed
-                            </th>
-                            <th class="py-2 px-4 text-left border">Penalty</th>
-                            <th class="py-2 px-4 text-left border">Committed date</th>
-                            <th class="py-2 px-4 text-left border">Recorded date</th>
-                            <th class="py-2 px-4 text-left border">Cleansed date</th>
+                <!-- Print Button -->
+                <a 
+                    :href="route('printrecord', { student: props.student.id })"
+                    target="_blank"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"
+                >
+                    Print
+                </a>
+            </div>
 
+
+
+            <!-- Minor Offense Section -->
+            <div v-if="submittedminorOffenses.length" class="bg-white p-4 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <h5 class="text-lg font-bold text-gray-800">Minor Offense</h5>
+                </div>
+                <table class="w-full border border-gray-200 rounded-lg shadow">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
+                            <th class="py-2 px-4 text-left border-b">Cleansed Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
                             v-for="offense in submittedminorOffenses"
                             :key="offense.id"
+                            class="hover:bg-gray-50 text-sm text-gray-800"
                         >
-                            <td class="py-2 px-4 border">
-                                {{ offense.minor_offense }}
-                            </td>
-                            <td class="py-2 px-4 border">
-                                {{ offense.minor_penalty }}
-                            </td>
-                            <td class="py-2 px-4 border">{{ offense.committed_date }}</td>
-                            <td class="py-2 px-4 border">{{ offense.recorded_date }}</td>
-                            <td class="py-2 px-4 border">{{ offense.cleansed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_offense }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_penalty }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
+                            <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Conditionally display Major Offense table -->
-            <div v-if="submittedmajorOffenses.length" class="mt-4 mx-4">
-                <div class="flex justify-between">
-                    <h5 class="m-4">Major Offense</h5>
+            <!-- Major Offense Section -->
+            <div v-if="submittedmajorOffenses.length" class="bg-white p-4 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <h5 class="text-lg font-bold text-gray-800">Major Offense</h5>
                 </div>
-                <table class="w-full bg-white border border-gray-200 shadow">
+                <table class="w-full border border-gray-200 rounded-lg shadow">
                     <thead>
-                        <tr>
-                            <th class="py-2 px-4 text-left border">
-                                Offense Committed
-                            </th>
-                            <th class="py-2 px-4 text-left border">Penalty</th>
-                            <th class="py-2 px-4 text-left border">Committed date</th>
-                            <th class="py-2 px-4 text-left border">Recorded date</th>
-                            <th class="py-2 px-4 text-left border">Cleansed date</th>
-
+                        <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
+                            <th class="py-2 px-4 text-left border-b">Cleansed Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
                             v-for="offense in submittedmajorOffenses"
                             :key="offense.id"
+                            class="hover:bg-gray-50 text-sm text-gray-800"
                         >
-                            <td class="py-2 px-4 border">
-                                {{ offense.major_offense }}
-                            </td>
-                            <td class="py-2 px-4 border">
-                                {{ offense.major_penalty }}
-                            </td>
-                            <td class="py-2 px-4 border">{{ offense.committed_date }}</td>
-                            <td class="py-2 px-4 border">{{ offense.recorded_date }}</td>
-                            <td class="py-2 px-4 border">{{ offense.cleansed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_offense }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_penalty }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
+                            <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
         </div>
     </AuthenticatedLayout>
 </template>
