@@ -12,6 +12,9 @@ const form = useForm({
 });
 
 const saveMajorOffense = () => {
+    if (form.major_offenses === '') {
+        form.post(route('majoroffense.store'));
+    } else {
     Swal.fire({
         title: "Are you sure?",
         text: "You are about to add this major offense!",
@@ -51,6 +54,7 @@ const saveMajorOffense = () => {
             });
         }
     });
+}
 };
 </script>
 

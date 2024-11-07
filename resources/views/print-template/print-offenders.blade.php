@@ -60,10 +60,16 @@
     <h1>List of Offenders</h1>
 
     <div class="filter">  
-        Status: {{ $sanction == 0 ? 'Unresolve' : ($sanction == 1 ? 'Resolve' : 'N/A') }} |
-        Offense Filter: {{ $offenseFilter ?? 'All Offenses' }} |
+        Status: 
+        @if ($sanction === "0")
+            Unresolved
+        @elseif ($sanction === "1")
+            Resolved
+        @else
+            All
+        @endif |        Offense Filter: {{ $offenseFilter ?? 'All Offenses' }} |
         Sex: {{ $sex ?? 'All' }} |
-        School Year: {{ $selectedYear ?? 'N/A' }}, Quarter: {{ $selectedQuarter ?? 'N/A' }} |
+        School Year: {{ $selectedYear ?? 'All' }}, Quarter: {{ $selectedQuarter ?? 'All' }} |
         Grade: {{ $grade ?? 'All' }}, Section: {{ $section ?? 'All' }} |
         Offense: {{ $selectedOffense ?? 'All Offenses' }}
     </div>

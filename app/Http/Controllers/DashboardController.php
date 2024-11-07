@@ -94,7 +94,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getTableData(Request $request, $selectedSchoolyear, $selectedQuarter) 
+    public function getTableData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
     {
         $sortColumn = $request->input('sortColumn', 'updated_at');  
         $sortOrder = $request->input('sortOrder', 'desc'); 

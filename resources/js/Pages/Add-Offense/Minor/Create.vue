@@ -12,6 +12,9 @@ const form = useForm({
 });
 
 const saveMinorOffense = () => {
+    if (form.minor_offenses === '') {
+        form.post(route('minoroffense.store'));
+    } else {
     Swal.fire({
         title: "Are you sure?",
         text: "You are about to add this minor offense!",
@@ -51,6 +54,7 @@ const saveMinorOffense = () => {
             });
         }
     });
+}
 };
 </script>
 
