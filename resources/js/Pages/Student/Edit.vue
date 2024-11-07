@@ -127,13 +127,10 @@ const updateStudent = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Edit Student</h5>
-                <Link
-                    :href="route('students.index')"
-                    class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
-                    >Back</Link
-                >
             </div>
 
             <form @submit.prevent="updateStudent()">
@@ -375,5 +372,6 @@ const updateStudent = () => {
                 </div>
             </form>
         </div>
+    </div>
     </AuthenticatedLayout>
 </template>

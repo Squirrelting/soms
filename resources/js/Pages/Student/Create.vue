@@ -184,12 +184,10 @@ const saveStudent = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Input Student</h5>
-                <Link
-                    :href="route('students.index')"
-                    class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
-                    >Back</Link>
             </div>
 
             <form @submit.prevent="saveStudent()">
@@ -326,6 +324,7 @@ const saveStudent = () => {
 </div>
     </div>
 </form>
+</div>
         </div>
     </AuthenticatedLayout>
 </template>
