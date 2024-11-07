@@ -56,17 +56,29 @@ const filterQuarters = () => {
 
 const getStudentsData = () => {
     isLoading.value = true;
+
+    // Prepare route parameters
+    const params = {
+        selectedSchoolyear: selectedYear.value,
+    };
+
+    // Only add selectedQuarter if it’s not empty
+    if (selectedQuarter.value) {
+        params.selectedQuarter = selectedQuarter.value;
+    }
+
     axios
-        .get(route("get.table.data", {
-            selectedSchoolyear: selectedYear.value,
-            selectedQuarter: selectedQuarter.value,
-        }))
+        .get(route("get.table.data", params))
         .then((response) => {
             studentsData.value = response.data.students;
             isLoading.value = false;
         })
-        .catch((error) => console.error("Error fetching data:", error));
+        .catch((error) => {
+            console.error("Error fetching data:", error);
+            isLoading.value = false;
+        });
 };
+
 
 onMounted(() => {
     getStudentsData();
@@ -83,6 +95,7 @@ onMounted(() => {
                     <!-- School Year Selector -->
                     <select
                         v-model="selectedYear"
+                        :disabled="isLoading"
                         @change="filterQuarters"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >

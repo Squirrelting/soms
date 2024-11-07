@@ -50,7 +50,10 @@ const sectionFilter = ref(props.section || "");
 const sections = ref(props.sections);
 const selectedOffense = ref(props.selectedOffense || "");
 
+const isLoading = ref(false);
+
 const filter = () => {
+    isLoading.value = true;
     router.get(
         route("reports.index"),
         {
@@ -71,6 +74,8 @@ const filter = () => {
             replace: true,
             onSuccess: (page) => {
                 offendersData.value = page.props.offendersData;
+                isLoading.value = false;
+
             },
         }
     );
@@ -196,8 +201,6 @@ const checkDataAndProceed = (action) => {
 };
 </script>
 
-
-
 <template>
     <Head title="Reports" />
     <AuthenticatedLayout>
@@ -209,6 +212,7 @@ const checkDataAndProceed = (action) => {
 
                 <div class="flex space-x-1">
                     <select
+                        :disabled="isLoading"
                         v-model="selectedYear"
                         @change="filterQuarters"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
@@ -224,6 +228,7 @@ const checkDataAndProceed = (action) => {
                     </select>
 
                     <select
+                        :disabled="isLoading"
                         v-model="selectedQuarter"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -239,6 +244,7 @@ const checkDataAndProceed = (action) => {
 
                     <div class="flex space-x-1">
                     <select
+                        :disabled="isLoading"
                         v-model="gradeFilter"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -253,6 +259,7 @@ const checkDataAndProceed = (action) => {
                     </select>
 
                     <select
+                        :disabled="isLoading"
                         v-model="sectionFilter"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -304,6 +311,7 @@ const checkDataAndProceed = (action) => {
                 </div>
             <div class="flex space-x-1 mb-2">
                 <select
+                        :disabled="isLoading"
                         v-model="sex"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -313,6 +321,7 @@ const checkDataAndProceed = (action) => {
                     </select>
 
                 <select
+                        :disabled="isLoading"
                         v-model="sanction"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -321,6 +330,7 @@ const checkDataAndProceed = (action) => {
                         <option value="1">Resolved</option>
                     </select>
                 <select
+                   :disabled="isLoading"
                     v-model="offenseFilter"
                     class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -329,6 +339,7 @@ const checkDataAndProceed = (action) => {
                     <option value="Major">Major Offense</option>
                 </select>
                 <select
+                    :disabled="isLoading"
                     v-model="selectedOffense"
                     class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[46rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                 >
@@ -342,6 +353,8 @@ const checkDataAndProceed = (action) => {
                     </option>
                 </select>
             </div>
+
+            <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>

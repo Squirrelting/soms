@@ -34,6 +34,11 @@ class AddMajorOffensesController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        return Inertia::render('Add-Offense/Major/Create');
+    }
+
     public function store(AddMajorDetailRequest $request)
     {
         MajorOffense::create($request->validated());
