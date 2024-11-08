@@ -22,7 +22,8 @@
         @foreach ($submittedminorOffenses as $minorOffense)
             <li>
                 Offense: {{ $minorOffense->minor_offense }}<br>
-                Penalty: {{ $minorOffense->minor_penalty }}
+                Penalty: {{ $minorOffense->minor_penalty }}<br>
+                Date Committed: {{ \Carbon\Carbon::parse($minorOffense->committed_date)->format('Y-m-d') }}
             </li>
         @endforeach
     </ul>
@@ -34,7 +35,8 @@
             @foreach ($submittedmajorOffenses as $majorOffense)
                 <li>
                     Offense: {{ $majorOffense->major_offense }}<br>
-                    Penalty: {{ $majorOffense->major_penalty }}
+                    Penalty: {{ $majorOffense->major_penalty }}<br>
+                    Date Committed: {{ \Carbon\Carbon::parse($majorOffense->committed_date)->format('Y-m-d') }}
                 </li>
             @endforeach
         </ul>
@@ -50,7 +52,5 @@
     
         We kindly ask for your assistance and understanding in addressing these matters. If you would like to discuss the details further or have any concerns, please feel free to reach out. Together, we can work towards maintaining a positive and supportive learning environment for all our students.
     </p>
-    
-
 </body>
 </html>
