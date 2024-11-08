@@ -78,20 +78,12 @@ const getStudentsData = () => {
             isLoading.value = false;
         });
 };
-
 const getGradesData = () => {
     isLoading.value = true;
-
-    // Prepare route parameters
-    const params = {
-        selectedSchoolyear: selectedYear.value,
-    };
-
-    // Only add selectedQuarter if it’s not empty
+    const params = { selectedSchoolyear: selectedYear.value };
     if (selectedQuarter.value) {
         params.selectedQuarter = selectedQuarter.value;
     }
-
     axios
         .get(route("get.grade.data", params))
         .then((response) => {

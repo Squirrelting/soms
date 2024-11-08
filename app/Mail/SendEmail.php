@@ -36,9 +36,9 @@ class SendEmail extends Mailable
     {
         return new Envelope(
             from: new Address('samplecode42069@gmail.com', 'Santiago City National High School'),
-            replyTo: [
-                new Address('christiansalvador1906@gmail.com', 'Bossing'),
-            ],
+            // replyTo: [
+            //     new Address('christiansalvador1906@gmail.com', 'Bossing'),
+            // ],
 
             subject: $this->subject,
         );

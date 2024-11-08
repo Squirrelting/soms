@@ -83,33 +83,38 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
-    {
-
-        // Fetch offenses per grade
-        $offensesPerGrade = Student::select('grade_id')
-        ->whereHas('submittedMinorOffensesWithNoSanction')
-        ->orWhereHas('submittedMajorOffensesWithNoSanction')
-        ->when($selectedSchoolyear, fn($query) => $query->where('schoolyear', $selectedSchoolyear))
-        ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
-        ->distinct('lrn')
+public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
+{
+    // Fetch offenses per grade with necessary filters
+    $offensesPerGrade = Student::select('grade_id')
+        ->where(function ($query) {
+            $query->whereHas('submittedMinorOffensesWithNoSanction')
+                  ->orWhereHas('submittedMajorOffensesWithNoSanction');
+        })
+        ->when($selectedSchoolyear, function($query) use ($selectedSchoolyear) {
+            $query->where('schoolyear', $selectedSchoolyear);
+        })
+        ->when($selectedQuarter, function($query) use ($selectedQuarter) {
+            $query->where('quarter', $selectedQuarter);
+        })
         ->groupBy('grade_id')
         ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
         ->get()
-        ->keyBy('grade_id'); 
+        ->keyBy('grade_id');
 
-        // Define all grades
-        $allGrades = [7, 8, 9, 10, 11, 12];
-        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offensesPerGrade) {
+    // Define all grades and ensure zeroes for missing grades
+    $allGrades = [7, 8, 9, 10, 11, 12];
+    $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offensesPerGrade) {
         return [
             'grade_id' => $grade_id,
             'offense_count' => $offensesPerGrade->get($grade_id)->offense_count ?? 0
         ];
-        });
+    });
 
-        return response()->json([
-            'offensesPerGrade' => $offensesPerGradeWithZeroes,
-        ]);
-    }
+    return response()->json([
+        'offensesPerGrade' => $offensesPerGradeWithZeroes,
+    ]);
+}
+
     
 }
