@@ -153,7 +153,11 @@ onMounted(async () => {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 200px;
-  overflow: hidden;
+  width: 100%;  /* Full width */
+  height: 100%; /* Full height */
+  min-height: 225px; /* Minimum height */
+  max-height: 225px; /* Constrains the height */
+  overflow: hidden; /* Prevents overflow */
+
 }
 </style>
