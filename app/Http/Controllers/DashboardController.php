@@ -14,30 +14,11 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $sortColumn = $request->input('sortColumn', 'updated_at');  
-        $sortOrder = $request->input('sortOrder', 'desc');  
         $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
     
-        // Fetch offenses per grade
-        $offensesPerGrade = Student::select('grade_id')
-            ->whereHas('submittedMinorOffensesWithNoSanction')
-            ->orWhereHas('submittedMajorOffensesWithNoSanction')
-            ->distinct('lrn')
-            ->groupBy('grade_id')
-            ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
-            ->get()
-            ->keyBy('grade_id'); 
-    
-        // Define all grades
-        $allGrades = [7, 8, 9, 10, 11, 12];
-        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offensesPerGrade) {
-            return [
-                'grade_id' => $grade_id,
-                'offense_count' => $offensesPerGrade->get($grade_id)->offense_count ?? 0
-            ];
-        });
+      
         
         // Fetch distinct school years and quarters
         $getMajorSchoolYears = SubmittedMajorOffense::select('student_schoolyear', 'student_quarter')->distinct();
@@ -71,24 +52,9 @@ class DashboardController extends Controller
         
         $finalResult = array_values($groupedSchoolYears);
         
-        // Retrieve all data, filter, and then paginate
-        $filteredStudents = Student::with(['grade', 'section'])
-            ->when($selectedYear, fn($query) => $query->where('schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
-            ->withCount([
-                'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
-                'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
-            ])
-            ->orderBy($sortColumn, $sortOrder)
-            ->get();
-    
-        // Paginate the filtered result manually
-        $students = $filteredStudents->take(5)->values();
     
         return Inertia::render('Dashboard', [
-            'students' => $students,
             'schoolYears' => $finalResult,
-            'offensesPerGrade' => $offensesPerGradeWithZeroes,
             'selectedYear' => $selectedYear,  
             'selectedQuarter' => $selectedQuarter,  
         ]);
@@ -114,6 +80,35 @@ class DashboardController extends Controller
 
         return response()->json([
             'students' => $students
+        ]);
+    }
+
+    public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
+    {
+
+        // Fetch offenses per grade
+        $offensesPerGrade = Student::select('grade_id')
+        ->whereHas('submittedMinorOffensesWithNoSanction')
+        ->orWhereHas('submittedMajorOffensesWithNoSanction')
+        ->when($selectedSchoolyear, fn($query) => $query->where('schoolyear', $selectedSchoolyear))
+        ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
+        ->distinct('lrn')
+        ->groupBy('grade_id')
+        ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
+        ->get()
+        ->keyBy('grade_id'); 
+
+        // Define all grades
+        $allGrades = [7, 8, 9, 10, 11, 12];
+        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offensesPerGrade) {
+        return [
+            'grade_id' => $grade_id,
+            'offense_count' => $offensesPerGrade->get($grade_id)->offense_count ?? 0
+        ];
+        });
+
+        return response()->json([
+            'offensesPerGrade' => $offensesPerGradeWithZeroes,
         ]);
     }
     

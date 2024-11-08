@@ -66,6 +66,8 @@ const saveSection = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Add Section</h5>
                 <Link
@@ -80,7 +82,7 @@ const saveSection = () => {
 
                         <div class="mb-3">
                             <label>Student's Grade</label>
-                            <select v-model="form.grade_id" class="py-1 w-full">
+                            <select v-model="form.grade_id" class="py-1 w-full bg-gray-200 border border-gray-500 rounded">
                                 <option value="">Select Grade</option>
                                 <option v-for="grade in grades" :key="grade.id" :value="grade.id">{{ grade.grade }}</option>
                             </select>
@@ -92,7 +94,7 @@ const saveSection = () => {
                             <input
                                 type="text"
                                 v-model="form.section"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.section" class="text-red-500">
                                 {{ errors.section }}
@@ -113,5 +115,7 @@ const saveSection = () => {
                 </div>
             </form>
         </div>
+    </div>
+
     </AuthenticatedLayout>
 </template>

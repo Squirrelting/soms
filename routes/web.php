@@ -24,6 +24,7 @@ Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('ge
 Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');
 Route::get('/get-bar-data', [BarGraphController::class, 'getBarData'])->name('get.bar.data');
 Route::get('/get-table-data/{selectedSchoolyear}/{selectedQuarter?}', [DashboardController::class, 'getTableData'])->name('get.table.data');
+Route::get('/get-grade-data/{selectedSchoolyear}/{selectedQuarter?}', [DashboardController::class, 'getGradeData'])->name('get.grade.data');
 
 
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
