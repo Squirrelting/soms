@@ -10,14 +10,13 @@ import BarGraph from "@/Components/BarGraph.vue";
 import axios from "axios";
 
 const props = defineProps({
-    students: Object,
     schoolYears: Array,
-    offensesPerGrade: Array,
     selectedYear: String,
     selectedQuarter: String,
 });
 
 const studentsData = ref([]);
+const gradesData = ref([]);
 const isLoading = ref(false);
 
 const selectedYear = ref(
@@ -34,6 +33,7 @@ const filteredQuarters = computed(() => {
         (year) => year.student_schoolyear === selectedYear.value
     );
     getStudentsData();
+    getGradesData();
     return selectedSchoolYear ? selectedSchoolYear.quarters : [];
 });
 
@@ -79,9 +79,36 @@ const getStudentsData = () => {
         });
 };
 
+const getGradesData = () => {
+    isLoading.value = true;
+
+    // Prepare route parameters
+    const params = {
+        selectedSchoolyear: selectedYear.value,
+    };
+
+    // Only add selectedQuarter if it’s not empty
+    if (selectedQuarter.value) {
+        params.selectedQuarter = selectedQuarter.value;
+    }
+
+    axios
+        .get(route("get.grade.data", params))
+        .then((response) => {
+            gradesData.value = response.data.offensesPerGrade;
+            isLoading.value = false;
+        })
+        .catch((error) => {
+            console.error("Error fetching data:", error);
+            isLoading.value = false;
+        });
+};
+
+
 
 onMounted(() => {
     getStudentsData();
+    getGradesData();
 });
 </script>
 
@@ -165,7 +192,8 @@ onMounted(() => {
 
             <!-- Vertical Card Section -->
             <div class="flex">
-                <OffensesPerGrade :offensesPerGrade="offensesPerGrade" />
+                <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
+                <OffensesPerGrade :offensesPerGrade="gradesData" />
             </div>
         </div>
     </AuthenticatedLayout>

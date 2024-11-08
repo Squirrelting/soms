@@ -28,28 +28,28 @@
   });
   const isLoading = ref(false);
   
-  // Reactive data structure
-  const lineData = ref({
-    labels: [], // Empty initially
-    datasets: [
-      {
-        label: "Minor Offenses",
-        data: [],
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 2,
-        tension: 0.3,
-      },
-      {
-        label: "Major Offenses",
-        data: [],
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
-        borderWidth: 2,
-        tension: 0.3,
-      },
-    ],
-  });
+// Reactive data structure
+const lineData = ref({
+  labels: [], // Empty initially
+  datasets: [
+    {
+      label: "Minor Offenses",
+      data: [],
+      backgroundColor: "rgba(255, 206, 86, 0.2)", // Yellow with transparency
+      borderColor: "rgba(255, 206, 86, 1)",       // Solid yellow border
+      borderWidth: 2,
+      tension: 0.3,
+    },
+    {
+      label: "Major Offenses",
+      data: [],
+      backgroundColor: "rgba(75, 192, 75, 0.2)",  // Green with transparency
+      borderColor: "rgba(75, 192, 75, 1)",        // Solid green border
+      borderWidth: 2,
+      tension: 0.3,
+    },
+  ],
+});
   
   let chartInstance = null;
   
@@ -155,14 +155,7 @@
             align: "center",
           },
           datalabels: {
-            color: "#000",
-            anchor: "end",
-            align: "end",
-            font: {
-              weight: "bold",
-              size: 10,
-            },
-            formatter: (value) => `${value}`,
+              display: false,
           },
         },
         scales: {

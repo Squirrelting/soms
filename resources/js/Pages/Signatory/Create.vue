@@ -62,6 +62,8 @@ const saveSignatory = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Input Signatory</h5>
                 <Link
@@ -79,7 +81,9 @@ const saveSignatory = () => {
                             <input
                                 type="text"
                                 v-model="form.name"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
+
+
                             />
                             <div v-if="errors.name" class="text-red-500">
                                 {{ errors.name }}
@@ -91,7 +95,9 @@ const saveSignatory = () => {
                             <input
                                 type="text"
                                 v-model="form.position"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
+
+
                             />
                             <div v-if="errors.position" class="text-red-500">
                                 {{ errors.position }}
@@ -103,6 +109,7 @@ const saveSignatory = () => {
                                 type="submit"
                                 :disabled="form.processing"
                                 class="bg-blue-500 text-white py-2 px-5 rounded mb-4"
+
                             >
                                 <span v-if="form.processing">Saving...</span>
                                 <span v-else>Save</span>
@@ -112,5 +119,7 @@ const saveSignatory = () => {
                 </div>
             </form>
         </div>
+    </div>
+
     </AuthenticatedLayout>
 </template>

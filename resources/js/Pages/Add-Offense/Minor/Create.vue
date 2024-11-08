@@ -66,6 +66,8 @@ const saveMinorOffense = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Add Minor Offense</h5>
                 <Link
@@ -83,7 +85,7 @@ const saveMinorOffense = () => {
                             <input
                                 type="text"
                                 v-model="form.minor_offenses"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.minor_offenses" class="text-red-500">
                                 {{ errors.minor_offenses }}
@@ -103,6 +105,7 @@ const saveMinorOffense = () => {
                     </div>
                 </div>
             </form>
+        </div>
         </div>
     </AuthenticatedLayout>
 </template>
