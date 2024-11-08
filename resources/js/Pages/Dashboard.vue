@@ -147,7 +147,6 @@ onMounted(() => {
                     <!-- Bar Graph -->
                     <div
                         class="flex-grow bg-white rounded-lg p-2"
-                        style="height: 225px"
                     >
                         <BarGraph
                             :selectedYear="selectedYear"
@@ -158,7 +157,6 @@ onMounted(() => {
                     <!-- Line Chart -->
                     <div
                         class="flex-grow bg-white rounded-lg p-2"
-                        style="height: 225px"
                     >
                         <LineChart
                             :selectedYear="selectedYear"
@@ -169,7 +167,6 @@ onMounted(() => {
                     <!-- Pie Chart -->
                     <div
                         class="bg-white rounded-lg p-2 w-full lg:w-64"
-                        style="height: 225px"
                     >
                         <PieChart
                             :selectedYear="selectedYear"
