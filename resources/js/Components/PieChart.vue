@@ -1,6 +1,6 @@
 <template>
-  <div class="chart-container flex flex-col items-center justify-center">
-    <span v-if='isLoading' class="loading loading-dots loading-sm mt-10"></span>
+  <div class="chart-container">
+    <span v-if="isLoading" class="loading loading-dots loading-sm mt-10"></span>
     <canvas id="pieChart"></canvas>
   </div>
 </template>
@@ -73,7 +73,7 @@ const createChart = () => {
     data: pieData.value,
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: false, // Allow dynamic resizing
       plugins: {
         legend: {
           position: 'right',
@@ -125,7 +125,11 @@ onMounted(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 200px; 
-  overflow: hidden;
+  width: 100%;  /* Full width */
+  height: 100%; /* Full height */
+  min-height: 225px; /* Minimum height */
+  max-height: 225px; /* Constrains the height */
+  overflow: hidden; /* Prevents overflow */
+
 }
 </style>
