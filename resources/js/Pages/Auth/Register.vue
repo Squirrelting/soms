@@ -67,6 +67,8 @@ const submitForm = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Register User</h5>
                 <Link
@@ -84,7 +86,7 @@ const submitForm = () => {
                                 id="name"
                                 type="text"
                                 v-model="form.name"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                                 required
                             />
                             <div v-if="errors.name" class="text-red-500">
@@ -98,7 +100,7 @@ const submitForm = () => {
                                 id="email"
                                 type="email"
                                 v-model="form.email"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                                 required
                             />
                             <div v-if="errors.email" class="text-red-500">
@@ -108,7 +110,7 @@ const submitForm = () => {
 
                         <div class="mb-3">
                             <label>Role</label>
-                            <select v-model="form.role" class="py-1 w-full">
+                            <select v-model="form.role" class="py-1 w-full bg-gray-200 border border-gray-500 rounded">
                                 <option value="">Select Role</option>
                                 <option value="admin">Admin</option>
                                 <option value="pod">POD</option>
@@ -124,7 +126,7 @@ const submitForm = () => {
                                 id="password"
                                 type="password"
                                 v-model="form.password"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                                 required
                             />
                             <div v-if="errors.password" class="text-red-500">
@@ -138,7 +140,7 @@ const submitForm = () => {
                                 id="password_confirmation"
                                 type="password"
                                 v-model="form.password_confirmation"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                                 required
                             />
                             <div v-if="errors.password_confirmation" class="text-red-500">
@@ -160,5 +162,7 @@ const submitForm = () => {
                 </div>
             </form>
         </div>
+    </div>
+
     </AuthenticatedLayout>
 </template>

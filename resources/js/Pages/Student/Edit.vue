@@ -127,13 +127,10 @@ const updateStudent = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Edit Student</h5>
-                <Link
-                    :href="route('students.index')"
-                    class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
-                    >Back</Link
-                >
             </div>
 
             <form @submit.prevent="updateStudent()">
@@ -300,7 +297,7 @@ const updateStudent = () => {
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             >
                                 <option value="">Select</option>
-                                <option value="2nd Quarter">
+                                <option value="1st Quarter">
                                     1st Quarter
                                 </option>
                                 <option value="2nd Quarter">
@@ -328,8 +325,7 @@ const updateStudent = () => {
                             >
                             <input
                                 type="number"
-                                :min="new Date().getFullYear()"
-                                max="2099"
+                                :max="new Date().getFullYear() + 1"
                                 step="1"
                                 v-model="form.yeartoday"
                                 class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
@@ -376,5 +372,6 @@ const updateStudent = () => {
                 </div>
             </form>
         </div>
+    </div>
     </AuthenticatedLayout>
 </template>

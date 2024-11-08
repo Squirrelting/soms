@@ -7,12 +7,35 @@
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
-            margin: 40px;
             line-height: 1.5;
+            margin: 0;
+            padding: 0;
         }
         h1 {
+            text-align: center;
             font-size: 24px;
+            margin: 10px 0 20px;
+        }
+        .logo {
+            text-align: center;
+            margin-top: -30px;
             margin-bottom: 20px;
+        }
+        .student, .footer, .date {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 14px;
+        }
+        .date {
+            text-align: right;
+            font-size: 14px;
         }
         table {
             width: 100%;
@@ -26,10 +49,6 @@
             padding: 8px;
             text-align: left;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
@@ -39,12 +58,20 @@
     </div>
 
     <h1>Student Record</h1>
-    <p><strong>Date: {{ $date }}</strong></p>
+    
+    <div class="student">  
+        <span><strong>LRN:</strong> {{ $student->lrn }}</span> | 
+        <span><strong>Name:</strong> {{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</span> |
+        <span><strong>Sex:</strong> {{ $student->sex }}</span> |
+        <span><strong>Grade:</strong> {{ $student->grade->grade ?? 'N/A' }}</span> |
+        <span><strong>Section:</strong> {{ $student->section->section ?? 'N/A' }}</span>
+    </div>
+    
 
     <!-- Minor Offenses Table -->
     @if($submittedminorOffenses->isNotEmpty())
-    <div class="mt-4 mx-4">
-        <h2>Minor Offenses</h2>
+    <div class="mt-2">
+        <h4>Minor Offenses</h4>
         <table>
             <thead>
                 <tr>
@@ -72,8 +99,8 @@
 
     <!-- Major Offenses Table -->
     @if($submittedmajorOffenses->isNotEmpty())
-    <div class="mt-4 mx-4">
-        <h2>Major Offenses</h2>
+    <div class="mt-2">
+        <h4>Major Offenses</h4>
         <table>
             <thead>
                 <tr>
@@ -98,6 +125,13 @@
         </table>
     </div>
     @endif
+
+    <div class="footer">
+        Printed by: {{ $userName }}, {{ $userRole }}
+    </div>
+    <div class="date">
+        Date: {{ $date }}
+    </div>
 
 </body>
 </html>

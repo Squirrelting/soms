@@ -84,6 +84,8 @@ const updateMajorOffense = () => {
         </div>
 
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Edit Major Offense's</h5>
                 <Link
@@ -102,7 +104,7 @@ const updateMajorOffense = () => {
                             <input
                                 type="text"
                                 v-model="form.major_offenses"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.major_offenses" class="text-red-500">
                                 {{ errors.major_offenses }}
@@ -123,6 +125,7 @@ const updateMajorOffense = () => {
                     </div>
                 </div>
             </form>
+        </div>
         </div>
     </AuthenticatedLayout>
 </template>

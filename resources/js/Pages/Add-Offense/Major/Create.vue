@@ -12,6 +12,9 @@ const form = useForm({
 });
 
 const saveMajorOffense = () => {
+    if (form.major_offenses === '') {
+        form.post(route('majoroffense.store'));
+    } else {
     Swal.fire({
         title: "Are you sure?",
         text: "You are about to add this major offense!",
@@ -51,6 +54,7 @@ const saveMajorOffense = () => {
             });
         }
     });
+}
 };
 </script>
 
@@ -62,6 +66,8 @@ const saveMajorOffense = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Add Major Offense</h5>
                 <Link
@@ -79,7 +85,7 @@ const saveMajorOffense = () => {
                             <input
                                 type="text"
                                 v-model="form.major_offenses"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.major_offenses" class="text-red-500">
                                 {{ errors.major_offenses }}
@@ -99,6 +105,7 @@ const saveMajorOffense = () => {
                     </div>
                 </div>
             </form>
+        </div>
         </div>
     </AuthenticatedLayout>
 </template>

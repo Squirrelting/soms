@@ -125,60 +125,75 @@ const DeleteSection = (id) => {
 
         <div class="mt-4 mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h5 class="text-xl font-semibold text-gray-700">
-                    Grade and Section List
-                </h5>
+    <h5 class="text-xl font-semibold text-gray-700">
+        Grade and Section List
+    </h5>
 
-                <div class="flex items-center">
-                    <!-- Search Input -->
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Search by section name"
-                        class="border border-gray-300 rounded-lg p-2 w-72 focus:outline-none focus:ring focus:border-blue-300"
-                    />
+    <div class="flex items-center space-x-4">
+        <!-- Search Input -->
+        <div class="relative w-full max-w-xs mr-4">
+            <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search"
+                class="input border-gray-300 rounded-lg text-sm h-10 pl-9 pr-3 w-full focus:border-blue-200 focus:ring focus:ring-blue-200 focus:outline-none"
+            />
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 opacity-70 pointer-events-none"
+            >
+                <path
+                    fill-rule="evenodd"
+                    d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                    clip-rule="evenodd"
+                />
+            </svg>
+        </div>
 
-                    <!-- Grade Dropdown -->
-                    <select
-                        v-model="gradeFilter"
-                        class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Grades</option>
-                        <option
-                            v-for="grade in [
-                                 7, 8, 9, 10, 11, 12,
-                            ]"
-                            :key="grade"
-                            :value="grade"
-                        >
-                            Grade {{ grade }}
-                        </option>
-                    </select>
+        <div class="flex items-center space-x-4">
+            <!-- Grade Dropdown -->
+            <select
+                v-model="gradeFilter"
+                class="select text-gray-700 select-xs text-xs py-1 px-1 w-[6rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+            >
+                <option value="">All Grades</option>
+                <option
+                    v-for="grade in [7, 8, 9, 10, 11, 12]"
+                    :key="grade"
+                    :value="grade"
+                >
+                    Grade {{ grade }}
+                </option>
+            </select>
 
-                    <!-- Section Dropdown -->
-                    <select
-                        v-model="sectionFilter"
-                        class="ml-4 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
-                    >
-                        <option value="">All Sections</option>
-                        <option
-                            v-for="section in sections"
-                            :key="section.id"
-                            :value="section.id"
-                        >
-                            {{ section.section }}
-                        </option>
-                    </select>
+            <!-- Section Dropdown -->
+            <select
+                v-model="sectionFilter"
+                class="select text-gray-700 select-xs text-xs py-1 px-1 w-[6rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+            >
+                <option value="">All Sections</option>
+                <option
+                    v-for="section in sections"
+                    :key="section.id"
+                    :value="section.id"
+                >
+                    {{ section.section }}
+                </option>
+            </select>
+        </div>
 
-                    <!-- Add Section Button -->
-                    <Link
-                        :href="route('section.create')"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg ml-4 transition ease-in-out duration-150"
-                    >
-                        Add Section
-                    </Link>
-                </div>
-            </div>
+        <!-- Add Section Button -->
+        <Link
+            :href="route('section.create')"
+            class="bg-blue-500 text-white h-8 py-1 px-1 rounded text-sm w-[12rem] text-center"
+        >
+            Add Section
+        </Link>
+    </div>
+</div>
+
 
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>

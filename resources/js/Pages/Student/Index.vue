@@ -52,7 +52,11 @@ const sortTable = (column) => {
     filter(); 
 };
 
+const isLoading = ref(false);
+
 const filter = () => {
+    isLoading.value = true;
+
     router.get(
         route("students.index"),
         {
@@ -69,6 +73,8 @@ const filter = () => {
             preserveScroll: true,
             onSuccess: (page) => {
                 studentsData.value = page.props.students;
+                isLoading.value = false;
+
             },
         }
     );
@@ -130,6 +136,7 @@ watch(gradeFilter, (newGrade) => {
                 
                 <div class="flex space-x-1">
                     <select
+                        :disabled="isLoading"
                         v-model="selectedYear"
                         @change="filterQuarters"
                         class="select text-gray-700 select-xs text-xs py-1 px-1 w-[8rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
@@ -145,6 +152,7 @@ watch(gradeFilter, (newGrade) => {
                     </select>
                     <!-- Quarters Select -->
                     <select
+                        :disabled="isLoading"
                         v-model="selectedQuarter"
                         class="select text-gray-700 select-xs text-xs py-1 px-1 w-[6rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -161,6 +169,7 @@ watch(gradeFilter, (newGrade) => {
                 <div class="flex space-x-1">
                 <!-- Grade Dropdown -->
                 <select
+                    :disabled="isLoading"
                     v-model="gradeFilter"
                     class="select text-gray-700 select-xs text-xs py-1 px-1 w-[6rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -176,6 +185,7 @@ watch(gradeFilter, (newGrade) => {
 
                 <!-- Section Dropdown -->
                 <select
+                    :disabled="isLoading"
                     v-model="sectionFilter"
                     class="select text-gray-700 select-xs text-xs py-1 px-1 w-[6rem] h-8 focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -222,6 +232,7 @@ watch(gradeFilter, (newGrade) => {
                 </Link>
             </div>
  
+            <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
             <table class="w-full bg-white border border-gray-200 shadow">
                 <thead>
                     <tr>

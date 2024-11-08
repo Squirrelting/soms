@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="chart-container">
+        <div class="chart-container flex flex-col justify-center items-center">
+            <span v-if="loading" class="loading loading-dots loading-sm mt-10"></span>
             <canvas ref="barChart"></canvas>
         </div>
     </div>
@@ -20,7 +21,7 @@ const props = defineProps({
 const chartInstance = ref(null);
 const loading = ref(true);
 const chartData = ref([]);
-const barChartRef = ref(null); // Define a ref for the canvas
+const barChartRef = ref(null);
 
 // Function to fetch bar chart data from the server
 const fetchBarData = async () => {
@@ -75,16 +76,16 @@ const renderChart = () => {
                     {
                         data: data,
                         backgroundColor: [
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
+                            "rgba(255, 0, 0, 0.2)",
+                            "rgba(255, 165, 0, 0.4)",
+                            "rgba(54, 162, 235, 0.4)",
+                            "rgba(75, 192, 192, 0.4)",
+                            "rgba(153, 102, 255, 0.4)",
                         ],
                         borderColor: [
-                            "rgba(255, 99, 132, 1)",
+                            "rgba(255, 0, 0, 1)",
+                            "rgba(255, 165, 0, 1)",
                             "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
                             "rgba(75, 192, 192, 1)",
                             "rgba(153, 102, 255, 1)",
                         ],

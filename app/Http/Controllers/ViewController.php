@@ -83,12 +83,19 @@ public function printRecord(Student $student)
     $imagePath = public_path('Images/SCNHS-Logo.png');
     $date = Carbon::now()->format('F j, Y');
 
+    // Fetch the currently logged-in user and their role
+    $user = auth()->user();
+    $userName = $user->name;
+    $userRole = $user->getRoleNames()->first();
+
     $pdf = Pdf::loadView('print-template.print-record', [
         'student' => $studentWithGradeAndSection,
         'submittedminorOffenses' => $submittedminorOffenses,
         'submittedmajorOffenses' => $submittedmajorOffenses,
         'imagePath' => $imagePath,
         'date' => $date,
+        'userName' => $userName,
+        'userRole' => $userRole,
     ])->setPaper('legal', 'landscape');
 
     return $pdf->stream('student-record.pdf');

@@ -105,52 +105,60 @@ function hasPermission(input) {
           <a class="ml-4 text-2xl font-bold text-blue-800">SOMS - Santiago City National High School</a>
 
 
-          <!-- Admin Privilege Dropdown -->
-          <div v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end ml-auto">
-            <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-blue-200">
-              Admin Privilege
-            </div>
-            <ul class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
-              <li>
-                <Link :href="route('user.index')" class="text-gray-700 hover:bg-gray-200">
-                  <UserPlusIcon class="h-4 w-4 text-black" /> User
-                </Link>
-              </li>
-              <li>
-                <Link :href="route('signatory.index')" class="text-gray-700 hover:bg-gray-200">
-                  <PencilIcon class="h-4 w-4 text-black" /> Signatory
-                </Link>
-              </li>
-              <li>
-                <Link :href="route('section.index')" class="text-gray-700 hover:bg-gray-200">
-                  <ChatBubbleLeftEllipsisIcon class="h-4 w-4 text-black" /> Add Section
-                </Link>
-              </li>
-            </ul>
-          </div>
+<!-- Admin Privilege Dropdown -->
+<div v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end ml-auto">
+  <div tabindex="0" role="button" class="btn m-1 text-gray-800 bg-blue-200 hover:bg-blue-300 rounded-md shadow-md px-4 py-2">
+    Admin Privilege
+  </div>
+  <ul class="dropdown-content menu bg-white text-gray-800 rounded-lg shadow-lg z-[1] w-52 p-2">
+    <li>
+      <Link :href="route('user.index')" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100">
+        <UserPlusIcon class="h-5 w-5 text-blue-500" />
+        <span>User</span>
+      </Link>
+    </li>
+    <li>
+      <Link :href="route('signatory.index')" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100">
+        <PencilIcon class="h-5 w-5 text-blue-500" />
+        <span>Signatory</span>
+      </Link>
+    </li>
+    <li>
+      <Link :href="route('section.index')" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100">
+        <ChatBubbleLeftEllipsisIcon class="h-5 w-5 text-blue-500" />
+        <span>Add Section</span>
+      </Link>
+    </li>
+  </ul>
+</div>
 
-          <!-- User Profile & Logout Dropdown -->
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn m-1 text-gray-700 bg-gray-200">
-              Hi, {{ $page.props.auth.user.name }}
-            </div>
-            <ul class="dropdown-content menu bg-gray-300 text-gray-700 rounded-box z-[1] w-52 p-2 shadow">
-              <li>
-                <Link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-200">
-                  <UserPlusIcon class="h-4 w-4 text-black" /> Profile
-                </Link>
-              </li>
-              <li>
-                <button @click="logOut()" class="text-gray-700 hover:bg-gray-200">
-                  <PowerIcon class="h-4 w-4 text-black" /> Log out
-                </button>
-              </li>
-            </ul>
-          </div>
+<!-- User Profile & Logout Dropdown -->
+<div class="dropdown dropdown-end">
+  <div tabindex="0" role="button" class="btn m-1 text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-md shadow-md px-4 py-2">
+    Hi, {{ $page.props.auth.user.name }}
+  </div>
+  <ul class="dropdown-content menu bg-white text-gray-800 rounded-lg shadow-lg z-[1] w-52 p-2">
+    <li>
+      <Link :href="route('profile.edit')" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100">
+        <UserPlusIcon class="h-5 w-5 text-blue-500" />
+        <span>Profile</span>
+      </Link>
+    </li>
+    <li>
+      <button @click="logOut()" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 w-full text-left">
+        <PowerIcon class="h-5 w-5 text-red-500" />
+        <span>Log out</span>
+      </button>
+    </li>
+  </ul>
+</div>
+
+
+
         </div>
       </header>
       <!-- Content Section -->
-      <section class="pt-16 px-4 bg-gray-100 min-h-screen">
+      <section class="pt-16 px-4 bg-gray-200 min-h-screen w-full">
         <slot />
       </section>
     </div>

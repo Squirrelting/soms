@@ -1,5 +1,6 @@
 <template>
-  <div class="chart-container">
+  <div class="chart-container flex flex-col items-center justify-center">
+    <span v-if='isLoading' class="loading loading-dots loading-sm mt-10"></span>
     <canvas id="pieChart"></canvas>
   </div>
 </template>
@@ -34,8 +35,10 @@ const pieData = ref({
 });
 
 let chartInstance = null;
+const isLoading = ref(false);
 
 const fetchChartData = () => {
+  isLoading.value = true;
   axios
     .get(`/get-pie-data`, {
       params: {
@@ -50,6 +53,7 @@ const fetchChartData = () => {
       if (chartInstance) {
         chartInstance.data = pieData.value;
         chartInstance.update();
+        isLoading.value = false;
       }
     })
     .catch((error) => {

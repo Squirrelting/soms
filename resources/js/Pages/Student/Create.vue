@@ -16,8 +16,8 @@ const props = defineProps({
     majorOffenses: Array
 });
 
-const yearToday = ref(new Date().getFullYear());
-const nextYear = ref(yearToday.value + 1);
+const yearToday = ref(new Date().getFullYear() || "");
+const nextYear = ref(yearToday.value + 1 || "");
 
 
 const form = useForm({
@@ -184,12 +184,10 @@ const saveStudent = () => {
 
     <AuthenticatedLayout>
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Input Student</h5>
-                <Link
-                    :href="route('students.index')"
-                    class="bg-red-600 text-white py-2 px-5 inline-block rounded mb-4"
-                    >Back</Link>
             </div>
 
             <form @submit.prevent="saveStudent()">
@@ -293,7 +291,7 @@ const saveStudent = () => {
     
     <div class="col-span-4 mb-3">
     <label class="block text-gray-700 font-semibold mb-1">School Year</label>
-    <input type="number" :min="new Date().getFullYear()" max="2099" step="1" v-model="form.yeartoday" 
+    <input type="number" :max="new Date().getFullYear() + 1" step="1" v-model="form.yeartoday" 
            class="py-1 w-full bg-gray-200 border border-gray-500 rounded" />
     <div v-if="errors.yeartoday" class="text-red-500 mt-1 text-sm">{{ errors.yeartoday }}</div>
 </div>
@@ -326,6 +324,7 @@ const saveStudent = () => {
 </div>
     </div>
 </form>
+</div>
         </div>
     </AuthenticatedLayout>
 </template>

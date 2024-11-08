@@ -107,7 +107,7 @@ const DeleteMajorOffense = (id) => {
             <span>{{ $page.props.flash.message }}</span>
         </div>
 
-        <div class="mx-4">
+        <div class="mt-4 mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h5 class="text-xl font-semibold text-gray-700">
                     Major Offenses Table
