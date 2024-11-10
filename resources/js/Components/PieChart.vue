@@ -26,9 +26,9 @@ const pieData = ref({
   datasets: [
     {
       label: 'Offenders by Sex',
-      data: [1, 0], 
+      data: [1, 0],
       backgroundColor: ['#00FFFF', '#FFC0CB'], // Light pink and cyan colors
-      borderColor: ['#00FFFF', '#FFC0CB'], 
+      borderColor: ['#00FFFF', '#FFC0CB'],
       borderWidth: 1,
     },
   ],
@@ -72,8 +72,8 @@ const createChart = () => {
     type: 'doughnut',
     data: pieData.value,
     options: {
-      responsive: true,
-      maintainAspectRatio: false, // Allow dynamic resizing
+      responsive: true, // Make sure chart resizes with screen
+      maintainAspectRatio: false, // Allow the chart to resize freely based on container size
       plugins: {
         legend: {
           position: 'right',
@@ -129,10 +129,14 @@ onMounted(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  width: 100%;  /* Full width */
-  height: 100%; /* Full height */
-  min-height: 225px; /* Minimum height */
-  max-height: 225px; /* Constrains the height */
-  overflow: hidden; /* Prevents overflow */
+  width: 100%;  /* Make chart responsive to parent width */
+  height: 225px;  /* Set a fixed height for the chart */
+}
+
+@media (min-width: 1024px) {
+  .chart-container {
+    min-height: 180px; 
+    max-height: 225px; /* Adjust for larger screens */
+  }
 }
 </style>
