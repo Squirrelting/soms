@@ -5,6 +5,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import Swal from "sweetalert2";
+
 
 defineProps({
     status: {
@@ -17,8 +19,33 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('password.email'));
-};
+    Swal.fire({
+                title: "Sending...",
+                text: "Please wait while we send the link on your email.",
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            }); 
+            form.post(route('password.email'), {
+                onSuccess: () => {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Send to Email Successfully",
+                        text: "Reset Link have been send to your email address!",
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                    form.reset();
+                },
+                onError: () => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed",
+                        text: "There was a problem sending the email link. Please try again.",
+                    });
+                },
+            });
+        };
 </script>
 
 <template>
