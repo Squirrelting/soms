@@ -1,12 +1,14 @@
 <template>
   <div class="chart-container">
+    <!-- Centered loading spinner -->
     <span v-if="isLoading" class="loading loading-dots loading-sm mt-10"></span>
-    <canvas id="pieChart"></canvas>
+    <!-- Canvas for the pie chart -->
+    <canvas id="pieChart" v-show="!isLoading"></canvas>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { Chart } from 'chart.js/auto';
 import axios from 'axios';
 
@@ -37,28 +39,29 @@ const pieData = ref({
 let chartInstance = null;
 const isLoading = ref(false);
 
-const fetchChartData = () => {
+const fetchChartData = async () => {
   isLoading.value = true;
-  axios
-    .get(`/get-pie-data`, {
+
+  try {
+    const response = await axios.get(`/get-pie-data`, {
       params: {
         selectedYear: props.selectedYear,
         selectedQuarter: props.selectedQuarter,
       },
-    })
-    .then((response) => {
-      const data = response.data;
-      pieData.value.datasets[0].data = [data.male, data.female];
-
-      if (chartInstance) {
-        chartInstance.data = pieData.value;
-        chartInstance.update();
-        isLoading.value = false;
-      }
-    })
-    .catch((error) => {
-      console.error('Error fetching chart data:', error);
     });
+
+    const data = response.data;
+    pieData.value.datasets[0].data = [data.male, data.female];
+
+    if (chartInstance) {
+      chartInstance.data = pieData.value;
+      chartInstance.update();
+    }
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const createChart = () => {
@@ -110,7 +113,7 @@ const createChart = () => {
         },
       },
     },
-  });
+    });
 };
 
 watch(
@@ -121,7 +124,8 @@ watch(
   { immediate: true }
 );
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
   createChart();
 });
 </script>
@@ -129,14 +133,30 @@ onMounted(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  width: 100%;  /* Make chart responsive to parent width */
-  height: 225px;  /* Set a fixed height for the chart */
+  width: 100%;  
+  min-height: 225px; 
+  max-height: 225px; 
+}
+
+.loading {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the spinner */
+  z-index: 10; /* Ensure it appears on top of the chart */
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Ensure the chart stays behind the loading spinner */
 }
 
 @media (min-width: 1024px) {
   .chart-container {
-    min-height: 180px; 
-    max-height: 225px; /* Adjust for larger screens */
+    min-height: 225px; 
+    max-height: 225px;
   }
 }
 </style>

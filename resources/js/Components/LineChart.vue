@@ -1,12 +1,15 @@
 <template>
   <div class="chart-container">
+    <!-- Centered loading spinner -->
     <span v-if="isLoading" class="loading loading-dots loading-sm"></span>
-    <canvas id="lineChart"></canvas>
+    <!-- Canvas for the line chart -->
+    <canvas id="lineChart" v-show="!isLoading"></canvas>
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { Chart } from "chart.js/auto";
 import axios from "axios";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -24,7 +27,7 @@ const props = defineProps({
   },
 });
 
-const isLoading = ref(false);
+const isLoading = ref(true); // Set to true initially to show the loading spinner
 
 const lineData = ref({
   labels: [],
@@ -65,7 +68,8 @@ function formatDateForTooltip(dateString) {
 const originalDates = ref([]); // New array to store original dates from the database
 
 const fetchChartData = () => {
-  isLoading.value = true;
+  isLoading.value = true; // Show loading spinner when fetching data
+
   axios
     .get("/get-line-data", {
       params: {
@@ -119,7 +123,7 @@ const fetchChartData = () => {
       } else {
         createChart();
       }
-      isLoading.value = false;
+      isLoading.value = false; // Hide loading spinner when data is fetched
     })
     .catch((error) => {
       console.error("Error fetching chart data:", error);
@@ -197,7 +201,6 @@ const createChart = () => {
   });
 };
 
-
 watch(
   () => [props.selectedYear, props.selectedQuarter],
   () => {
@@ -215,17 +218,29 @@ onMounted(() => {
 .chart-container {
   position: relative;
   width: 100%;  
-  min-height: 180px; 
+  min-height: 225px; 
   max-height: 225px; 
 }
 
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the spinner */
+  z-index: 10; /* Ensure it appears on top of the chart */
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Ensure the chart stays behind the loading spinner */
+}
 
 @media (min-width: 1024px) {
   .chart-container {
-    min-height: 180px; 
+    min-height: 225px; 
     max-height: 225px;
   }
 }
 </style>
-
-
