@@ -8,7 +8,7 @@ const props = defineProps({
 
 <template>
     <div class="text-center">
-        <h2 class="text-lg font-semibold mb-4">Offenders</h2>
+        <h2 class="text-sm font-semibold mb-4">Number of Offenders</h2>
         <ul>
             <li 
                 v-for="gradeData in offensesPerGrade" 
