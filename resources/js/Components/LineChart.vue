@@ -50,11 +50,19 @@ const lineData = ref({
 
 let chartInstance = null;
 
-function formatDate(dateString) {
+function formatDateForAxis(dateString) {
   const date = new Date(dateString);
-  const options = { month: "short", day: "2-digit", year: "numeric" };
+  const options = { month: "short", day: "2-digit" };
   return date.toLocaleDateString("en-US", options).replace(",", ".");
 }
+
+function formatDateForTooltip(dateString) {
+  const date = new Date(dateString);
+  const options = { month: "short", day: "2-digit", year: "numeric" };
+  return date.toLocaleDateString("en-US", options);
+}
+
+const originalDates = ref([]); // New array to store original dates from the database
 
 const fetchChartData = () => {
   isLoading.value = true;
@@ -70,11 +78,12 @@ const fetchChartData = () => {
       lineData.value.labels = [];
       lineData.value.datasets[0].data = [];
       lineData.value.datasets[1].data = [];
+      originalDates.value = []; // Clear previous dates
 
       const offenseCounts = {};
 
       data.minor.forEach((offense) => {
-        const committedDate = formatDate(offense.date);
+        const committedDate = offense.date;
         const count = offense.count;
         if (committedDate) {
           offenseCounts[committedDate] =
@@ -84,7 +93,7 @@ const fetchChartData = () => {
       });
 
       data.major.forEach((offense) => {
-        const committedDate = formatDate(offense.date);
+        const committedDate = offense.date;
         const count = offense.count;
         if (committedDate) {
           offenseCounts[committedDate] =
@@ -97,7 +106,8 @@ const fetchChartData = () => {
         const minorCount = offenseCounts[date].minor;
         const majorCount = offenseCounts[date].major;
         if (minorCount > 0 || majorCount > 0) {
-          lineData.value.labels.push(date);
+          lineData.value.labels.push(formatDateForAxis(date)); // Use shortened date for x-axis labels
+          originalDates.value.push(date); // Save original date with year for tooltips
           lineData.value.datasets[0].data.push(minorCount);
           lineData.value.datasets[1].data.push(majorCount);
         }
@@ -129,10 +139,18 @@ const createChart = () => {
     data: lineData.value,
     options: {
       responsive: true,
-      maintainAspectRatio: false, // Allow dynamic resizing
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: "bottom",
+          labels: {
+            boxWidth: 10, // Set the width of the box
+            boxHeight: 10, // Set the height of the box
+            padding: 10,   // Optional: space between boxes and labels
+            font: {
+              size: 12,    // Optional: font size for label text
+            },
+          },
         },
         title: {
           display: true,
@@ -148,8 +166,23 @@ const createChart = () => {
         datalabels: {
           display: false,
         },
+        tooltip: {
+          callbacks: {
+            title: (tooltipItems) => {
+              const index = tooltipItems[0].dataIndex;
+              return formatDateForTooltip(originalDates.value[index]);
+            },
+          },
+        },
       },
       scales: {
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            minRotation: 0,
+          },
+        },
         y: {
           beginAtZero: true,
           ticks: {
@@ -181,11 +214,18 @@ onMounted(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  width: 100%;  /* Full width */
-  height: 100%; /* Full height */
-  min-height: 225px; /* Minimum height */
-  max-height: 225px; /* Constrains the height */
-  overflow: hidden; /* Prevents overflow */
+  width: 100%;  
+  min-height: 180px; 
+  max-height: 225px; 
+}
 
+
+@media (min-width: 1024px) {
+  .chart-container {
+    min-height: 180px; 
+    max-height: 225px;
+  }
 }
 </style>
+
+
