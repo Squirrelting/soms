@@ -1,8 +1,10 @@
 <template>
     <div>
         <div class="chart-container">
-            <span v-if="loading" class="loading loading-dots loading-sm mt-10"></span>
-            <canvas ref="barChart"></canvas>
+            <!-- Centered loading spinner -->
+            <span v-if="loading" class="loading loading-dots loading-sm"></span>
+            <!-- Canvas for the bar chart -->
+            <canvas ref="barChart" v-show="!loading"></canvas>
         </div>
     </div>
 </template>
@@ -143,7 +145,6 @@ const renderChart = () => {
     }
 };
 
-
 // Fetch data when the component is mounted
 onMounted(async () => {
     await nextTick(); // Ensure DOM is fully rendered
@@ -155,14 +156,28 @@ onMounted(async () => {
 .chart-container {
   position: relative;
   width: 100%;  
-  min-height: 180px; 
+  min-height: 225px; 
   max-height: 225px; 
 }
 
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the spinner */
+  z-index: 10; /* Ensure it appears on top of the chart */
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Ensure the chart stays behind the loading spinner */
+}
 
 @media (min-width: 1024px) {
   .chart-container {
-    min-height: 180px; 
+    min-height: 225px; 
     max-height: 225px;
   }
 }
