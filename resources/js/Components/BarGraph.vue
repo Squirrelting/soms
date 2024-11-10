@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="chart-container flex flex-col justify-center items-center">
+        <div class="chart-container">
             <span v-if="loading" class="loading loading-dots loading-sm mt-10"></span>
             <canvas ref="barChart"></canvas>
         </div>
@@ -95,7 +95,7 @@ const renderChart = () => {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Allow aspect ratio to be managed by CSS
+                maintainAspectRatio: false, // Allow CSS to manage aspect ratio
                 plugins: {
                     legend: {
                         display: false, // Remove the legend
@@ -143,21 +143,27 @@ const renderChart = () => {
     }
 };
 
+
 // Fetch data when the component is mounted
 onMounted(async () => {
     await nextTick(); // Ensure DOM is fully rendered
     fetchBarData();
 });
 </script>
-  
+
 <style scoped>
 .chart-container {
   position: relative;
-  width: 100%;  /* Full width */
-  height: 100%; /* Full height */
-  min-height: 225px; /* Minimum height */
-  max-height: 225px; /* Constrains the height */
-  overflow: hidden; /* Prevents overflow */
+  width: 100%;  
+  min-height: 180px; 
+  max-height: 225px; 
+}
 
+
+@media (min-width: 1024px) {
+  .chart-container {
+    min-height: 180px; 
+    max-height: 225px;
+  }
 }
 </style>

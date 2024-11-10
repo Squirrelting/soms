@@ -57,12 +57,10 @@ const filterQuarters = () => {
 const getStudentsData = () => {
     isLoading.value = true;
 
-    // Prepare route parameters
     const params = {
         selectedSchoolyear: selectedYear.value,
     };
 
-    // Only add selectedQuarter if it’s not empty
     if (selectedQuarter.value) {
         params.selectedQuarter = selectedQuarter.value;
     }
@@ -78,6 +76,7 @@ const getStudentsData = () => {
             isLoading.value = false;
         });
 };
+
 const getGradesData = () => {
     isLoading.value = true;
     const params = { selectedSchoolyear: selectedYear.value };
@@ -96,8 +95,6 @@ const getGradesData = () => {
         });
 };
 
-
-
 onMounted(() => {
     getStudentsData();
     getGradesData();
@@ -107,10 +104,10 @@ onMounted(() => {
 <template>
     <Head title="Dashboard" />
     <AuthenticatedLayout>
-        <div class="m-4 flex flex-col lg:flex-row lg:space-x-4">
+        <div class="m-4 grid gap-4 grid-cols-1 lg:grid-cols-8">
             <!-- Main Content Section -->
-            <div class="flex-grow">
-                <div class="flex flex-wrap space-x-2 mb-2">
+            <div class="lg:col-span-7">
+                <div class="flex flex-wrap gap-2 mb-4">
                     <!-- School Year Selector -->
                     <select
                         v-model="selectedYear"
@@ -131,7 +128,7 @@ onMounted(() => {
                     <select
                         :disabled="isLoading"
                         v-model="selectedQuarter"
-                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Quarter</option>
                         <option
@@ -143,43 +140,46 @@ onMounted(() => {
                     </select>
                 </div>
 
-                <div class="flex flex-col lg:flex-row gap-4">
-                    <!-- Bar Graph -->
-                    <div class="flex-grow bg-white rounded-lg p-2 mb-4 lg:mb-0">
-                        <BarGraph
-                            :selectedYear="selectedYear"
-                            :selectedQuarter="selectedQuarter"
-                        />
-                    </div>
+                <div class="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+  <!-- Bar Graph (larger size) -->
+  <div class="bg-white rounded-lg p-2 xl:col-span-1 md:col-span-1 col-span-1">
+    <BarGraph
+      :selectedYear="selectedYear"
+      :selectedQuarter="selectedQuarter"
+    />
+  </div>
 
-                    <!-- Line Chart -->
-                    <div class="flex-grow bg-white rounded-lg p-2 mb-4 lg:mb-0">
-                        <LineChart
-                            :selectedYear="selectedYear"
-                            :selectedQuarter="selectedQuarter"
-                        />
-                    </div>
+  <!-- Line Chart (larger size) -->
+  <div class="bg-white rounded-lg p-2 xl:col-span-1 md:col-span-1 col-span-1">
+    <LineChart
+      :selectedYear="selectedYear"
+      :selectedQuarter="selectedQuarter"
+    />
+  </div>
 
-                    <!-- Pie Chart -->
-                    <div class="bg-white rounded-lg p-2 w-full lg:w-64 mb-4 lg:mb-0">
-                        <PieChart
-                            :selectedYear="selectedYear"
-                            :selectedQuarter="selectedQuarter"
-                        />
-                    </div>
-                </div>
+  <!-- Pie Chart (smaller size) -->
+  <div class="bg-white rounded-lg p-2 xl:col-span-1 md:col-span-1 col-span-1">
+    <PieChart
+      :selectedYear="selectedYear"
+      :selectedQuarter="selectedQuarter"
+    />
+  </div>
+</div>
+
+
                 
                 <!-- Table Section -->
-                <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
-                <StudentTable :students="studentsData" />
+                <div class="my-4">
+                    <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
+                    <StudentTable :students="studentsData" />
+                </div>
             </div>
 
-            <!-- Vertical Card Section -->
-            <div class="flex flex-col lg:flex-none lg:w-40 w-full">
+            <!-- Vertical Card Section with Responsive Width -->
+            <div class="lg:col-span-1">
                 <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
                 <OffensesPerGrade :offensesPerGrade="gradesData" />
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
-
