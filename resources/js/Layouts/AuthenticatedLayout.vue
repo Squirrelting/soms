@@ -104,9 +104,9 @@ function hasPermission(input) {
           </button>
           <a class="ml-4 text-2xl font-bold text-blue-800">SOMS - Santiago City National High School</a>
 
-
+<div class="ml-auto">
 <!-- Admin Privilege Dropdown -->
-<div v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end ml-auto">
+<div v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end">
   <div tabindex="0" role="button" class="btn m-1 text-gray-800 bg-blue-200 hover:bg-blue-300 rounded-md shadow-md px-4 py-2">
     Admin Privilege
   </div>
@@ -152,7 +152,7 @@ function hasPermission(input) {
     </li>
   </ul>
 </div>
-
+</div>
 
 
         </div>

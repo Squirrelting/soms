@@ -80,7 +80,8 @@ const createChart = () => {
           labels: {
             boxWidth: 16,
             font: {
-              size: 12, // Normal font size for labels
+              size: 16, // Increased font size for labels
+              weight: 'bold', // Bold font weight
             },
             generateLabels: (chart) => {
               const data = chart.data;
@@ -103,6 +104,9 @@ const createChart = () => {
           },
           color: 'black', // Title color
           align: 'center', // Center the text
+        },
+        datalabels: {
+          display: false, // Disable data labels inside the chart
         },
       },
     },
@@ -130,6 +134,5 @@ onMounted(() => {
   min-height: 225px; /* Minimum height */
   max-height: 225px; /* Constrains the height */
   overflow: hidden; /* Prevents overflow */
-
 }
 </style>

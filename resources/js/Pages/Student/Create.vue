@@ -103,14 +103,19 @@ const formatName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 const previewData = () => {
-    // Convert the minor and major offenses arrays into readable strings
-    const minorOffensesString = form.minor_offenses.map(offense => offense.minor_offenses).join(", ");
-    const majorOffensesString = form.major_offenses.map(offense => offense.major_offenses).join(", ");
-    
+    // Convert the minor and major offenses arrays into readable strings with dates
+    const minorOffensesString = form.minor_offenses
+        .map(offense => `${offense.minor_offenses} (Date: ${offense.date_committed || "N/A"})`)
+        .join("<br>");
+        
+    const majorOffensesString = form.major_offenses
+        .map(offense => `${offense.major_offenses} (Date: ${offense.date_committed || "N/A"})`)
+        .join("<br>");    
+
     Swal.fire({
-        title: "Preview Data",
+        title: "Save and Send to Adviser's Email",
         html: `
-            <div style="text-align: left;">
+            <div style="text-align: left; font-size: 18px;">
                 <p><strong>LRN:</strong> ${form.lrn}</p>
                 <p><strong>Adviser's Email:</strong> ${form.email}</p>
                 <p><strong>First Name:</strong> ${form.firstname}</p>
@@ -121,13 +126,19 @@ const previewData = () => {
                 <p><strong>Section:</strong> ${form.section_id}</p>
                 <p><strong>Quarter:</strong> ${form.quarter}</p>
                 <p><strong>School Year:</strong> ${form.yeartoday} - ${form.nextyear}</p>
-                ${minorOffensesString ? `<p><strong>Minor Offenses:</strong> ${minorOffensesString}</p>` : ""}
-                ${majorOffensesString ? `<p><strong>Major Offenses:</strong> ${majorOffensesString}</p>` : ""}
+                
+                <hr style="margin: 10px 0;">
+                
+                ${minorOffensesString ? `<p><strong>Minor Offenses</strong>${minorOffensesString}</p>` : ""}
+                ${majorOffensesString ? `<p><strong>Major Offenses</strong>${majorOffensesString}</p>` : ""}
             </div>
         `,
         showCancelButton: true,
         confirmButtonText: "Save",
         cancelButtonText: "Cancel",
+        customClass: {
+            popup: 'swal-wide' // Add a custom class if you want to control the width in CSS
+        },
         preConfirm: () => {
             // Call saveStudent here to submit the form if confirmed
             saveStudent();
@@ -136,21 +147,11 @@ const previewData = () => {
 };
 
 
+
 const saveStudent = () => {
     Swal.fire({
-        title: "Are you sure?",
-        text: "You are about to add this student!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, save it!",
-        cancelButtonText: "Cancel",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
                 title: "Saving...",
-                text: "Please wait while we save the student.",
+                text: "Please wait while we save and send the student data.",
                 didOpen: () => {
                     Swal.showLoading();
                 },
@@ -159,8 +160,8 @@ const saveStudent = () => {
                 onSuccess: () => {
                     Swal.fire({
                         icon: "success",
-                        title: "Student Added",
-                        text: "The student has been successfully added!",
+                        title: "Send to Email Successfully",
+                        text: "The student's data has been successfully added!",
                         timer: 2000,
                         showConfirmButton: false,
                     });
@@ -174,9 +175,7 @@ const saveStudent = () => {
                     });
                 },
             });
-        }
-    });
-};
+        };
 </script>
 
 <template>

@@ -116,7 +116,7 @@ onMounted(() => {
                         v-model="selectedYear"
                         :disabled="isLoading"
                         @change="filterQuarters"
-                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option
                             v-for="(schoolyear, index) in props.schoolYears"
@@ -131,7 +131,7 @@ onMounted(() => {
                     <select
                         :disabled="isLoading"
                         v-model="selectedQuarter"
-                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
+                        class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">All Quarter</option>
                         <option
@@ -145,9 +145,7 @@ onMounted(() => {
 
                 <div class="flex flex-col lg:flex-row gap-4">
                     <!-- Bar Graph -->
-                    <div
-                        class="flex-grow bg-white rounded-lg p-2"
-                    >
+                    <div class="flex-grow bg-white rounded-lg p-2 mb-4 lg:mb-0">
                         <BarGraph
                             :selectedYear="selectedYear"
                             :selectedQuarter="selectedQuarter"
@@ -155,9 +153,7 @@ onMounted(() => {
                     </div>
 
                     <!-- Line Chart -->
-                    <div
-                        class="flex-grow bg-white rounded-lg p-2"
-                    >
+                    <div class="flex-grow bg-white rounded-lg p-2 mb-4 lg:mb-0">
                         <LineChart
                             :selectedYear="selectedYear"
                             :selectedQuarter="selectedQuarter"
@@ -165,25 +161,25 @@ onMounted(() => {
                     </div>
 
                     <!-- Pie Chart -->
-                    <div
-                        class="bg-white rounded-lg p-2 w-full lg:w-64"
-                    >
+                    <div class="bg-white rounded-lg p-2 w-full lg:w-64 mb-4 lg:mb-0">
                         <PieChart
                             :selectedYear="selectedYear"
                             :selectedQuarter="selectedQuarter"
                         />
                     </div>
                 </div>
+                
                 <!-- Table Section -->
                 <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
                 <StudentTable :students="studentsData" />
             </div>
 
             <!-- Vertical Card Section -->
-            <div class="flex">
+            <div class="flex flex-col lg:flex-none lg:w-40 w-full">
                 <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
                 <OffensesPerGrade :offensesPerGrade="gradesData" />
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
