@@ -103,15 +103,39 @@ const formatName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 const previewData = () => {
+    // Check if both minor and major offenses arrays are empty
+    if (form.minor_offenses.length === 0 && form.major_offenses.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Offense is required',
+            text: 'Please provide at least one minor or major offense.'
+        });
+        return; // Stop the function if offenses are missing
+    }
+
+    // Check if any offense is missing a date
+    const isMinorDateMissing = form.minor_offenses.some(offense => !offense.date_committed);
+    const isMajorDateMissing = form.major_offenses.some(offense => !offense.date_committed);
+
+    if (isMinorDateMissing || isMajorDateMissing) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Date on offense is required',
+            text: 'Please provide a date for each offense.'
+        });
+        return; // Stop the function if dates are missing
+    }
+
     // Convert the minor and major offenses arrays into readable strings with dates
     const minorOffensesString = form.minor_offenses
         .map(offense => `${offense.minor_offenses} (Date: ${offense.date_committed || "N/A"})`)
         .join("<br>");
-        
+
     const majorOffensesString = form.major_offenses
         .map(offense => `${offense.major_offenses} (Date: ${offense.date_committed || "N/A"})`)
         .join("<br>");    
 
+    // Display SweetAlert with offense data preview
     Swal.fire({
         title: "Save and Send to Adviser's Email",
         html: `
@@ -129,8 +153,8 @@ const previewData = () => {
                 
                 <hr style="margin: 10px 0;">
                 
-                ${minorOffensesString ? `<p><strong>Minor Offenses</strong>${minorOffensesString}</p>` : ""}
-                ${majorOffensesString ? `<p><strong>Major Offenses</strong>${majorOffensesString}</p>` : ""}
+                ${minorOffensesString ? `<p><strong>Minor Offenses</strong><br>${minorOffensesString}</p>` : ""}
+                ${majorOffensesString ? `<p><strong>Major Offenses</strong><br>${majorOffensesString}</p>` : ""}
             </div>
         `,
         showCancelButton: true,
@@ -145,6 +169,7 @@ const previewData = () => {
         }
     });
 };
+
 
 
 
