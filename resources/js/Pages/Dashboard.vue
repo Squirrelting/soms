@@ -102,7 +102,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Dashboard yowww" />
     <AuthenticatedLayout>
         <div class="m-4 grid gap-4 grid-cols-1 lg:grid-cols-8">
             <!-- Main Content Section -->
