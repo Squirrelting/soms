@@ -346,18 +346,23 @@ const checkDataAndProceed = (action) => {
             <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
             <div class="bg-white py-2 px-2 rounded-lg shadow-lg space-y-4">
                 <div class="flex justify-between items-center mb-2 space-x-2">
-<select
-    id="perPage"
-    v-model="perPage"
-    @change="filter"
-    class="select select-xs text-xs py-1 px-1 w-[4rem] h-8 focus:outline-none border-gray-500 focus:ring focus:border-blue-200 focus:ring-blue-200"
-    >
-    <option value="5">5</option>
-    <option value="10">10</option>
-    <option value="15">15</option>
-    <option value="20">20</option>
-    <option value="25">25</option>
-</select>
+                    <div class="flex items-center space-x-2">
+        <select
+            id="perPage"
+            v-model="perPage"
+            @change="filter"
+            class="select select-xs text-xs py-1 px-1 w-[4rem] h-8 focus:outline-none border-gray-500 focus:ring focus:border-blue-200 focus:ring-blue-200"
+        >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+        </select>
+        
+        <!-- Label next to the select dropdown -->
+        <span class="text-xs">Entries per page</span>
+    </div>
 <!-- Search Input -->
 <div class="relative w-full max-w-xs">
     <input
