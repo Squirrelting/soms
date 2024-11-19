@@ -55,8 +55,9 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
 //Print-cgm
 Route::prefix('print')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [PrintController::class, 'index'])->name('print.index');
-    Route::get('/print-certificate/{signatory}/{firstname}/{middlename}/{lastname}', [PrintController::class, 'printcgm'])->name('print.cgm');
 });
+Route::get("/print/print-certificate/{signatory}/{firstname}/{middlename}/{lastname}", [PrintController::class, 'printcgm'])->name('print.cgm');
+
 
 
     //add section

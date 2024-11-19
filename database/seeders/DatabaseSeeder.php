@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             MinorOffenseSeeder::class,
             GradeSeeder::class,
             SectionSeeder::class,
-            StudentSeeder::class,
+            // StudentSeeder::class,
             MinorPenaltySeeder::class,
             MajorOffenseSeeder::class,
             MajorPenaltySeeder::class,
