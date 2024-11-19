@@ -29,7 +29,7 @@ class ReportsController extends Controller
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
         $selectedOffense = $request->input('selectedOffense');
-        $perPage = 10; 
+        $perPage = $request->input('perPage', 10);
         $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
 
         // Retrieve and filter minor offenses
@@ -145,6 +145,7 @@ class ReportsController extends Controller
 
         return Inertia::render('Report/Index', [
             'offendersData' => $offendersData,
+            'perPage' => $perPage,
             'grades' => $grades,
             'sections' => $sections,
             'schoolYears' => $finalResult,

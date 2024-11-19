@@ -168,6 +168,8 @@ const saveMajorOffense = () => {
         <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+            <th class="p-2 text-left border-b border-r border-gray-200">S.Y. Quarter</th>
+            <th class="p-2 text-left border-b border-r border-gray-200">Grade and Section</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Sanction</th>
@@ -178,6 +180,8 @@ const saveMajorOffense = () => {
         <tr v-for="offense in submittedmajorOffenses" :key="offense.id" class="hover:bg-gray-50 text-sm text-gray-800">
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_offense }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_penalty }}</td>
+            <td class="p-2 border-b border-r border-gray-200">{{ offense.student_schoolyear }}, {{ offense.student_quarter }}</td>
+            <td class="p-2 border-b border-r border-gray-200">Grade {{ offense.student_grade }}, {{ offense.student_section }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">

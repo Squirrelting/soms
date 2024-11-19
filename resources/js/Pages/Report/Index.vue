@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 
 const props = defineProps({
     offendersData: Object,
+    perPage: Number,
     offenses: Object,
     grades: Array,
     sections: {
@@ -23,6 +24,8 @@ const props = defineProps({
     offenseFilter: String,
     selectedOffense: String,
 });
+
+const perPage = ref(props.perPage || 10);
 
 const offenses = ref(props.offenses);
 const offendersData = ref(props.offendersData);
@@ -67,6 +70,8 @@ const filter = () => {
             selectedQuarter: selectedQuarter.value,
             selectedOffense: selectedOffense.value,
             page: offendersData.value.current_page,
+            perPage: perPage.value,
+
         },
         {
             preserveState: true,
@@ -274,43 +279,8 @@ const checkDataAndProceed = (action) => {
                     </select>
                     </div>
 
-                <!-- Search Input -->
-                <div class="relative w-full max-w-xs">
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Search"
-                        class="input border-gray-300 rounded-lg text-sm h-10 pl-9 pr-3 w-full focus:border-blue-200 focus:ring focus:ring-blue-200 focus:outline-none"
-                    />
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 opacity-70 pointer-events-none"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </div>
-
-                    <button
-                        @click="checkDataAndProceed('print')"
-                        class="bg-blue-500 text-white py-1 px-3 rounded text-sm"
-                    >
-                        Print
-                    </button>
-                    <button
-                        @click="checkDataAndProceed('export')"
-                        class="bg-green-500 text-white py-1 px-3 rounded text-sm"
-                    >
-                        Export to Excel
-                    </button>
-                </div>
-            <div class="flex space-x-1 mb-2">
-                <select
+                    <div class="flex space-x-1">
+                    <select
                         :disabled="isLoading"
                         v-model="sex"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
@@ -329,6 +299,25 @@ const checkDataAndProceed = (action) => {
                         <option value="0">Unresolve</option>
                         <option value="1">Resolved</option>
                     </select>
+                    </div>
+
+                    <div class="flex space-x-1">
+                    <button
+                        @click="checkDataAndProceed('print')"
+                        class="bg-blue-500 text-white py-1 px-3 rounded text-sm"
+                    >
+                        Print
+                    </button>
+                    <button
+                        @click="checkDataAndProceed('export')"
+                        class="bg-green-500 text-white py-1 px-3 rounded text-sm"
+                    >
+                        Export to Excel
+                    </button>
+                    </div>
+                </div>
+
+            <div class="flex space-x-1 mb-2">
                 <select
                    :disabled="isLoading"
                     v-model="offenseFilter"
@@ -355,6 +344,47 @@ const checkDataAndProceed = (action) => {
             </div>
 
             <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
+            <div class="bg-white py-2 px-2 rounded-lg shadow-lg space-y-4">
+                <div class="flex justify-between items-center mb-2 space-x-2">
+                    <div class="flex items-center space-x-2">
+        <select
+            id="perPage"
+            v-model="perPage"
+            @change="filter"
+            class="select select-xs text-xs py-1 px-1 w-[4rem] h-8 focus:outline-none border-gray-500 focus:ring focus:border-blue-200 focus:ring-blue-200"
+        >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+        </select>
+        
+        <!-- Label next to the select dropdown -->
+        <span class="text-xs">Entries per page</span>
+    </div>
+<!-- Search Input -->
+<div class="relative w-full max-w-xs">
+    <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search"
+        class="input rounded-lg text-sm h-10 pl-9 pr-3 w-full border-blue-200 ring ring-blue-200 focus:border-blue-300 focus:ring focus:ring-blue-300 focus:outline-none"
+    />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5  opacity-70 pointer-events-none"
+    >
+        <path
+            fill-rule="evenodd"
+            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+            clip-rule="evenodd"
+        />
+    </svg>
+</div>
+</div>
             <table class="w-full bg-white border shadow">
                 <thead>
                     <tr>
@@ -444,6 +474,7 @@ const checkDataAndProceed = (action) => {
             </table>
 
             <Pagination :pagination="offendersData" />
+        </div>
         </div>
     </AuthenticatedLayout>
 </template>

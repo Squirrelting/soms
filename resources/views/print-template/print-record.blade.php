@@ -77,6 +77,8 @@
                 <tr>
                     <th>Offense Committed</th>
                     <th>Penalty</th>
+                    <th>S.Y. Quarter</th>
+                    <th>Grade and Section</th>
                     <th>Committed Date</th>
                     <th>Recorded Date</th>
                     <th>Cleansed Date</th>
@@ -87,6 +89,8 @@
                     <tr>
                         <td>{{ $offense->minor_offense }}</td>
                         <td>{{ $offense->minor_penalty }}</td>
+                        <td>{{ $offense->student_schoolyear }}, {{ $offense->student_quarter }}</td>
+                        <td>{{ $offense->student_grade }}, {{ $offense->student_section }}</td>
                         <td>{{ $offense->committed_date }}</td>
                         <td>{{ $offense->recorded_date }}</td>
                         <td>{{ $offense->cleansed_date ?? 'N/A' }}</td>
@@ -106,6 +110,8 @@
                 <tr>
                     <th>Offense Committed</th>
                     <th>Penalty</th>
+                    <th>S.Y. Quarter</th>
+                    <th>Grade and Section</th>
                     <th>Committed Date</th>
                     <th>Recorded Date</th>
                     <th>Cleansed Date</th>
@@ -116,6 +122,8 @@
                     <tr>
                         <td>{{ $offense->major_offense }}</td>
                         <td>{{ $offense->major_penalty }}</td>
+                        <td>{{ $offense->student_schoolyear }}, {{ $offense->student_quarter }}</td>
+                        <td>{{ $offense->student_grade }}, {{ $offense->student_section }}</td>
                         <td>{{ $offense->committed_date }}</td>
                         <td>{{ $offense->recorded_date }}</td>
                         <td>{{ $offense->cleansed_date ?? 'N/A' }}</td>

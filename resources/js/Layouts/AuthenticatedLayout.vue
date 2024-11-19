@@ -158,7 +158,7 @@ function hasPermission(input) {
         </div>
       </header>
       <!-- Content Section -->
-      <section class="pt-16 px-4 bg-gray-200 min-h-screen w-full">
+      <section class="pt-16 bg-gray-200 min-h-screen w-full">
         <slot />
       </section>
     </div>
