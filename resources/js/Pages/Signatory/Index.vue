@@ -109,6 +109,14 @@ const DeleteSignatory = (id) => {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="!signatory || signatory.length === 0">
+        <td
+            class="py-2 px-2 text-center border text-sm"
+            colspan="10"
+        >
+            No Registered Signatory.
+        </td>
+    </tr>
                     <tr v-for="(signatory, index) in signatory" :key="index">
                         <td class="py-2 px-4 border">{{ signatory.name }}</td>
                         <td class="py-2 px-4 border">

@@ -11,7 +11,7 @@ import axios from "axios";
 
 const props = defineProps({
     students: Object,
-    perPage: String,
+    perPage: Number,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
@@ -416,6 +416,14 @@ onMounted(() => {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="!studentsData.data || studentsData.data.length === 0">
+                    <td
+                        class="py-2 px-2 text-center border text-sm"
+                        colspan="10"
+                    >
+                        No data available.
+                    </td>
+                </tr>
                     <tr
                         v-for="(student, index) in studentsData.data"
                         :key="student.id"

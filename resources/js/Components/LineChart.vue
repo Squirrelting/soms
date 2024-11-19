@@ -2,10 +2,13 @@
   <div class="chart-container">
     <!-- Centered loading spinner -->
     <span v-if="isLoading" class="loading loading-dots loading-sm"></span>
+    <!-- "No data available" message -->
+    <p v-if="!isLoading && isDataEmpty" class="no-data">No data available for LineChart</p>
     <!-- Canvas for the line chart -->
-    <canvas id="lineChart" v-show="!isLoading"></canvas>
+    <canvas id="lineChart" v-show="!isLoading && !isDataEmpty"></canvas>
   </div>
 </template>
+
 
 
 <script setup>
@@ -67,8 +70,11 @@ function formatDateForTooltip(dateString) {
 
 const originalDates = ref([]); // New array to store original dates from the database
 
+const isDataEmpty = ref(false); // Flag to check if data is empty
+
 const fetchChartData = () => {
-  isLoading.value = true; // Show loading spinner when fetching data
+  isLoading.value = true;
+  isDataEmpty.value = false;
 
   axios
     .get("/get-line-data", {
@@ -79,10 +85,11 @@ const fetchChartData = () => {
     })
     .then((response) => {
       const data = response.data;
+
       lineData.value.labels = [];
       lineData.value.datasets[0].data = [];
       lineData.value.datasets[1].data = [];
-      originalDates.value = []; // Clear previous dates
+      originalDates.value = [];
 
       const offenseCounts = {};
 
@@ -110,20 +117,27 @@ const fetchChartData = () => {
         const minorCount = offenseCounts[date].minor;
         const majorCount = offenseCounts[date].major;
         if (minorCount > 0 || majorCount > 0) {
-          lineData.value.labels.push(formatDateForAxis(date)); // Use shortened date for x-axis labels
-          originalDates.value.push(date); // Save original date with year for tooltips
+          lineData.value.labels.push(formatDateForAxis(date));
+          originalDates.value.push(date);
           lineData.value.datasets[0].data.push(minorCount);
           lineData.value.datasets[1].data.push(majorCount);
         }
       }
 
-      if (chartInstance) {
+      if (
+        lineData.value.labels.length === 0 &&
+        lineData.value.datasets[0].data.length === 0 &&
+        lineData.value.datasets[1].data.length === 0
+      ) {
+        isDataEmpty.value = true;
+      } else if (chartInstance) {
         chartInstance.data = lineData.value;
         chartInstance.update();
       } else {
         createChart();
       }
-      isLoading.value = false; // Hide loading spinner when data is fetched
+
+      isLoading.value = false;
     })
     .catch((error) => {
       console.error("Error fetching chart data:", error);
@@ -228,6 +242,13 @@ onMounted(() => {
   left: 50%;
   transform: translate(-50%, -50%); /* Center the spinner */
   z-index: 10; /* Ensure it appears on top of the chart */
+}
+
+.no-data {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 canvas {
