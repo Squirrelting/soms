@@ -8,6 +8,7 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\SubmittedMajorOffense;
 use App\Models\SubmittedMinorOffense;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DashboardController extends Controller
 {
@@ -17,7 +18,42 @@ class DashboardController extends Controller
         $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
-    
+        $sortColumn = $request->input('sortColumn', 'updated_at');
+        $sortOrder = $request->input('sortOrder', 'desc');
+        $search = $request->input('search');
+
+
+        $perPage = $request->input('perPage', 10);
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+        $studentsQuery = Student::with(['grade', 'section'])
+        ->withCount([
+            'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
+            'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
+        ])
+        ->when($selectedYear, fn($query) => $query->where('schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
+        ->when($search, fn($query) => $query->where(function ($query) use ($search) {
+            $query->where('firstname', 'like', "%{$search}%")
+                  ->orWhere('middlename', 'like', "%{$search}%")
+                  ->orWhere('lastname', 'like', "%{$search}%")
+                  ->orWhere('lrn', 'like', "%{$search}%");
+        }))
+        ->orderBy($sortColumn, $sortOrder);
+
+
+    // Apply limit and offset for manual pagination
+    $students = $studentsQuery
+        ->get();
+
+    // Create the LengthAwarePaginator instance
+    $students = new LengthAwarePaginator(
+        $students->forPage($currentPage, $perPage),
+        $students->count(),
+        $perPage,
+        $currentPage,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
       
         
         // Fetch distinct school years and quarters
@@ -54,35 +90,13 @@ class DashboardController extends Controller
         
     
         return Inertia::render('Dashboard', [
+            'students' => $students,
+            'perPage' => $perPage,
             'schoolYears' => $finalResult,
             'selectedYear' => $selectedYear,  
             'selectedQuarter' => $selectedQuarter,  
         ]);
     }
-
-    public function getTableData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
-    {
-        $sortColumn = $request->input('sortColumn', 'updated_at');  
-        $sortOrder = $request->input('sortOrder', 'desc'); 
-
-        $filteredStudents = Student::with(['grade', 'section'])
-            ->when($selectedSchoolyear, fn($query) => $query->where('schoolyear', $selectedSchoolyear))
-            ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
-            ->withCount([
-                'submittedMinorOffensesWithNoSanction as submitted_minor_offenses_count',
-                'submittedMajorOffensesWithNoSanction as submitted_major_offenses_count'
-            ])
-            ->orderBy($sortColumn, $sortOrder)
-            ->get();
-    
-        // Paginate the filtered result manually
-        $students = $filteredStudents->take(5)->values();
-
-        return response()->json([
-            'students' => $students
-        ]);
-    }
-
 public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
 {
     // Fetch offenses per grade with necessary filters
