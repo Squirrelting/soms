@@ -33,7 +33,7 @@ public function index(Request $request)
     $selectedYear = $request->input('selectedYear');
     $selectedQuarter = $request->input('selectedQuarter');
     
-    $perPage = 10;
+    $perPage = $request->input('perPage', 10);
     $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
     $studentsQuery = Student::with(['grade', 'section'])
@@ -104,6 +104,7 @@ public function index(Request $request)
     
     return Inertia::render('Student/Index', [
         'students' => $students,
+        'perPage' => $perPage,
         'grade' => $grade,
         'grades' => $grades,
         'section' => $section,
