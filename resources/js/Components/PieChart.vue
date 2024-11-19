@@ -2,10 +2,13 @@
   <div class="chart-container">
     <!-- Centered loading spinner -->
     <span v-if="isLoading" class="loading loading-dots loading-sm mt-10"></span>
+    <!-- "No data available" message -->
+    <p v-if="!isLoading && isDataEmpty" class="no-data">No data available for PieChart.</p>
     <!-- Canvas for the pie chart -->
-    <canvas id="pieChart" v-show="!isLoading"></canvas>
+    <canvas id="pieChart" v-show="!isLoading && !isDataEmpty"></canvas>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue';
@@ -39,8 +42,11 @@ const pieData = ref({
 let chartInstance = null;
 const isLoading = ref(false);
 
+const isDataEmpty = ref(false); // Flag to check if data is empty
+
 const fetchChartData = async () => {
   isLoading.value = true;
+  isDataEmpty.value = false;
 
   try {
     const response = await axios.get(`/get-pie-data`, {
@@ -51,18 +57,25 @@ const fetchChartData = async () => {
     });
 
     const data = response.data;
-    pieData.value.datasets[0].data = [data.male, data.female];
+    const male = data.male || 0;
+    const female = data.female || 0;
 
-    if (chartInstance) {
-      chartInstance.data = pieData.value;
-      chartInstance.update();
+    if (male === 0 && female === 0) {
+      isDataEmpty.value = true;
+    } else {
+      pieData.value.datasets[0].data = [male, female];
+      if (chartInstance) {
+        chartInstance.data = pieData.value;
+        chartInstance.update();
+      }
     }
   } catch (error) {
-    console.error('Error fetching chart data:', error);
+    console.error("Error fetching chart data:", error);
   } finally {
     isLoading.value = false;
   }
 };
+
 
 const createChart = () => {
   const ctx = document.getElementById('pieChart').getContext('2d');
@@ -144,6 +157,13 @@ onMounted(async () => {
   left: 50%;
   transform: translate(-50%, -50%); /* Center the spinner */
   z-index: 10; /* Ensure it appears on top of the chart */
+}
+
+.no-data {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 canvas {

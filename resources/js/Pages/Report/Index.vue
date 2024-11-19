@@ -433,6 +433,15 @@ const checkDataAndProceed = (action) => {
                     </tr>
                 </thead>
                 <tbody>
+                        <!-- Check if studentsData is empty -->
+    <tr v-if="!offendersData.data || offendersData.data.length === 0">
+        <td
+            class="py-2 px-2 text-center border text-sm"
+            colspan="10"
+        >
+            No data available.
+        </td>
+    </tr>
                     <tr
                         v-for="(offense, index) in offendersData.data"
                         :key="offense.id"

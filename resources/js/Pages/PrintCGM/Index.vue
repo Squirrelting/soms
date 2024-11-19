@@ -76,7 +76,7 @@ const formatName = (name) => {
                         <a
                             target="_blank"
                             v-if="form.signatory" 
-                            :href="`/print/print-certificate/${form.signatory}/${encodeURIComponent(form.firstname)}/${encodeURIComponent(form.middlename)}/${encodeURIComponent(form.lastname)}`"
+                            :href="`/print/print-certificate/${form.signatory}/${encodeURIComponent(form.firstname)}/${form.middlename ? encodeURIComponent(form.middlename) : ' '}/${encodeURIComponent(form.lastname)}`"
                             class="bg-blue-500 text-white py-2 px-5 rounded mb-4"
                         >
                             Print

@@ -22,7 +22,7 @@ class PrintController extends Controller
     }
 
     
-    public function printcgm($signatory, $firstname, $middlename, $lastname) {
+    public function printcgm($signatory, $firstname, $middlename = null, $lastname) {
         $getsignatory = Signatory::findOrFail($signatory);
         $imagePath = public_path('Images/SCNHS-Logo.png');
         $date = Carbon::now()->format('F j, Y'); 
