@@ -9,6 +9,7 @@ import LineChart from "@/Components/LineChart.vue";
 import BarGraph from "@/Components/BarGraph.vue";
 import axios from "axios";
 
+// Props
 const props = defineProps({
     students: Object,
     perPage: Number,
@@ -17,91 +18,104 @@ const props = defineProps({
     selectedQuarter: String,
 });
 
+// Reactive data and refs
 const studentsData = ref(props.students);
 const searchQuery = ref("");
 const perPage = ref(props.perPage || 10);
-
 const gradesData = ref([]);
-const isLoading = ref(false);
+
+// Separate loading states
+const isTableLoading = ref(false);  // For table data loading
+const isGradesLoading = ref(false);  // For grades data loading
 
 const selectedYear = ref(
-  props.schoolYears.length > 0
-    ? props.schoolYears[props.schoolYears.length - 1].student_schoolyear // Get the latest year
-    : ""
+    props.schoolYears.length > 0
+        ? props.schoolYears[props.schoolYears.length - 1].student_schoolyear
+        : ""
 );
 
 const selectedQuarter = ref(
-  props.schoolYears.length > 0 && props.schoolYears[props.schoolYears.length - 1].quarters.length > 0
-    ? props.schoolYears[props.schoolYears.length - 1].quarters[props.schoolYears[props.schoolYears.length - 1].quarters.length - 1]  // Get the latest quarter of the latest year
-    : "All Quarters"
+    props.schoolYears.length > 0 &&
+    props.schoolYears[props.schoolYears.length - 1].quarters.length > 0
+        ? props.schoolYears[props.schoolYears.length - 1].quarters[
+              props.schoolYears[props.schoolYears.length - 1].quarters.length - 1
+          ]  // Get the latest quarter of the latest year
+        : "All Quarters"
 );
 
 const filteredQuarters = computed(() => {
-  const selectedSchoolYear = props.schoolYears.find(
-    (year) => year.student_schoolyear === selectedYear.value
-  );
-  return selectedSchoolYear ? selectedSchoolYear.quarters : [];
+    const selectedSchoolYear = props.schoolYears.find(
+        (year) => year.student_schoolyear === selectedYear.value
+    );
+    return selectedSchoolYear ? selectedSchoolYear.quarters : [];
 });
 
+// Watcher for selectedQuarter
 watch(selectedQuarter, (newQuarter) => {
-  if (newQuarter === "All Quarters") {
-    selectedQuarter.value = null;  // Set null for All Quarters selection
-  }
-  filter();  // Trigger filtering whenever the quarter changes
+    if (newQuarter === "All Quarters") {
+        selectedQuarter.value = null;  // Set null for All Quarters selection
+    }
+    getGradesData();  // Trigger data fetch whenever the quarter changes
+    filter();  // Trigger filtering whenever the quarter changes
 });
 
-// Watcher for selectedYear to change the quarters
+// Watcher for selectedYear
 watch(selectedYear, (newYear) => {
-  const selectedSchoolYear = props.schoolYears.find(
-    (year) => year.student_schoolyear === newYear
-  );
-  selectedQuarter.value = selectedSchoolYear ? selectedSchoolYear.quarters[selectedSchoolYear.quarters.length - 1] : null;
-  filter();  // Trigger filtering whenever the selected year changes
+    const selectedSchoolYear = props.schoolYears.find(
+        (year) => year.student_schoolyear === newYear
+    );
+    selectedQuarter.value = selectedSchoolYear
+        ? selectedSchoolYear.quarters[selectedSchoolYear.quarters.length - 1]
+        : null;
+    getGradesData();  // Trigger data fetch whenever the year changes
+    filter();  // Trigger filtering whenever the selected year changes
 });
 
 const filterQuarters = () => {
     selectedQuarter.value = "";
 };
 
-const sortColumn = ref('updated_at');
-const sortOrder = ref('desc');
+const sortColumn = ref("updated_at");
+const sortOrder = ref("desc");
 
 const sortTable = (column) => {
-  sortColumn.value = column;
-  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-  filter();
+    sortColumn.value = column;
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+    filter();
 };
 
 const filter = () => {
-  isLoading.value = true;
-
-  router.get(
-    route("dashboard"),
-    {
-      search: searchQuery.value,
-      sortColumn: sortColumn.value,
-      sortOrder: sortOrder.value,
-      perPage: perPage.value,
-      selectedYear: selectedYear.value,
-      selectedQuarter: selectedQuarter.value,
-    },
-    {
-      preserveState: true,
-      preserveScroll: true,
-      onSuccess: (page) => {
-        studentsData.value = page.props.students;
-        isLoading.value = false;
-      },
-    }
-  );
+    isTableLoading.value = true;  // Show loading spinner for table data
+    router.get(
+        route("dashboard"),
+        {
+            search: searchQuery.value,
+            sortColumn: sortColumn.value,
+            sortOrder: sortOrder.value,
+            perPage: perPage.value,
+            selectedYear: selectedYear.value,
+            selectedQuarter: selectedQuarter.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                console.log("Response:", page.props.students);
+                studentsData.value = page.props.students;
+                isTableLoading.value = false;  // Hide loading spinner after table data is fetched
+            },
+        }
+    );
 };
 
+// Watch for changes in search, page size, year, or quarter
 watch([perPage, searchQuery, selectedYear, selectedQuarter], () => {
-  filter();  // Trigger filter on perPage or search query change
+    filter();  // Trigger filter on perPage or search query change
 });
 
+// Fetch grades data
 const getGradesData = () => {
-    isLoading.value = true;
+    isGradesLoading.value = true;  // Set grades loading state
     const params = { selectedSchoolyear: selectedYear.value };
     if (selectedQuarter.value) {
         params.selectedQuarter = selectedQuarter.value;
@@ -110,18 +124,21 @@ const getGradesData = () => {
         .get(route("get.grade.data", params))
         .then((response) => {
             gradesData.value = response.data.offensesPerGrade;
-            isLoading.value = false;
+            isGradesLoading.value = false;  // Hide grades loading spinner once data is fetched
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
-            isLoading.value = false;
+            isGradesLoading.value = false;  // Hide loading spinner on error
         });
 };
 
+// Trigger initial data fetch on mount
 onMounted(() => {
+    filter();
     getGradesData();
 });
 </script>
+
 
 <template>
     <Head title="Dashboard" />
@@ -192,7 +209,7 @@ onMounted(() => {
                 
                 <!-- Table Section -->
                 <div class="my-4">
-                    <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
+                    <span v-if="isTableLoading" class="loading loading-spinner loading-lg"></span>
 
                     <div class="bg-white py-2 px-2 rounded-lg shadow-lg space-y-4">
                 <div class="flex justify-between items-center mb-2 space-x-2">
@@ -525,7 +542,7 @@ onMounted(() => {
 
             <!-- Vertical Card Section with Responsive Width -->
             <div class="lg:col-span-1">
-                <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
+                <span v-if="isGradesLoading" class="loading loading-spinner loading-lg"></span>
                 <OffensesPerGrade :offensesPerGrade="gradesData" />
             </div>
         </div>

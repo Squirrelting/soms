@@ -89,6 +89,9 @@ public function major(Student $student)
             'major_offense' => $validated['major_offense'],
             'major_penalty' => $penalty->major_penalties, 
         ]);
+
+        $student->updated_at = Carbon::now();
+        $student->save();
         
         EmailController::sendemail($student);
 
@@ -104,6 +107,9 @@ public function major(Student $student)
         $offense->save();
         $student = Student::where('lrn', $offense->lrn)->first();
     
+        $student->updated_at = Carbon::now();
+        $student->save();
+        
         return Redirect::route('major.offenses', ['student' => $student->id]);
     }
 
