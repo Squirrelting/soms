@@ -91,6 +91,9 @@ public function minor(Student $student)
             'minor_penalty' => $penalty->minor_penalties, 
         ]);
 
+        $student->updated_at = Carbon::now();
+        $student->save();
+
         EmailController::sendemail($student);
         return Redirect::back()->with('message', 'Offense and corresponding penalty added successfully');
     }
@@ -102,6 +105,10 @@ public function minor(Student $student)
         $offense->cleansed_date = Carbon::now();
         $offense->save();
         $student = Student::where('lrn', $offense->lrn)->first();
+
+        $student->updated_at = Carbon::now();
+        $student->save();
+        
         return Redirect::route('minor.offenses', ['student' => $student->id]);
     }
 
