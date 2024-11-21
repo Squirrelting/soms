@@ -38,7 +38,7 @@ class Student extends Model
         return $this->belongsTo(Section::class, 'section_id', 'id');
     }
 
-// In Student.php (Model)
+
 public function submittedMinorOffenses()
 {
     return $this->hasMany(SubmittedMinorOffense::class, 'lrn', 'lrn');
@@ -47,6 +47,10 @@ public function submittedMinorOffenses()
 public function submittedMinorOffensesWithNoSanction()
 {
     return $this->submittedMinorOffenses()->where('sanction', 0);
+}
+public function submittedMinorOffensesWithSanction()
+{
+    return $this->submittedMinorOffenses()->where('sanction', 1);
 }
 
 public function submittedMajorOffenses()
@@ -57,6 +61,10 @@ public function submittedMajorOffenses()
 public function submittedMajorOffensesWithNoSanction()
 {
     return $this->submittedMajorOffenses()->where('sanction', 0);
+}
+public function submittedMajorOffensesWithSanction()
+{
+    return $this->submittedMajorOffenses()->where('sanction', 1);
 }
 
 }

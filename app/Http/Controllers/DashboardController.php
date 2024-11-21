@@ -97,38 +97,97 @@ class DashboardController extends Controller
             'selectedQuarter' => $selectedQuarter,  
         ]);
     }
-public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null) 
-{
-    // Fetch offenses per grade with necessary filters
-    $offensesPerGrade = Student::select('grade_id')
-        ->where(function ($query) {
-            $query->whereHas('submittedMinorOffensesWithNoSanction')
-                  ->orWhereHas('submittedMajorOffensesWithNoSanction');
-        })
-        ->when($selectedSchoolyear, function($query) use ($selectedSchoolyear) {
-            $query->where('schoolyear', $selectedSchoolyear);
-        })
-        ->when($selectedQuarter, function($query) use ($selectedQuarter) {
-            $query->where('quarter', $selectedQuarter);
-        })
-        ->groupBy('grade_id')
-        ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
-        ->get()
-        ->keyBy('grade_id');
+    private function getOffenseCounts($type, $sanction, $selectedSchoolyear, $selectedQuarter) {
+        $model = $type === 'major' ? SubmittedMajorOffense::class : SubmittedMinorOffense::class;
+        return $model::select('student_grade as grade_id')
+            ->where('sanction', $sanction)
+            ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+            ->groupBy('student_grade')
+            ->selectRaw('student_grade as grade_id, COUNT(*) as offense_count')
+            ->pluck('offense_count', 'grade_id');
+    }
 
-    // Define all grades and ensure zeroes for missing grades
-    $allGrades = [7, 8, 9, 10, 11, 12];
-    $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offensesPerGrade) {
-        return [
-            'grade_id' => $grade_id,
-            'offense_count' => $offensesPerGrade->get($grade_id)->offense_count ?? 0
-        ];
-    });
+    
+    public function getGradeData(Request $request, $selectedSchoolyear, $selectedQuarter = null)
+    {
+        // Define all grades for normalization
+        $allGrades = [7, 8, 9, 10, 11, 12];
+    
+        // Offenders by grade
+        $offenders = Student::select('grade_id')
+            ->when($selectedSchoolyear, fn($query) => $query->where('schoolyear', $selectedSchoolyear))
+            ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
+            ->groupBy('grade_id')
+            ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
+            ->get()
+            ->keyBy('grade_id');
+    
+        $minorUnresolved = $this->getOffenseCounts('minor', 0, $selectedSchoolyear, $selectedQuarter);
+        $majorUnresolved = $this->getOffenseCounts('major', 0, $selectedSchoolyear, $selectedQuarter);
+        $totalUnresolved = collect($allGrades)->mapWithKeys(function ($gradeId) use ($minorUnresolved, $majorUnresolved) {
+            $minorCount = $minorUnresolved[$gradeId] ?? 0;
+            $majorCount = $majorUnresolved[$gradeId] ?? 0;
+            
+            // Sum the minor and major unresolved offenses
+            return [
+                $gradeId => $minorCount + $majorCount
+            ];
+        })->toArray();
+        
+    
+        // Resolved offenses by grade
+        $minorResolved = $this->getOffenseCounts('minor', 1, $selectedSchoolyear, $selectedQuarter);
+        $majorResolved = $this->getOffenseCounts('major', 1, $selectedSchoolyear, $selectedQuarter);
+        $totalResolved = collect($allGrades)->mapWithKeys(function ($gradeId) use ($minorResolved, $majorResolved) {
+            $minorCount = $minorResolved[$gradeId] ?? 0;
+            $majorCount = $majorResolved[$gradeId] ?? 0;
+            
+            // Sum the minor and major unresolved offenses
+            return [
+                $gradeId => $minorCount + $majorCount
+            ];
+        })->toArray();
+        
 
-    return response()->json([
-        'offensesPerGrade' => $offensesPerGradeWithZeroes,
-    ]);
-}
-
+        // Aggregate major and minor offenses
+        $majorOffenses = SubmittedMajorOffense::select('student_grade as grade_id')
+            ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+            ->groupBy('student_grade')
+            ->selectRaw('student_grade as grade_id, COUNT(*) as major_offenses')
+            ->pluck('major_offenses', 'grade_id');
+    
+        $minorOffenses = SubmittedMinorOffense::select('student_grade as grade_id')
+            ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+            ->groupBy('student_grade')
+            ->selectRaw('student_grade as grade_id, COUNT(*) as minor_offenses')
+            ->pluck('minor_offenses', 'grade_id');
+    
+        $totalOffenses = collect($majorOffenses)
+            ->map(function ($majorCount, $gradeId) use ($minorOffenses) {
+                return $majorCount + ($minorOffenses[$gradeId] ?? 0);
+            })
+            ->toArray();
+    
+        // Normalize data with all grades
+        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offenders, $totalUnresolved, $totalResolved, $totalOffenses) {
+            return [
+                'grade_id' => $grade_id,
+                'offenders' => $offenders->get($grade_id)->offense_count ?? 0,
+                'unresolved' => $totalUnresolved[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
+                'resolved' => $totalResolved[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
+                'offenses' => $totalOffenses[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
+            ];
+        });
+    
+        // Return as JSON
+        return response()->json([
+            'offendersPerGrade' => $offensesPerGradeWithZeroes,
+        ]);
+    }
+    
+    
     
 }
