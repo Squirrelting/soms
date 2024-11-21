@@ -22,7 +22,27 @@ const props = defineProps({
 const studentsData = ref(props.students);
 const searchQuery = ref("");
 const perPage = ref(props.perPage || 10);
-const gradesData = ref([]);
+
+//Offenders Per Grade
+const offenders = ref([]);
+
+// Fetch grades data
+const getGradesData = () => {
+    isGradesLoading.value = true;  // Set grades loading state
+    const params = { selectedSchoolyear: selectedYear.value };
+    if (selectedQuarter.value) {
+        params.selectedQuarter = selectedQuarter.value;
+    }
+    axios
+        .get(route("get.grade.data", params))
+        .then((response) => {
+            offenders.value = response.data.offendersPerGrade;
+            isGradesLoading.value = false;  // Hide grades loading spinner once data is fetched
+        })
+        .catch((error) => {
+            isGradesLoading.value = false;  // Hide loading spinner on error
+        });
+};
 
 // Separate loading states
 const isTableLoading = ref(false);  // For table data loading
@@ -100,7 +120,6 @@ const filter = () => {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                console.log("Response:", page.props.students);
                 studentsData.value = page.props.students;
                 isTableLoading.value = false;  // Hide loading spinner after table data is fetched
             },
@@ -112,25 +131,6 @@ const filter = () => {
 watch([perPage, searchQuery, selectedYear, selectedQuarter], () => {
     filter();  // Trigger filter on perPage or search query change
 });
-
-// Fetch grades data
-const getGradesData = () => {
-    isGradesLoading.value = true;  // Set grades loading state
-    const params = { selectedSchoolyear: selectedYear.value };
-    if (selectedQuarter.value) {
-        params.selectedQuarter = selectedQuarter.value;
-    }
-    axios
-        .get(route("get.grade.data", params))
-        .then((response) => {
-            gradesData.value = response.data.offensesPerGrade;
-            isGradesLoading.value = false;  // Hide grades loading spinner once data is fetched
-        })
-        .catch((error) => {
-            console.error("Error fetching data:", error);
-            isGradesLoading.value = false;  // Hide loading spinner on error
-        });
-};
 
 // Trigger initial data fetch on mount
 onMounted(() => {
@@ -150,7 +150,7 @@ onMounted(() => {
                     <!-- School Year Selector -->
                     <select
                         v-model="selectedYear"
-                        :disabled="isLoading"
+                        :disabled="isTableLoading"
                         @change="filterQuarters"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -165,7 +165,7 @@ onMounted(() => {
 
                     <!-- Quarters Select -->
                     <select
-                        :disabled="isLoading"
+                        :disabled="isTableLoading"
                         v-model="selectedQuarter"
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-full sm:w-[8rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
@@ -543,7 +543,7 @@ onMounted(() => {
             <!-- Vertical Card Section with Responsive Width -->
             <div class="lg:col-span-1">
                 <span v-if="isGradesLoading" class="loading loading-spinner loading-lg"></span>
-                <OffensesPerGrade :offensesPerGrade="gradesData" />
+                <OffensesPerGrade :offendersPerGrade="offenders" />
             </div>
         </div>
     </AuthenticatedLayout>
