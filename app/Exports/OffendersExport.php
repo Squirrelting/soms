@@ -31,8 +31,12 @@ class OffendersExport implements FromCollection, WithHeadings
                 'Section' => $offense->student_section,
                 'Offense' => $offense->minor_offense ?? $offense->major_offense ?? 'N/A',
                 'Penalty' => $offense->minor_penalty ?? $offense->major_penalty ?? 'N/A',
+                'Status' => $offense->sanction == 1 ? 'Resolved' : 'Unresolved',
                 'Date Committed' => $offense->committed_date,
+                'Recorded By' => $offense->recorded_by,
                 'Date Recorded' => $offense->recorded_date,
+                'Resolved By' => $offense->cleansed_by,
+                'Date Resolved' => $offense->cleansed_date,
             ];
         }));
     }
@@ -49,8 +53,12 @@ class OffendersExport implements FromCollection, WithHeadings
             'Section',
             'Offense',
             'Penalty',
+            'Status',
             'Date Committed',
+            'Recorded By',
             'Date Recorded',
+            'Resolved By',
+            'Date Resolved',
         ];
     }
 }

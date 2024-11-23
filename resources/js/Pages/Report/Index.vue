@@ -428,8 +428,25 @@ const checkDataAndProceed = (action) => {
                         >
                             Penalty
                         </th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Status
+                        </th>
                         <th class="py-1 px-2 border text-sm">Date Committed</th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Recorded By
+                        </th>
                         <th class="py-1 px-2 border text-sm">Date Recorded</th>
+                        <th
+                            class="py-2 px-2 text-left border cursor-pointer text-sm"
+                        >
+                            Resolved By
+                        </th>
+                        <th class="py-1 px-2 border text-sm">Date Resolved</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -473,10 +490,23 @@ const checkDataAndProceed = (action) => {
                             {{ offense.minor_penalty || offense.major_penalty }}
                         </td>
                         <td class="py-1 px-2 border text-sm">
+    {{ offense.sanction == 1 ? 'Resolved' : 'Unresolved' }}
+</td>
+
+                        <td class="py-1 px-2 border text-sm">
                             {{ offense.committed_date }}
                         </td>
                         <td class="py-1 px-2 border text-sm">
+                            {{ offense.recorded_by }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
                             {{ offense.recorded_date }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.cleansed_by }}
+                        </td>
+                        <td class="py-1 px-2 border text-sm">
+                            {{ offense.cleansed_date }}
                         </td>
                     </tr>
                 </tbody>

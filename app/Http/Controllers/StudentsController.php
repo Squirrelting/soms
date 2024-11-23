@@ -189,6 +189,7 @@ public function index(Request $request)
         }
     
         $section = Section::where('id', $student->section_id)->first();
+        $recordedBy = auth()->user()->name;
     
         // Fetch current offense count
         $existingMinorOffensesCount = SubmittedMinorOffense::where('lrn', $student->lrn)->count();
@@ -215,6 +216,7 @@ public function index(Request $request)
                     'student_sex' => $student->sex,
                     'student_schoolyear' => $student->schoolyear,
                     'student_quarter' => $student->quarter,
+                    'recorded_by' => $recordedBy,
                     'committed_date' => $request->minor_offenses[$i]['date_committed'],
                     'minor_offense' => $request->minor_offenses[$i]['minor_offenses'],
                     'minor_penalty' => $minorPenalty->minor_penalties,
@@ -246,6 +248,7 @@ public function index(Request $request)
                     'student_sex' => $student->sex,
                     'student_schoolyear' => $student->schoolyear,
                     'student_quarter' => $student->quarter,
+                    'recorded_by' => $recordedBy,
                     'committed_date' => $request->major_offenses[$i]['date_committed'],
                     'major_offense' => $request->major_offenses[$i]['major_offenses'],
                     'major_penalty' => $majorPenalty->major_penalties,

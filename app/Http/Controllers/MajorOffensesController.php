@@ -29,13 +29,8 @@ public function major(Student $student)
             // Format the created_at date to "Month Day, Year"
             $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
             $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
 
-            // Format the sanction_date if it exists
-            if ($offense->cleansed_date) {
-                $offense->cleansed_date = Carbon::parse($offense->cleansed_date)->format('F d, Y');
-            } else {
-                $offense->cleansed_date = null; // Or set a default value if needed
-            }
             
             return $offense;
         });
@@ -52,6 +47,8 @@ public function major(Student $student)
     {
         // Validate the form input
         $validated = $request->validated();
+        $recordedBy = auth()->user()->name;
+
         
         // Fetch the student using the provided lrn
         $student = Student::where('lrn', $validated['lrn'])->first();
@@ -87,7 +84,9 @@ public function major(Student $student)
             'student_quarter' => $validated['student_quarter'],
             'committed_date' => $validated['committed_date'],
             'major_offense' => $validated['major_offense'],
-            'major_penalty' => $penalty->major_penalties, 
+            'major_penalty' => $penalty->major_penalties,
+            'recorded_by' => $recordedBy,
+ 
         ]);
 
         $student->updated_at = Carbon::now();
@@ -103,6 +102,7 @@ public function major(Student $student)
     {
         // Update the sanction field to 1 and set the cleansed_date to the current timestamp
         $offense->sanction = 1;
+        $offense->cleansed_by = auth()->user()->name;
         $offense->cleansed_date = Carbon::now();
         $offense->save();
         $student = Student::where('lrn', $offense->lrn)->first();
