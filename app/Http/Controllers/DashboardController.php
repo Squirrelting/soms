@@ -37,6 +37,10 @@ class DashboardController extends Controller
             $query->where('firstname', 'like', "%{$search}%")
                   ->orWhere('middlename', 'like', "%{$search}%")
                   ->orWhere('lastname', 'like', "%{$search}%")
+                  ->orWhere('grade_id', 'like', "%{$search}%")
+                  ->orWhereHas('section', fn($q) => 
+                  $q->where('section', 'like', "%{$search}%")
+              )                  ->orWhere('sex', 'like', "%{$search}%")
                   ->orWhere('lrn', 'like', "%{$search}%");
         }))
         ->orderBy($sortColumn, $sortOrder);
@@ -114,14 +118,36 @@ class DashboardController extends Controller
         // Define all grades for normalization
         $allGrades = [7, 8, 9, 10, 11, 12];
     
-        // Offenders by grade
-        $offenders = Student::select('grade_id')
-            ->when($selectedSchoolyear, fn($query) => $query->where('schoolyear', $selectedSchoolyear))
-            ->when($selectedQuarter, fn($query) => $query->where('quarter', $selectedQuarter))
-            ->groupBy('grade_id')
-            ->selectRaw('grade_id, COUNT(DISTINCT lrn) as offense_count')
-            ->get()
-            ->keyBy('grade_id');
+// Get distinct LRNs for minor offenders
+$minorOffendersLRNs = SubmittedMinorOffense::select('lrn', 'student_grade as grade_id')
+    ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+    ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+    ->get();
+
+// Get distinct LRNs for major offenders
+$majorOffendersLRNs = SubmittedMajorOffense::select('lrn', 'student_grade as grade_id')
+    ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+    ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+    ->get();
+
+// Combine minor and major LRNs
+$combinedOffenders = $minorOffendersLRNs->concat($majorOffendersLRNs);
+
+// Group by grade and count distinct LRNs
+$offenders = $combinedOffenders
+    ->groupBy('grade_id')
+    ->map(function ($groupedOffenders) {
+        // Count distinct LRNs in each grade
+        return $groupedOffenders->pluck('lrn')->unique()->count();
+    });
+
+// Normalize offenders data with all grades
+$offendersByGrade = collect($allGrades)->mapWithKeys(function ($gradeId) use ($offenders) {
+    return [$gradeId => $offenders[$gradeId] ?? 0];
+});
+
+// You can now use $offendersByGrade as needed
+
     
         $minorUnresolved = $this->getOffenseCounts('minor', 0, $selectedSchoolyear, $selectedQuarter);
         $majorUnresolved = $this->getOffenseCounts('major', 0, $selectedSchoolyear, $selectedQuarter);
@@ -172,13 +198,13 @@ class DashboardController extends Controller
             ->toArray();
     
         // Normalize data with all grades
-        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offenders, $totalUnresolved, $totalResolved, $totalOffenses) {
+        $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offendersByGrade, $totalUnresolved, $totalResolved, $totalOffenses) {
             return [
                 'grade_id' => $grade_id,
-                'offenders' => $offenders->get($grade_id)->offense_count ?? 0,
-                'unresolved' => $totalUnresolved[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
-                'resolved' => $totalResolved[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
-                'offenses' => $totalOffenses[$grade_id] ?? $offenders->get($grade_id)->offense_count ?? 0,
+                'offenders' => $offendersByGrade[$grade_id] ?? 0,
+                'unresolved' => $totalUnresolved[$grade_id] ?? 0,
+                'resolved' => $totalResolved[$grade_id] ?? 0,
+                'offenses' => $totalOffenses[$grade_id] ?? 0,
             ];
         });
     

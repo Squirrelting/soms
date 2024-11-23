@@ -8,7 +8,6 @@ const props = defineProps({
 
 <template>
     <div class="text-left">
-      <h2 class="text-sm font-semibold mb-2">Number of Offenders</h2>
       <ul>
         <li
           v-for="gradeData in offendersPerGrade"
@@ -31,4 +30,3 @@ const props = defineProps({
     </div>
   </template>
   
-

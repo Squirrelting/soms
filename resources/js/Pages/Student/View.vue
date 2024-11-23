@@ -52,11 +52,14 @@ const props = defineProps({
                         <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Status</th>
                             <th class="p-2 text-left border-b border-r border-gray-200">S.Y. Quarter</th>
                             <th class="p-2 text-left border-b border-r border-gray-200">Grade and Section</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded By</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
-                            <th class="py-2 px-4 text-left border-b">Cleansed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Resolved By</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Resolved Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,11 +70,14 @@ const props = defineProps({
                         >
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_offense }}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.minor_penalty }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.sanction == 1 ? 'Resolved' : 'Unresolved' }}</td>
                             <td class="p-2 border-b border-r border-gray-200">{{ offense.student_schoolyear }}, {{ offense.student_quarter }}</td>
                             <td class="p-2 border-b border-r border-gray-200">Grade {{ offense.student_grade }}, {{ offense.student_section }}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_by}}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
-                            <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.cleansed_by}}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.cleansed_date }}</td>    
                         </tr>
                     </tbody>
                 </table>
@@ -87,11 +93,14 @@ const props = defineProps({
                         <tr class="bg-gray-100 text-gray-700 text-sm font-medium">
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Offense Committed</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Penalty</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Status</th>
                             <th class="p-2 text-left border-b border-r border-gray-200">S.Y. Quarter</th>
                             <th class="p-2 text-left border-b border-r border-gray-200">Grade and Section</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded By</th>
                             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
-                            <th class="py-2 px-4 text-left border-b">Cleansed Date</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Resolved By</th>
+                            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Resolved Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,11 +111,14 @@ const props = defineProps({
                         >
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_offense }}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.major_penalty }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.sanction == 1 ? 'Resolved' : 'Unresolved' }}</td>
                             <td class="p-2 border-b border-r border-gray-200">{{ offense.student_schoolyear }}, {{ offense.student_quarter }}</td>
                             <td class="p-2 border-b border-r border-gray-200">Grade {{ offense.student_grade }}, {{ offense.student_section }}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_by}}</td>
                             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
-                            <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.cleansed_by}}</td>
+                            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.cleansed_date }}</td>   
                         </tr>
                     </tbody>
                 </table>

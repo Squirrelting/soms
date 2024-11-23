@@ -54,6 +54,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Minor';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
@@ -79,6 +80,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Major';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
@@ -189,6 +191,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Minor';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
@@ -214,6 +217,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Major';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
@@ -284,6 +288,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Minor';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
@@ -309,6 +314,7 @@ class ReportsController extends Controller
                 $offense->offense_type = 'Major';
                 $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
                 $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
                 return $offense;
             });
 
