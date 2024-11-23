@@ -171,8 +171,10 @@ const saveMajorOffense = () => {
             <th class="p-2 text-left border-b border-r border-gray-200">S.Y. Quarter</th>
             <th class="p-2 text-left border-b border-r border-gray-200">Grade and Section</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Committed Date</th>
+            <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded By</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Recorded Date</th>
             <th class="py-2 px-4 text-left border-b border-r border-gray-200">Sanction</th>
+            <th class="py-2 px-4 text-left border-b">Resolved By</th>
             <th class="py-2 px-4 text-left border-b">Resolved Date</th>
         </tr>
     </thead>
@@ -183,6 +185,7 @@ const saveMajorOffense = () => {
             <td class="p-2 border-b border-r border-gray-200">{{ offense.student_schoolyear }}, {{ offense.student_quarter }}</td>
             <td class="p-2 border-b border-r border-gray-200">Grade {{ offense.student_grade }}, {{ offense.student_section }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.committed_date }}</td>
+            <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_by }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
             <td class="py-2 px-4 border-b border-r border-gray-200">
                 <button
@@ -200,6 +203,7 @@ const saveMajorOffense = () => {
                     Resolved
                 </button>
             </td>
+            <td class="py-2 px-4 border-b">{{ offense.cleansed_by }}</td>
             <td class="py-2 px-4 border-b">{{ offense.cleansed_date }}</td>
         </tr>
     </tbody>

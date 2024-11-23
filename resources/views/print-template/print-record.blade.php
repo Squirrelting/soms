@@ -77,11 +77,14 @@
                 <tr>
                     <th>Offense Committed</th>
                     <th>Penalty</th>
+                    <th>Status</th>
                     <th>S.Y. Quarter</th>
                     <th>Grade and Section</th>
                     <th>Committed Date</th>
+                    <th>Recorded By</th>
                     <th>Recorded Date</th>
-                    <th>Cleansed Date</th>
+                    <th>Resolved By</th>
+                    <th>Resolved Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -92,8 +95,10 @@
                         <td>{{ $offense->student_schoolyear }}, {{ $offense->student_quarter }}</td>
                         <td>{{ $offense->student_grade }}, {{ $offense->student_section }}</td>
                         <td>{{ $offense->committed_date }}</td>
+                        <td>{{ $offense->recorded_by }}</td>
                         <td>{{ $offense->recorded_date }}</td>
-                        <td>{{ $offense->cleansed_date ?? 'N/A' }}</td>
+                        <td>{{ $offense->cleansed_by }}</td>
+                        <td>{{ $offense->cleansed_date }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -110,11 +115,14 @@
                 <tr>
                     <th>Offense Committed</th>
                     <th>Penalty</th>
+                    <th>Status</th>
                     <th>S.Y. Quarter</th>
                     <th>Grade and Section</th>
                     <th>Committed Date</th>
+                    <th>Recorded By</th>
                     <th>Recorded Date</th>
-                    <th>Cleansed Date</th>
+                    <th>Resolved By</th>
+                    <th>Resolved Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -122,11 +130,14 @@
                     <tr>
                         <td>{{ $offense->major_offense }}</td>
                         <td>{{ $offense->major_penalty }}</td>
+                        <td>{{ $offense->sanction == 1 ? 'Resolved' : 'Unresolved' }}</td>
                         <td>{{ $offense->student_schoolyear }}, {{ $offense->student_quarter }}</td>
                         <td>{{ $offense->student_grade }}, {{ $offense->student_section }}</td>
                         <td>{{ $offense->committed_date }}</td>
+                        <td>{{ $offense->recorded_by }}</td>
                         <td>{{ $offense->recorded_date }}</td>
-                        <td>{{ $offense->cleansed_date ?? 'N/A' }}</td>
+                        <td>{{ $offense->cleansed_by }}</td>
+                        <td>{{ $offense->cleansed_date }}</td>
                     </tr>
                 @endforeach
             </tbody>

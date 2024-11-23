@@ -40,13 +40,14 @@
             text-align: left;
         }
 
-        .footer {
+        .footer{
             margin-top: 20px;
-            text-align: right;
+            margin-left: 1000px;
+        }
+        .printby {
             font-size: 14px;
         }
         .date {
-            text-align: right;
             font-size: 14px;
         }
 
@@ -88,8 +89,12 @@
                 <th>Section</th>
                 <th>Offense</th>
                 <th>Penalty</th>
+                <th>Status</th>
                 <th>Date Committed</th>
+                <th>Recorded By</th>
                 <th>Date Recorded</th>
+                <th>Resolved By</th>
+                <th>Date Resolved</th>
             </tr>
         </thead>
         <tbody>
@@ -103,18 +108,27 @@
                     <td>{{ $offense->student_section }}</td>
                     <td>{{ $offense->minor_offense ?? $offense->major_offense }}</td>
                     <td>{{ $offense->minor_penalty ?? $offense->major_penalty }}</td>
+                    <td>{{ $offense->sanction == 1 ? 'Resolved' : 'Unresolved' }}</td>
                     <td>{{ $offense->committed_date }}</td>
+                    <td>{{ $offense->recorded_by }}</td>
                     <td>{{ $offense->recorded_date }}</td>
+                    <td>{{ $offense->cleansed_by }}</td>
+                    <td>{{ $offense->cleansed_date }}</td>
                 </tr>
             @endforeach
         </tbody>
+        
     </table>
 
     <div class="footer">
-        Printed by: {{ $userName }}, {{ $userRole }}
+    <div class="printby">
+        Printed by: <strong>{{ $userName }}</strong> <br>
+        Designation/Position: <strong>{{ $userRole }}</strong>
     </div>
     <div class="date">
         Date: {{ $date }}
     </div>
+</div>
+
 </body>
 </html>
