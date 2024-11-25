@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Models\SubmittedMajorOffense;
+use App\Models\SubmittedMinorOffense;
 
 class LineChartController extends Controller
 {
@@ -13,19 +14,12 @@ class LineChartController extends Controller
         $selectedQuarter = $request->selectedQuarter;
 
         // Fetch minor offenses data
-        $minorOffensesQuery = Student::whereHas('submittedMinorOffenses')
-            ->join('submitted_minor_offenses', 'students.lrn', '=', 'submitted_minor_offenses.lrn')
-            ->where('submitted_minor_offenses.student_schoolyear', $selectedYear);
-
-        // If a quarter is selected, filter by it; otherwise, merge data for all quarters
-        if ($selectedQuarter) {
-            $minorOffensesQuery->where('submitted_minor_offenses.student_quarter', $selectedQuarter);
-        }
-
-        $minorOffenses = $minorOffensesQuery
-            ->selectRaw('submitted_minor_offenses.committed_date, COUNT(*) as count')
-            ->groupBy('submitted_minor_offenses.committed_date')
-            ->orderBy('submitted_minor_offenses.committed_date') // Optional: order by committed date
+        $minorOffenses = SubmittedMinorOffense::query()
+            ->when($selectedYear, fn($query) => $query->where('student_schoolyear', $selectedYear))
+            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+            ->selectRaw('committed_date, COUNT(*) as count')
+            ->groupBy('committed_date')
+            ->orderBy('committed_date')
             ->get()
             ->map(function ($offense) {
                 return [
@@ -35,19 +29,12 @@ class LineChartController extends Controller
             });
 
         // Fetch major offenses data
-        $majorOffensesQuery = Student::whereHas('submittedMajorOffenses')
-            ->join('submitted_major_offenses', 'students.lrn', '=', 'submitted_major_offenses.lrn')
-            ->where('submitted_major_offenses.student_schoolyear', $selectedYear);
-
-        // If a quarter is selected, filter by it; otherwise, merge data for all quarters
-        if ($selectedQuarter) {
-            $majorOffensesQuery->where('submitted_major_offenses.student_quarter', $selectedQuarter);
-        }
-
-        $majorOffenses = $majorOffensesQuery
-            ->selectRaw('submitted_major_offenses.committed_date, COUNT(*) as count')
-            ->groupBy('submitted_major_offenses.committed_date')
-            ->orderBy('submitted_major_offenses.committed_date') // Optional: order by committed date
+        $majorOffenses = SubmittedMajorOffense::query()
+            ->when($selectedYear, fn($query) => $query->where('student_schoolyear', $selectedYear))
+            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+            ->selectRaw('committed_date, COUNT(*) as count')
+            ->groupBy('committed_date')
+            ->orderBy('committed_date')
             ->get()
             ->map(function ($offense) {
                 return [
