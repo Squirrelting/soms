@@ -176,27 +176,30 @@ $offendersByGrade = collect($allGrades)->mapWithKeys(function ($gradeId) use ($o
         })->toArray();
         
 
-        // Aggregate major and minor offenses
-        $majorOffenses = SubmittedMajorOffense::select('student_grade as grade_id')
-            ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
-            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
-            ->groupBy('student_grade')
-            ->selectRaw('student_grade as grade_id, COUNT(*) as major_offenses')
-            ->pluck('major_offenses', 'grade_id');
-    
-        $minorOffenses = SubmittedMinorOffense::select('student_grade as grade_id')
-            ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
-            ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
-            ->groupBy('student_grade')
-            ->selectRaw('student_grade as grade_id, COUNT(*) as minor_offenses')
-            ->pluck('minor_offenses', 'grade_id');
-    
-        $totalOffenses = collect($majorOffenses)
-            ->map(function ($majorCount, $gradeId) use ($minorOffenses) {
-                return $majorCount + ($minorOffenses[$gradeId] ?? 0);
-            })
-            ->toArray();
-    
+// Aggregate major and minor offenses
+$majorOffenses = SubmittedMajorOffense::select('student_grade as grade_id')
+    ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+    ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+    ->groupBy('student_grade')
+    ->selectRaw('student_grade as grade_id, COUNT(*) as major_offenses')
+    ->pluck('major_offenses', 'grade_id');
+
+$minorOffenses = SubmittedMinorOffense::select('student_grade as grade_id')
+    ->when($selectedSchoolyear, fn($query) => $query->where('student_schoolyear', $selectedSchoolyear))
+    ->when($selectedQuarter, fn($query) => $query->where('student_quarter', $selectedQuarter))
+    ->groupBy('student_grade')
+    ->selectRaw('student_grade as grade_id, COUNT(*) as minor_offenses')
+    ->pluck('minor_offenses', 'grade_id');
+
+// Combine and sum the offenses
+$totalOffenses = collect($majorOffenses)
+    ->mapWithKeys(function ($majorOffensesCount, $gradeId) use ($minorOffenses) {
+        return [$gradeId => $majorOffensesCount + ($minorOffenses[$gradeId] ?? 0)];
+    })
+    ->union($minorOffenses->filter(fn($minorOffensesCount, $gradeId) => !$majorOffenses->has($gradeId)))
+    ->toArray();
+
+
         // Normalize data with all grades
         $offensesPerGradeWithZeroes = collect($allGrades)->map(function ($grade_id) use ($offendersByGrade, $totalUnresolved, $totalResolved, $totalOffenses) {
             return [
