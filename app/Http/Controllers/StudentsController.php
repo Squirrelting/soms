@@ -160,16 +160,36 @@ public function index(Request $request)
     {
         $yearToday = $request->yeartoday; 
         $nextYear = $request->nextyear; 
-    
+        
         $schoolYear = $yearToday . '-' . $nextYear;
     
+        $newLrn = $request->lrn;
+        $oldLrn = $student->lrn;
+    
+        // Disable foreign key checks temporarily
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+    
+        // Update foreign key references in `submitted_minor_offenses`
+        \DB::table('submitted_minor_offenses')
+            ->where('lrn', $oldLrn)
+            ->update(['lrn' => $newLrn]);
+    
+        // Update foreign key references in `submitted_major_offenses`
+        \DB::table('submitted_major_offenses')
+            ->where('lrn', $oldLrn)
+            ->update(['lrn' => $newLrn]);
+    
+        // Update the student record
         $studentData = array_merge($request->validated(), ['schoolyear' => $schoolYear]);
-
         $student->update($studentData);
-
+    
+        // Enable foreign key checks again
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
+    
         return redirect()->route('students.index')->with('message', 'Student updated successfully');
     }
-
+    
+    
 
     public function store(StudentDetailRequest $request)
     {
@@ -208,9 +228,9 @@ public function index(Request $request)
     
                 SubmittedMinorOffense::create([
                     'lrn' => $student->lrn,
-                    'student_firstname' => $student->firstname,
-                    'student_middlename' => $student->middlename,
-                    'student_lastname' => $student->lastname,
+                    // 'student_firstname' => $student->firstname,
+                    // 'student_middlename' => $student->middlename,
+                    // 'student_lastname' => $student->lastname,
                     'student_grade' => $student->grade_id,
                     'student_section' => $section->section,
                     'student_sex' => $student->sex,
@@ -240,9 +260,9 @@ public function index(Request $request)
                 $majorPenalty = MajorPenalty::find($majorPenaltyId);
                 SubmittedMajorOffense::create([
                     'lrn' => $student->lrn,
-                    'student_firstname' => $student->firstname,
-                    'student_middlename' => $student->middlename,
-                    'student_lastname' => $student->lastname,
+                    // 'student_firstname' => $student->firstname,
+                    // 'student_middlename' => $student->middlename,
+                    // 'student_lastname' => $student->lastname,
                     'student_grade' => $student->grade_id,
                     'student_section' => $section->section,
                     'student_sex' => $student->sex,
@@ -261,6 +281,21 @@ public function index(Request $request)
         return redirect()->route('students.index')->with('message', $existingStudent ? 'Student updated successfully' : 'Student added successfully');
     }
     
+    public function checkLRN(Request $request)
+    {
+        // Validate that the LRN is provided
+        $request->validate([
+            'lrn' => 'required',
+        ]);
+    
+        // Check if the LRN exists in the database excluding the current student
+        $exists = Student::where('lrn', $request->lrn)
+            ->where('id', '!=', $request->student_id) // Exclude the student being updated
+            ->exists();
+    
+        // Return the result as a JSON response
+        return response()->json(['exists' => $exists]);
+    }
     
     
 }

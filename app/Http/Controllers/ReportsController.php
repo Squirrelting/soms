@@ -34,55 +34,71 @@ class ReportsController extends Controller
 
         // Retrieve and filter minor offenses
         $minorOffenses = SubmittedMinorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('minor_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()            
-            ->map(function ($offense) {
-                $offense->offense_type = 'Minor';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_minor_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_minor_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_minor_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_minor_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_minor_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_minor_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_minor_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_minor_offenses.minor_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Minor';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
+    
 
         // Retrieve and filter major offenses
         $majorOffenses = SubmittedMajorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('major_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()  
-            ->map(function ($offense) {
-                $offense->offense_type = 'Major';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_major_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_major_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_major_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_major_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_major_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_major_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_major_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_major_offenses.major_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Major';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
+    
 
             $offenderData = collect();
             $offenderData = match ($offenseFilter) {
@@ -171,55 +187,69 @@ class ReportsController extends Controller
 
         // Retrieve and filter minor offenses
         $minorOffenses = SubmittedMinorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('minor_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()            
-            ->map(function ($offense) {
-                $offense->offense_type = 'Minor';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_minor_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_minor_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_minor_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_minor_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_minor_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_minor_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_minor_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_minor_offenses.minor_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Minor';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
 
         // Retrieve and filter major offenses
         $majorOffenses = SubmittedMajorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('major_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()  
-            ->map(function ($offense) {
-                $offense->offense_type = 'Major';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_major_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_major_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_major_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_major_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_major_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_major_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_major_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_major_offenses.major_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Major';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
 
             $offendersData = match ($offenseFilter) {
                 'Minor' => $minorOffenses,
@@ -268,55 +298,69 @@ class ReportsController extends Controller
 
         // Retrieve and filter minor offenses
         $minorOffenses = SubmittedMinorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('minor_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()            
-            ->map(function ($offense) {
-                $offense->offense_type = 'Minor';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_minor_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_minor_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_minor_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_minor_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_minor_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_minor_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_minor_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_minor_offenses.minor_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Minor';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
 
         // Retrieve and filter major offenses
         $majorOffenses = SubmittedMajorOffense::query()
-            ->when($selectedYear, fn($q) => $q->where('student_schoolyear', $selectedYear))
-            ->when($selectedQuarter, fn($q) => $q->where('student_quarter', $selectedQuarter))
-            ->when($sanction !== null, fn($q) => $q->where('sanction', $sanction))
-            ->when($sex, fn($q) => $q->where('student_sex', $sex))
-            ->when($grade, fn($q) => $q->where('student_grade', $grade))
-            ->when($section, fn($q) => $q->where('student_section', $section))
-            ->when($selectedOffense, fn($q) => $q->where('major_offense', $selectedOffense))
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('student_firstname', 'like', "%{$search}%")
-                          ->orWhere('student_middlename', 'like', "%{$search}%")
-                          ->orWhere('student_lastname', 'like', "%{$search}%")
-                          ->orWhere('lrn', 'like', "%{$search}%");
-                });
-            })
-            ->get()  
-            ->map(function ($offense) {
-                $offense->offense_type = 'Major';
-                $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
-                $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
-                $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
-                return $offense;
+        ->join('students', 'submitted_major_offenses.lrn', '=', 'students.lrn')
+        ->select(
+            'submitted_major_offenses.*',
+            'students.firstname as student_firstname',
+            'students.middlename as student_middlename',
+            'students.lastname as student_lastname'
+        )
+        ->when($selectedYear, fn($q) => $q->where('submitted_major_offenses.student_schoolyear', $selectedYear))
+        ->when($selectedQuarter, fn($q) => $q->where('submitted_major_offenses.student_quarter', $selectedQuarter))
+        ->when($sanction !== null, fn($q) => $q->where('submitted_major_offenses.sanction', $sanction))
+        ->when($sex, fn($q) => $q->where('students.sex', $sex))
+        ->when($grade, fn($q) => $q->where('submitted_major_offenses.student_grade', $grade))
+        ->when($section, fn($q) => $q->where('submitted_major_offenses.student_section', $section))
+        ->when($selectedOffense, fn($q) => $q->where('submitted_major_offenses.major_offense', $selectedOffense))
+        ->when($search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('students.firstname', 'like', "%{$search}%")
+                      ->orWhere('students.middlename', 'like', "%{$search}%")
+                      ->orWhere('students.lastname', 'like', "%{$search}%")
+                      ->orWhere('students.lrn', 'like', "%{$search}%");
             });
+        })
+        ->get()
+        ->map(function ($offense) {
+            $offense->offense_type = 'Major';
+            $offense->recorded_date = Carbon::parse($offense->created_at)->format('F d, Y');
+            $offense->committed_date = Carbon::parse($offense->committed_date)->format('F d, Y');
+            $offense->cleansed_date = $offense->cleansed_date ? Carbon::parse($offense->cleansed_date)->format('F d, Y') : null;
+            return $offense;
+        });
 
             $offendersData = match ($offenseFilter) {
                 'Minor' => $minorOffenses,

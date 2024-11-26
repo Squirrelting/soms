@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('submitted_minor_offenses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lrn');
-            $table->foreign('lrn')->references('lrn')->on('students');
-            
-            $table->string('student_firstname');
-            $table->string('student_middlename')->nullable();
-            $table->string('student_lastname');
+            $table->foreign('lrn')
+                ->references('lrn')
+                ->on('students')
+                ->onUpdate('cascade') // Allow updates to propagate
+                ->onDelete('restrict'); 
+
             $table->string('student_grade');
             $table->string('student_section');
             $table->string('student_sex')->nullable();
