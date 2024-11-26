@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+import axios from 'axios'; // Import axios
 
 defineProps({
     canResetPassword: {
@@ -23,39 +24,83 @@ const form = useForm({
     remember: false,
 });
 
-const submit = () => {
-    // Show loading indicator
-    Swal.fire({
-        title: 'Logging in...',
-        text: 'Please wait',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+const submit = async () => {
+    try {
+        // Check account status with Axios
+        const response = await axios.post("/get-status", {
+            email: form.email,
+            password: form.password, // Include password for validation
+        });
 
-    form.post(route('authenticateUser'), {
-        onFinish: () => {
-            form.reset('password');
-        },
-        onSuccess: () => {
-            // Close the loading indicator and show success message
+        // If account is deactivated, show Swal error
+        if (response.data.error) {
             Swal.fire({
-                icon: 'success',
-                title: 'Logged in!',
-                text: 'You have been logged in successfully!',
-                timer: 2000,
-                showConfirmButton: false
+                icon: 'error',
+                title: 'Account Deactivated',
+                text: response.data.error,
+                showConfirmButton: true
             });
-        },
-        onError: () => {
-            // Close the loading indicator if there's an error
-            Swal.close();
+            return; // Stop further execution
         }
-    });
+
+        // If account is active, proceed with login
+        Swal.fire({
+            title: 'Logging in...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        form.post(route('authenticateUser'), {
+            onFinish: () => {
+                form.reset('password');
+            },
+            onSuccess: () => {
+                // Close the loading indicator and show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logged in!',
+                    text: 'You have been logged in successfully!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            },
+            onError: () => {
+                // Close the loading indicator if there's an error
+                Swal.close();
+            }
+        });
+
+    } catch (error) {
+        // Handle Axios errors (network or unexpected issues)
+        console.error("Error during request:", error);
+
+        if (error.response) {
+            // Handle validation or server errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response.data.error || 'Something went wrong. Please try again later.',
+                showConfirmButton: true
+            });
+        } else {
+            // Handle network or unexpected errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong. Please try again later.',
+                showConfirmButton: true
+            });
+        }
+    }
 };
 </script>
+
+
+
 
 <template>
             <!-- Background image with dark overlay -->
