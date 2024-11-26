@@ -19,6 +19,8 @@ use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\MinorOffensesController;    
 
+Route::post('/students/check-lrn', [StudentsController::class, 'checkLRN'])->name('check.lrn');
+
 //Dashboard Graphs
 Route::get('/get-pie-data', [PieChartController::class, 'getPieData'])->name('get.pie.data');
 Route::get('/get-line-data', [LineChartController::class, 'getLineData'])->name('get.line.data');

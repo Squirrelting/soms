@@ -21,20 +21,21 @@
             margin-top: -30px;
             margin-bottom: 20px;
         }
-        .student, .footer, .date {
+        .student {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
             margin: 10px 0;
             width: 100%;
         }
-        .footer {
+        .footer{
             margin-top: 20px;
-            text-align: right;
+            margin-left: 1000px;
+        }
+        .printby {
             font-size: 14px;
         }
         .date {
-            text-align: right;
             font-size: 14px;
         }
         table {
@@ -146,10 +147,13 @@
     @endif
 
     <div class="footer">
-        Printed by: {{ $userName }}, {{ $userRole }}
-    </div>
-    <div class="date">
-        Date: {{ $date }}
+        <div class="printby">
+            Printed by: <strong>{{ $userName }}</strong> <br>
+            Designation/Position: <strong>{{ $userRole }}</strong>
+        </div>
+        <div class="date">
+            Date: {{ $date }}
+        </div>
     </div>
 
 </body>

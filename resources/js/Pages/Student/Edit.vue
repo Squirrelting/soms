@@ -79,8 +79,33 @@ const formatName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 
+const checkLrnExists = async (lrn) => {
+    try {
+        const response = await axios.post(route("check.lrn"), {
+            lrn,
+            student_id: props.student.id, // Pass the current student ID
+        });
+        return response.data.exists; // Server response
+    } catch (error) {
+        console.error("Error checking LRN:", error.response?.data || error.message);
+        return false; // Default to no match on error
+    }
+};
 
-const updateStudent = () => {
+
+const updateStudent = async () => {
+    const lrnExists = await checkLrnExists(form.lrn);
+
+    if (lrnExists && form.lrn !== props.student.lrn) {
+        Swal.fire({
+            icon: "error",
+            title: "Duplicate LRN",
+            text: "LRN with that already exists for another student.",
+        });
+        return; // Stop further execution if duplicate LRN exists
+    }
+
+    // Proceed with the update if no duplicate
     Swal.fire({
         title: "Are you sure?",
         text: "Do you want to update this student's information?",
@@ -120,8 +145,8 @@ const updateStudent = () => {
         }
     });
 };
-</script>
 
+</script>
 <template>
     <Head title="Edit Student" />
 
