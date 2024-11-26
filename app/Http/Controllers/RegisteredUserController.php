@@ -15,7 +15,7 @@ class RegisteredUserController extends Controller
 {
     public function index() {
         
-        $users = User::with('roles', 'permissions')->get();; // Fetch all users
+        $users = User::with('roles', 'permissions')->get(); // Fetch all users
         return Inertia::render('User/Index', [
             'User' => $users, // Pass to Vue component
         ]);
@@ -23,7 +23,7 @@ class RegisteredUserController extends Controller
 
     public function edit(User $user) {
 
-        if ($user->hasAnyRole(['admin', 'super-admin'])) {
+        if ($user->hasAnyRole(['ADMIN', 'SUPER-ADMIN'])) {
             return abort(404);
         }
         
@@ -89,6 +89,15 @@ class RegisteredUserController extends Controller
     $user->save();
 
     return redirect()->route('user.index')->with('message', 'User updated successfully.');
+}
+public function toggleStatus(User $user)
+{
+    $user->status = $user->status === 'Active' ? 'Deactivated' : 'Active';
+    $user->save();
+
+    return redirect()->route('user.index')->with('flash', [
+        'message' => 'User status updated successfully!',
+    ]);
 }
 
 }

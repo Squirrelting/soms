@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
+use App\Http\Requests\Auth\LoginRequest;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -35,6 +36,28 @@ class AuthenticatedSessionController extends Controller
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
+
+    public function checkStatus(LoginRequest $request)
+    {
+        // Customize validation rules for this method
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+    
+        $user = User::where('email', $request->email)->first();
+    
+        if ($user && $user->status === 'Deactivated') {
+            return response()->json([
+                'error' => 'Your account is deactivated. Please contact support.',
+            ], 403); // 403 Forbidden status code
+        }
+    
+        return response()->json([
+            'success' => 'Account is active.'
+        ]);
+    }
+    
+    
 
     /**
      * Destroy an authenticated session.

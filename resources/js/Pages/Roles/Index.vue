@@ -74,9 +74,10 @@ const search = () => {
                             <td class="py-2 px-4 border">
                                 <div
                                     v-if="
-                                        !['admin', 'super-admin'].includes(role.name)
+                                        !['ADMIN', 'SUPER-ADMIN'].includes(role.name)
                                     "
                                 >
+
                                     <Link
                                         class="inline-flex items-center px-4 py-3 bg-none dark:bg-none rounded-md font-semibold text-xs text-blue-500 dark:text-blue-500 uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-400 focus:outline-none disabled:opacity-25 transition ease-in-out duration-150"
                                         :href="
