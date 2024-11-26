@@ -54,31 +54,31 @@ function hasPermission(input) {
         <img :class="[isSidebarCollapsed ? 'w-8 h-8' : 'w-16 h-16']" class="rounded-full transition-all duration-500" src="/Images/SCNHS-Logo.png" alt="logo" />
       </div>
       <ul class="px-2 space-y-2">
-        <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Dashboard'" pattern="dashboard" route="dashboard">
+        <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Dashboard'" pattern="dashboard" route="dashboard">
           <HomeIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Students'" pattern="students.index" route="students.index">
+        <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Students'" pattern="students.index" route="students.index">
           <UsersIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Reports'" pattern="reports.index" route="reports.index">
+        <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Reports'" pattern="reports.index" route="reports.index">
           <CalculatorIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <MenuItem v-if="hasPermission('Manage Students')" :label="isSidebarCollapsed ? '' : 'Good Moral'" pattern="print.index" route="print.index">
+        <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Good Moral'" pattern="print.index" route="print.index">
           <PencilIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Roles'" pattern="users.roles-permissions.roles.index" route="users.roles-permissions.roles.index">
+        <MenuItem v-if="hasPermission('Manage Users')" :label="isSidebarCollapsed ? '' : 'Roles'" pattern="users.roles-permissions.roles.index" route="users.roles-permissions.roles.index">
           <KeyIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <details v-if="hasPermission('Manage POD Users')" class="bg-gray-300 rounded-lg mt-4">
+        <details v-if="hasPermission('Manage Offenses')" class="bg-gray-300 rounded-lg mt-4">
           <summary class="p-2 text-gray-800 text-xs cursor-pointer">Add Offense</summary>
           <ul class="pl-4">
             <li>
-              <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Minor Offense'" pattern="minoroffense.index" route="minoroffense.index">
+              <MenuItem v-if="hasPermission('Manage Offenses')" :label="isSidebarCollapsed ? '' : 'Minor Offense'" pattern="minoroffense.index" route="minoroffense.index">
                 <IdentificationIcon class="h-4 w-4 text-gray-800" />
               </MenuItem>
             </li>
             <li>
-              <MenuItem v-if="hasPermission('Manage POD Users')" :label="isSidebarCollapsed ? '' : 'Major Offense'" pattern="majoroffense.index" route="majoroffense.index">
+              <MenuItem v-if="hasPermission('Manage Offenses')" :label="isSidebarCollapsed ? '' : 'Major Offense'" pattern="majoroffense.index" route="majoroffense.index">
                 <IdentificationIcon class="h-4 w-4 text-gray-800" />
               </MenuItem>
             </li>
@@ -106,7 +106,7 @@ function hasPermission(input) {
 
 <div class="ml-auto">
 <!-- Admin Privilege Dropdown -->
-<div v-if="hasPermission('Manage POD Users')" class="dropdown dropdown-end">
+<div v-if="hasPermission('Manage Users')" class="dropdown dropdown-end">
   <div tabindex="0" role="button" class="btn m-1 text-gray-800 bg-blue-200 hover:bg-blue-300 rounded-md shadow-md px-4 py-2">
     Admin Privilege
   </div>

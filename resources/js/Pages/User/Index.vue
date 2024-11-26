@@ -53,6 +53,53 @@ const DeleteUser = (id) => {
         }
     });
 };
+
+const toggleUserStatus = (id, currentStatus) => {
+    const action = currentStatus === "Active" ? "Deactivate" : "Activate";
+
+    Swal.fire({
+        title: `Do you want to ${action} this account?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: currentStatus === "Active" ? "#d33" : "#28a745",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: `Yes, ${action}!`,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+                title: `${action}...`,
+                text: "Please wait while the status is being updated.",
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            // Make the request
+            router.patch(route("user.toggleStatus", id), {}, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: (response) => {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: `The account has been ${action === 'Activate' ? 'activated' : 'deactivated'}.`,
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                },
+                onError: () => {
+                    Swal.fire(
+                        "Error!",
+                        "Failed to update the user status.",
+                        "error"
+                    );
+                },
+            });
+        }
+    });
+};
+
 </script>
 
 <template>
@@ -83,6 +130,7 @@ const DeleteUser = (id) => {
                         <th class="py-2 px-4 text-left border">Registered User Email</th>
                         <th class="py-2 px-4 text-left border">Name</th>
                         <th class="py-2 px-4 text-left border">Roles</th>
+                        <th class="py-2 px-4 text-left border">Status</th>
                         <th class="py-2 px-4 text-left border">Action</th>
                     </tr>
                 </thead>
@@ -91,16 +139,31 @@ const DeleteUser = (id) => {
                         <td class="py-2 px-4 border">{{ user.email }}</td>
                         <td class="py-2 px-4 border">{{ user.name }}</td>
                         <td class="py-2 px-4 border">{{ user.roles[0].name }}</td>
-                        <td class="py-2 px-4 border">
-                            <div v-if="!['admin', 'super-admin'].includes(user.roles[0].name)">
-                                <Link :href="route('user.edit', user.id)" class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block">
-                                Edit
-                            </Link>
-                            <button @click="DeleteUser(user.id)" class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded me-2 inline-block">
-                                Delete
-                            </button>
-                        </div>
-                        </td>
+                        <td class="py-2 px-4 border flex justify-center items-center">
+    <button
+        :class="{
+            'bg-green-500 text-white': user.status === 'Active',
+            'bg-red-600 text-white': user.status === 'Deactivated'
+        }"
+        @click="toggleUserStatus(user.id, user.status)"
+        class="w-24 px-3 py-1.5 text-sm rounded me-2 inline-block"
+    >
+        {{ user.status === 'Active' ? 'Active' : 'Deactivated' }}
+    </button>
+</td>
+
+<td class="py-2 px-4 border">
+    <div v-if="!['ADMIN', 'SUPER-ADMIN'].includes(user.roles[0].name)">
+        <Link :href="route('user.edit', user.id)" class="px-3 py-1.5 text-sm bg-green-500 text-white rounded me-2 inline-block">
+            Edit
+        </Link>
+        <button @click="DeleteUser(user.id)" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded me-2 inline-block">
+            Delete
+        </button>
+    </div>
+</td>
+
+
                     </tr>
                 </tbody>
             </table>

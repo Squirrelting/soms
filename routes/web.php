@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\AddMinorOffensesController;
-use App\Http\Controllers\AddMajorOffensesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ViewController;
@@ -17,7 +15,13 @@ use App\Http\Controllers\LineChartController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\MajorOffensesController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\AddMajorOffensesController;
+use App\Http\Controllers\AddMinorOffensesController;
 use App\Http\Controllers\MinorOffensesController;    
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+Route::post('/get-status', [AuthenticatedSessionController::class, 'checkStatus'])->name('getStatus');
+
 
 Route::post('/students/check-lrn', [StudentsController::class, 'checkLRN'])->name('check.lrn');
 
@@ -63,7 +67,7 @@ Route::get("/print/print-certificate/{signatory}/{firstname}/{middlename}/{lastn
 
 
     //add section
-Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('section')->middleware(['auth', 'verified', 'can:Manage Sections'])->group(function () {
     Route::get('/', [SectionsController::class, 'index'])->name('section.index');
     Route::get('/create', [SectionsController::class, 'create'])->name('section.create');
     Route::post('/store', [SectionsController::class, 'store'])->name('section.store');
@@ -73,7 +77,7 @@ Route::prefix('section')->middleware(['auth', 'verified'])->group(function () {
     });
 
         //add minor offenses
-Route::prefix('add-offense-minor')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('add-offense-minor')->middleware(['auth', 'verified', 'can:Manage Offenses'])->group(function () {
     Route::get('/', [AddMinorOffensesController::class, 'index'])->name('minoroffense.index');
     Route::get('/create', [AddMinorOffensesController::class, 'create'])->name('minoroffense.create');
     Route::post('/store', [AddMinorOffensesController::class, 'store'])->name('minoroffense.store');
@@ -83,7 +87,7 @@ Route::prefix('add-offense-minor')->middleware(['auth', 'verified'])->group(func
     });
 
             //add major offenses
-Route::prefix('add-offense-major')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('add-offense-major')->middleware(['auth', 'verified', 'can:Manage Offenses'])->group(function () {
     Route::get('/', [AddMajorOffensesController::class, 'index'])->name('majoroffense.index');
     Route::get('/create', [AddMajorOffensesController::class, 'create'])->name('majoroffense.create');
     Route::post('/store', [AddMajorOffensesController::class, 'store'])->name('majoroffense.store');
@@ -94,7 +98,7 @@ Route::prefix('add-offense-major')->middleware(['auth', 'verified'])->group(func
 
 
 //add signatory
-Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('signatory')->middleware(['auth', 'verified', 'can:Manage Signatory'])->group(function () {
     Route::get('/', [SignatoryController::class, 'index'])->name('signatory.index');
     Route::get('/create', [SignatoryController::class, 'create'])->name('signatory.create');
     Route::post('/', [SignatoryController::class, 'store'])->name('signatory.store');
@@ -104,25 +108,28 @@ Route::prefix('signatory')->middleware(['auth', 'verified'])->group(function () 
 });
 
 // Registered User Routes
-Route::prefix('user')->middleware(['auth', 'verified', 'can:Manage POD Users'])->group(function () {
+Route::prefix('user')->middleware(['auth', 'verified', 'can:Manage Users'])->group(function () {
     Route::get('/', [RegisteredUserController::class, 'index'])->name('user.index');
     Route::get('/{user}/edit', [RegisteredUserController::class, 'edit'])->name('user.edit');
     Route::put('/{user}', [RegisteredUserController::class, 'update'])->name('user.update');
     Route::delete('/{user}', [RegisteredUserController::class, 'destroy'])->name('user.destroy');
     Route::get('register', [RegisteredUserController::class, 'create'])->name('user.add');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('user.store');
+    Route::patch('/{user}/toggle-status', [RegisteredUserController::class, 'toggleStatus'])
+    ->name('user.toggleStatus');
+
 });
 
 
     //Minor Offenses
-Route::prefix('minor')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('minor')->middleware(['auth', 'verified', 'can:Student Offenses'])->group(function () {
     Route::get('/{student}/minor', [MinorOffensesController::class, 'minor'])->name('minor.offenses');
     Route::post('/', [MinorOffensesController::class, 'store'])->name('minor.store');
     Route::post('/{offense}/sanction', [MinorOffensesController::class, 'sanction'])->name('minor.sanction');
 });
 
 //Major Offenses
-Route::prefix('major')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('major')->middleware(['auth', 'verified', 'can:Manage Offenses'])->group(function () {
     Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
     Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
     Route::post('/{offense}/sanction', [MajorOffensesController::class, 'sanction'])->name('major.sanction');
