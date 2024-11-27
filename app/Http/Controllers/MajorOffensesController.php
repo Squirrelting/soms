@@ -14,7 +14,7 @@ use App\Http\Requests\MajorOffenseDetailRequest;
 
 class MajorOffensesController extends Controller
 {
-public function major(Student $student)
+public function major(Student $student, Request $request)
 {
     // Fetch the student's grade and section by resolving their foreign key relationships
     $studentWithGradeAndSection = $student->load('grade', 'section');
@@ -34,9 +34,11 @@ public function major(Student $student)
             
             return $offense;
         });
+        $user = $request->user();
 
     // Pass the student, major offenses, and submitted major offenses to the view
     return Inertia::render('Offenses/MajorOffenses', [
+        'user' => $user,
         'student' => $studentWithGradeAndSection, // Pass the student with the resolved grade and section
         'majorOffenses' => $majorOffenses,
         'submittedmajorOffenses' => $submittedmajorOffenses,

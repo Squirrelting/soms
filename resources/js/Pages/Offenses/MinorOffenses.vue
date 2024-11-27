@@ -8,6 +8,10 @@ const props = defineProps({
     student: Object,
     minorOffenses: Array,
     submittedminorOffenses: Array,
+    user: { // Accept user prop from backend
+        type: Object,
+        required: true
+    },
 });
 
 const maxDate = new Date().toISOString().split('T')[0];
@@ -189,6 +193,7 @@ const saveMinorOffense = () => {
             <td class="p-2 border-b border-r border-gray-200">{{ offense.recorded_date }}</td>
             <td class="p-2 border-b border-r border-gray-200">
                 <button
+                    :disabled="props.user.roles[0].name.includes('ADVISER')"
                     v-if="offense.sanction === 0"
                     @click="Resolve(offense.id)"
                     class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
@@ -213,7 +218,8 @@ const saveMinorOffense = () => {
 
 
 <!-- Form Section -->
-<form @submit.prevent="saveMinorOffense()" class="bg-white p-6 rounded shadow-sm">
+<form @submit.prevent="saveMinorOffense()" class="bg-white p-6 rounded shadow-sm" v-if="!props.user.roles[0].name.includes('ADVISER')"
+>
     <div class="grid grid-cols-10 gap-4">
         <!-- Select Minor Offenses (70% width) -->
         <div class="col-span-7">

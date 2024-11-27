@@ -59,8 +59,10 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
 });
 
 //Print-cgm
-Route::prefix('print')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('print')->middleware(['auth', 'verified', 'can:Manage Good Moral'])->group(function () {
     Route::get('/', [PrintController::class, 'index'])->name('print.index');
+    Route::post('/', [PrintController::class, 'store'])->name('print.store');
+    Route::delete('/{print}', [PrintController::class, 'destroy'])->name('print.destroy');
 });
 Route::get("/print/print-certificate/{signatory}/{firstname}/{middlename}/{lastname}", [PrintController::class, 'printcgm'])->name('print.cgm');
 
@@ -129,7 +131,7 @@ Route::prefix('minor')->middleware(['auth', 'verified', 'can:Student Offenses'])
 });
 
 //Major Offenses
-Route::prefix('major')->middleware(['auth', 'verified', 'can:Manage Offenses'])->group(function () {
+Route::prefix('major')->middleware(['auth', 'verified', 'can:Student Offenses'])->group(function () {
     Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
     Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
     Route::post('/{offense}/sanction', [MajorOffensesController::class, 'sanction'])->name('major.sanction');

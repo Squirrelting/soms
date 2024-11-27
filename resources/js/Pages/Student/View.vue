@@ -8,6 +8,10 @@ const props = defineProps({
     student: Object,
     submittedminorOffenses: Array,
     submittedmajorOffenses: Array,
+    user: { // Accept user prop from backend
+        type: Object,
+        required: true
+    },
 });
 
 </script>
@@ -32,6 +36,7 @@ const props = defineProps({
 
                 <!-- Print Button -->
                 <a 
+                    v-if="!props.user.roles[0].name.includes('ADVISER')"
                     :href="route('printrecord', { student: props.student.id })"
                     target="_blank"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300"

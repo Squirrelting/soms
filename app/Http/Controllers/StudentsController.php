@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Grade;
 use App\Models\Section;
@@ -101,8 +102,11 @@ public function index(Request $request)
     $finalResult = array_values($groupedSchoolYears);
     $sections = Section::all();
     $grades = Grade::all();
+
+    $user = $request->user();
     
     return Inertia::render('Student/Index', [
+        'user' => $user,
         'students' => $students,
         'perPage' => $perPage,
         'grade' => $grade,

@@ -16,31 +16,33 @@
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         p {
             font-size: 18px;
             text-indent: 30px;
             margin-bottom: 20px;
+            text-align: justify;
         }
 
-        .signatory {
-            text-align: right;
-            margin-top: 50px;
-        }
-
-        .signatory p {
-            margin: 0;
-        }
-
-        .position {
-            margin-top: 5px;
-        }
 
         .logo {
             text-align: center;
             margin-bottom: 20px;
         }
+
+        .footer{
+            margin-top: 20px;
+            margin-left: 500px;
+            margin-top: 80px;
+
+        }
+        .printby {
+            font-size: 14px;
+        }
+
+
     </style>
 </head>
 
@@ -60,12 +62,14 @@
     <p>This Certificate is given this day of <strong>{{ $date }}</strong> at <strong>Santiago City National High
             School</strong>.</p>
 
-    <div class="signatory">
-        <u>
-            <p><strong>{{ $signatory->name }}</strong></p>
-        </u>
-        <p class="position">{{ $signatory->position }}</p>
+
+    <div class="footer">
+        <div class="signatory">
+            <strong>{{ $signatory->name }}</strong> <br>
+            <strong>{{ $signatory->position }}</strong>
+        </div>
     </div>
+
 </body>
 
 </html>

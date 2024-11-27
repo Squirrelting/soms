@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\App;
 
 class ViewController extends Controller
 {
-    public function view(Student $student)
+    public function view(Student $student, Request $request)
     {
         $studentWithGradeAndSection = $student->load('grade', 'section');
 
@@ -46,7 +46,10 @@ class ViewController extends Controller
                 return $offense;
             });
             
+            $user = $request->user();
+
         return Inertia::render('Student/View', [
+            'user' => $user,
             'student' => $studentWithGradeAndSection,
             'submittedminorOffenses' => $submittedminorOffenses,
             'submittedmajorOffenses' => $submittedmajorOffenses,
