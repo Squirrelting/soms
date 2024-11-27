@@ -23,12 +23,14 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'Manage Users']);
         Permission::create(['name' => 'Manage Offenses']);
         Permission::create(['name' => 'Manage Roles']);
+        Permission::create(['name' => 'Manage Good Moral']);  
+
 
 
         // Create roles and assign permissions
-        Role::create(['name' => 'SUPER-ADMIN'])->givePermissionTo(['Manage Sections', 'Student Offenses', 'Manage Signatory', 'Manage Users', 'Manage Offenses', 'Manage Roles']);
-        Role::create(['name' => 'ADMIN'])->givePermissionTo(['Manage Sections', 'Student Offenses', 'Manage Signatory', 'Manage Users', 'Manage Offenses', 'Manage Roles']);
-        Role::create(['name' => 'POD'])->givePermissionTo(['Student Offenses']);
+        Role::create(['name' => 'SUPER-ADMIN'])->givePermissionTo(['Manage Sections', 'Student Offenses', 'Manage Signatory', 'Manage Users', 'Manage Offenses', 'Manage Roles', 'Manage Good Moral']);
+        Role::create(['name' => 'ADMIN'])->givePermissionTo(['Manage Sections', 'Student Offenses', 'Manage Signatory', 'Manage Users', 'Manage Offenses', 'Manage Roles', 'Manage Good Moral']);
+        Role::create(['name' => 'POD'])->givePermissionTo(['Student Offenses', 'Manage Good Moral']);
         Role::create(['name' => 'ADVISER'])->givePermissionTo(['Student Offenses']);
 
     }

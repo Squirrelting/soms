@@ -159,9 +159,11 @@ class ReportsController extends Controller
 
         $sections = Section::all();
         $grades = Grade::all();
+        $user = $request->user();
 
 
         return Inertia::render('Report/Index', [
+            'user' => $user,
             'offendersData' => $offendersData,
             'perPage' => $perPage,
             'grades' => $grades,
