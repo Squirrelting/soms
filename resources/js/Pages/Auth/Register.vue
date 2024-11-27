@@ -112,8 +112,10 @@ const submitForm = () => {
                             <label>Role</label>
                             <select v-model="form.role" class="py-1 w-full bg-gray-200 border border-gray-500 rounded">
                                 <option value="">Select Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="pod">POD</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="POD">POD</option>
+                                <option value="ADVISER">Adviser</option>
+
                             </select>
                             <div v-if="errors.role" class="text-red-500">
                                 {{ errors.role }}

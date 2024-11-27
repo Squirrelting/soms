@@ -14,7 +14,7 @@ use App\Models\MinorPenalty;
 
 class MinorOffensesController extends Controller
 {
-public function minor(Student $student)
+public function minor(Student $student, Request $request)
 {
     // Fetch the student's grade and section by resolving their foreign key relationships
     $studentWithGradeAndSection = $student->load('grade', 'section');
@@ -34,9 +34,11 @@ public function minor(Student $student)
             
             return $offense;
         });
+        $user = $request->user();
 
     // Pass the student, minor offenses, and submitted minor offenses to the view
     return Inertia::render('Offenses/MinorOffenses', [
+        'user' => $user,
         'student' => $studentWithGradeAndSection, // Pass the student with the resolved grade and section
         'minorOffenses' => $minorOffenses,
         'submittedminorOffenses' => $submittedminorOffenses,

@@ -16,6 +16,10 @@ const props = defineProps({
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
+    user: { // Accept user prop from backend
+        type: Object,
+        required: true
+    },
 });
 
 // Reactive data and refs
@@ -522,6 +526,7 @@ onMounted(() => {
 
                         <td class="py-2 px-4 border text-sm">
                             <Link
+                                v-if="!props.user.roles[0].name.includes('ADVISER')"
                                 :href="route('students.edit', student.id)"
                                 class="px-2 py-1 bg-green-500 text-white p-3 rounded"
                                 >Edit</Link

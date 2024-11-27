@@ -92,8 +92,10 @@ class DashboardController extends Controller
         
         $finalResult = array_values($groupedSchoolYears);
         
+        $user = $request->user();
     
         return Inertia::render('Dashboard', [
+            'user' => $user,
             'students' => $students,
             'perPage' => $perPage,
             'schoolYears' => $finalResult,

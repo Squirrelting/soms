@@ -23,6 +23,10 @@ const props = defineProps({
     sex: String,
     offenseFilter: String,
     selectedOffense: String,
+    user: { // Accept user prop from backend
+        type: Object,
+        required: true
+    },
 });
 
 const perPage = ref(props.perPage || 10);
@@ -301,19 +305,34 @@ const checkDataAndProceed = (action) => {
                     </select>
                     </div>
 
-                    <div class="flex space-x-1">
-                    <button
-                        @click="checkDataAndProceed('print')"
-                        class="bg-blue-500 text-white py-1 px-3 rounded text-sm"
-                    >
-                        Print
-                    </button>
-                    <button
-                        @click="checkDataAndProceed('export')"
-                        class="bg-green-500 text-white py-1 px-3 rounded text-sm"
-                    >
-                        Export to Excel
-                    </button>
+                    <div 
+                        class="flex space-x-1"
+                        >
+                        <button
+    :disabled="props.user.roles[0].name.includes('ADVISER')"
+    @click="checkDataAndProceed('print')"
+    :class="[
+        'py-1 px-3 rounded text-sm transition ease-in-out duration-150',
+        props.user.roles[0].name.includes('ADVISER')
+            ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+    ]"
+>
+    Print
+</button>
+<button
+    :disabled="props.user.roles[0].name.includes('ADVISER')"
+    @click="checkDataAndProceed('export')"
+    :class="[
+        'py-1 px-3 rounded text-sm transition ease-in-out duration-150',
+        props.user.roles[0].name.includes('ADVISER')
+            ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+            : 'bg-green-500 text-white hover:bg-green-600'
+    ]"
+>
+    Export to Excel
+</button>
+
                     </div>
                 </div>
 

@@ -63,7 +63,7 @@ function hasPermission(input) {
         <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Reports'" pattern="reports.index" route="reports.index">
           <CalculatorIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
-        <MenuItem v-if="hasPermission('Student Offenses')" :label="isSidebarCollapsed ? '' : 'Good Moral'" pattern="print.index" route="print.index">
+        <MenuItem v-if="hasPermission('Manage Good Moral')" :label="isSidebarCollapsed ? '' : 'Good Moral'" pattern="print.index" route="print.index">
           <PencilIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
         <MenuItem v-if="hasPermission('Manage Users')" :label="isSidebarCollapsed ? '' : 'Roles'" pattern="users.roles-permissions.roles.index" route="users.roles-permissions.roles.index">

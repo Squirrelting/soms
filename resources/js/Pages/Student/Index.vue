@@ -18,6 +18,10 @@ const props = defineProps({
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
+    user: { // Accept user prop from backend
+        type: Object,
+        required: true
+    },
 });
 
 const perPage = ref(props.perPage || 10);
@@ -206,11 +210,18 @@ watch(gradeFilter, (newGrade) => {
 
                 <!-- Add Student Button -->
                 <Link
-                    :href="route('students.create')"
-                    class="bg-blue-500 hover:bg-blue-600 text-white text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150"
-                >
-                    Add Student
-                </Link>
+                :href="props.user.roles[0].name.includes('ADVISER') ? null : route('students.create')"
+                :class="[
+                    'text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150',
+                    props.user.roles[0].name.includes('ADVISER')
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                ]"
+            >
+                Add Student
+            </Link>
+
+
             </div>
  
             <span v-if="isLoading" class="loading loading-spinner loading-lg"></span>
@@ -561,6 +572,7 @@ watch(gradeFilter, (newGrade) => {
 
                         <td class="py-2 px-4 border text-sm">
                             <Link
+                                v-if="!props.user.roles[0].name.includes('ADVISER')"
                                 :href="route('students.edit', student.id)"
                                 class="px-2 py-1 bg-green-500 text-white p-3 rounded"
                                 >Edit</Link
