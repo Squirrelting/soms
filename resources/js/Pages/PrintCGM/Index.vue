@@ -155,49 +155,6 @@ const formatName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 
-const DeleteData = (id) => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You are about to delete this Data! This action cannot be undone.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "Cancel",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: "Deleting...",
-                text: "Please wait while we delete the Data .",
-                didOpen: () => Swal.showLoading(),
-            });
-
-            router.delete(route("print.destroy", id), {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    studentsData.value.data = studentsData.value.data.filter(
-                        (print_cgm) => print_cgm.id !== id
-                    );
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Deleted!",
-                        text: "The Data has been deleted.",
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                },
-                onError: () => Swal.fire({
-                    icon: "error",
-                    title: "Failed!",
-                    text: "There was a problem deleting the Data. Please try again.",
-                }),
-            });
-        }
-    });
-};
 </script>
 
 <template>
@@ -572,55 +529,44 @@ class="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5  opacity-70 po
             No data available.
         </td>
     </tr>
-        <tr
-            v-for="(student, index) in studentsData.data"
-            :key="student.id"
+    <tr v-for="(student, index) in studentsData.data" :key="student.id">
+    <td class="py-2 px-4 text-left border text-sm">
+        {{ parseInt(index) + 1 }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.lrn }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.firstname }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.middlename }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.lastname }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.generated_by }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.created_at }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.signatory }}
+    </td>
+    <td class="py-2 px-2 border text-sm">
+        {{ student.position }}
+    </td>
+    <td class="py-2 px-4 border text-sm">
+        <Link
+            :href="route('print.view', student.lrn)"
+            class="px-2 py-1 text-sm bg-blue-500 text-white rounded"
         >
-            <td class="hidden">{{ student.updated_at }}</td>
-            <td class="py-2 px-4 text-left border text-sm">
-                {{ parseInt(index) + 1 }}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.lrn }}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.firstname }}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.middlename }}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.lastname }}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.generated_by}}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.created_at}}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.signatory}}
-            </td>
-            <td class="py-2 px-2 border text-sm">
-                {{ student.position}}
-            </td>
+            View All
+        </Link>
+    </td>
+</tr>
 
-            <td class="py-2 px-4 border text-sm">
-
-                <!-- <Link
-        :href="route('print.view', student.id)"
-        class="px-2 py-1 text-sm bg-blue-500 text-white rounded"
-    >
-        View
-    </Link> -->
-                <button
-                    @click="DeleteData(student.id)"
-                    class="px-2 py-1 text-sm bg-red-600 text-white p-3 rounded"
-                            >
-                                Delete
-                            </button>
-            </td>
-        </tr>
     </tbody>
 </table>
 <Pagination :pagination="studentsData" />
