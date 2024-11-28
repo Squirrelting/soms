@@ -9,7 +9,7 @@ const props = defineProps({
     errors: Object,
     signatory: Array, 
     students: Object,
-    perPage: Number,
+    perPage: String,
 });
 
 const form = useForm({

@@ -7,7 +7,7 @@ import axios from "axios";
 
 const props = defineProps({
     students: Object,
-    perPage: Number,
+    perPage: String,
     grade: String,
     grades: Array,
     section: String,

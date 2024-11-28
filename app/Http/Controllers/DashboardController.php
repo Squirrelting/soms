@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $search = $request->input('search');
 
 
-        $perPage = $request->input('perPage', 10);
+        $perPage = (string) $request->input('perPage', 10); // Cast to string
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
         $studentsQuery = Student::with(['grade', 'section'])
