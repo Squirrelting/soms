@@ -19,20 +19,21 @@ class PrintController extends Controller
 
     public function index(Request $request)
     {
-        // Fetch inputs with default values
         $search = $request->input('search', '');
         $sortColumn = $request->input('sortColumn', 'updated_at');
         $sortOrder = $request->input('sortOrder', 'desc');
-        $perPage = (string) $request->input('perPage', 10); // Cast to string
+        $perPage = (int) $request->input('perPage', 10);
     
-        // Validate sortColumn to avoid SQL injection
-        $allowedSortColumns = ['firstname', 'middlename', 'lastname', 'created_at', 'generated_by', 'lrn'];
-        if (!in_array($sortColumn, $allowedSortColumns)) {
-            $sortColumn = 'created_at'; // Default to created_at if invalid column is provided
-        }
-    
-        // Build query with search and sorting
         $studentsQuery = PrintCGM::query()
+            ->select('print_cgm.*')
+            ->joinSub(
+                PrintCGM::selectRaw('MAX(id) as latest_id')
+                    ->groupBy('lrn'),
+                'latest_records',
+                'print_cgm.id',
+                '=',
+                'latest_records.latest_id'
+            )
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('firstname', 'like', "%{$search}%")
@@ -42,19 +43,17 @@ class PrintController extends Controller
             })
             ->orderBy($sortColumn, $sortOrder);
     
-        // Paginate the results
         $students = $studentsQuery->paginate($perPage)->withQueryString();
-    
-        // Fetch signatory data
-        $signatory = Signatory::all();
-    
-        // Render the Inertia page with data
+            // Fetch signatory data
+            $signatory = Signatory::all();
         return Inertia::render('PrintCGM/Index', [
             'signatory' => $signatory,
+
             'students' => $students,
             'perPage' => $perPage,
         ]);
     }
+    
     
     
 
@@ -103,21 +102,27 @@ class PrintController extends Controller
         return $pdf->stream('certificate.pdf');
     }
     
-    public function destroy(PrintCGM $print)
+    public function destroy($id)
     {
-        $print->delete(); 
-        return Redirect::back()->with('message', 'Data Deleted Successfully');
-    }
-
-    // public function view(PrintCGM $print)
-    // {
-    //     // Fetch the specific student's data
-    //     $student = $print;
+        // Find the record by ID
+        $record = PrintCGM::findOrFail($id);
     
-    //     // Render the Inertia page with the student's data
-    //     return Inertia::render('PrintCGM/View', [
-    //         'student' => $student,
-    //     ]);
-    // }
+        // Delete the record
+        $record->delete();
+    
+    }
+    
+
+    public function view($lrn)
+    {
+        // Fetch all records for the given LRN
+        $records = PrintCGM::where('lrn', $lrn)->get();
+    
+        return Inertia::render('PrintCGM/View', [
+            'records' => $records,
+        ]);
+    }
+    
+    
     
 }
