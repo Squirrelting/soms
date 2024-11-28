@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 
 const props = defineProps({
     offendersData: Object,
-    perPage: Number,
+    perPage: String,
     offenses: Object,
     grades: Array,
     sections: {

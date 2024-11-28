@@ -12,11 +12,11 @@ import axios from "axios";
 // Props
 const props = defineProps({
     students: Object,
-    perPage: Number,
+    perPage: String,
     schoolYears: Array,
     selectedYear: String,
     selectedQuarter: String,
-    user: { // Accept user prop from backend
+    user: { 
         type: Object,
         required: true
     },

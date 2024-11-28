@@ -23,7 +23,7 @@ class PrintController extends Controller
         $search = $request->input('search', '');
         $sortColumn = $request->input('sortColumn', 'updated_at');
         $sortOrder = $request->input('sortOrder', 'desc');
-        $perPage = $request->input('perPage', 10);
+        $perPage = (string) $request->input('perPage', 10); // Cast to string
     
         // Validate sortColumn to avoid SQL injection
         $allowedSortColumns = ['firstname', 'middlename', 'lastname', 'created_at', 'generated_by', 'lrn'];

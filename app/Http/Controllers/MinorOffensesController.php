@@ -102,10 +102,13 @@ public function minor(Student $student, Request $request)
     
     public function sanction(SubmittedMinorOffense $offense)
     {
-        $offense->sanction = 1;
-        $offense->cleansed_by = auth()->user()->name;
-        $offense->cleansed_date = Carbon::now();
-        $offense->save();
+        $offense->update([
+            'sanction' => 1,
+            'cleansed_by' => auth()->user()->name,
+            'cleansed_date' => Carbon::now(),
+        ]);
+
+        
         $student = Student::where('lrn', $offense->lrn)->first();
 
         $student->updated_at = Carbon::now();

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('student_sex')->nullable();
             $table->string('student_schoolyear');
             $table->string('recorded_by');
-            $table->timestamp('committed_date');
+            $table->date('committed_date');
             $table->string('student_quarter');
             $table->tinyInteger('sanction')->default(0);
             $table->string('cleansed_by')->nullable();
