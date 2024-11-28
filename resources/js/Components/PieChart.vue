@@ -135,6 +135,7 @@ watch(
     fetchChartData();
   },
   { immediate: true }
+  
 );
 
 onMounted(async () => {

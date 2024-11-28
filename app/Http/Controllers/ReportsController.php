@@ -29,7 +29,7 @@ class ReportsController extends Controller
         $selectedYear = $request->input('selectedYear');
         $selectedQuarter = $request->input('selectedQuarter');
         $selectedOffense = $request->input('selectedOffense');
-        $perPage = $request->input('perPage', 10);
+        $perPage = (string) $request->input('perPage', 10); // Cast to string
         $quarterOrder = ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'];
 
         // Retrieve and filter minor offenses

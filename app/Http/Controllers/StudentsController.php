@@ -34,7 +34,7 @@ public function index(Request $request)
     $selectedYear = $request->input('selectedYear');
     $selectedQuarter = $request->input('selectedQuarter');
     
-    $perPage = $request->input('perPage', 10);
+    $perPage = (string) $request->input('perPage', 10); // Cast to string
     $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
     $studentsQuery = Student::with(['grade', 'section'])
