@@ -122,7 +122,7 @@ const DeleteSignatory = (id) => {
                         <td class="py-2 px-4 border">
                             {{ signatory.position }}
                         </td>
-                        <td>
+                        <td class="py-2 px-4 border">
                             <Link
                                 :href="route('signatory.edit', signatory.id)"
                                 class="px-2 py-1 text-sm bg-green-500 text-white p-3 rounded me-2 inline-block"
