@@ -12,6 +12,8 @@ import {
   CalculatorIcon,
   PowerIcon,
   IdentificationIcon,
+  CircleStackIcon,
+  
 } from "@heroicons/vue/24/solid";
 
 const isSidebarCollapsed = ref(false);
@@ -68,6 +70,9 @@ function hasPermission(input) {
         </MenuItem>
         <MenuItem v-if="hasPermission('Manage Users')" :label="isSidebarCollapsed ? '' : 'Roles'" pattern="users.roles-permissions.roles.index" route="users.roles-permissions.roles.index">
           <KeyIcon class="h-4 w-4 text-gray-800" />
+        </MenuItem>
+        <MenuItem v-if="hasPermission('Manage Users')" :label="isSidebarCollapsed ? '' : 'Back Up'" pattern="backup.index" route="backup.index">
+          <CircleStackIcon class="h-4 w-4 text-gray-800" />
         </MenuItem>
         <details v-if="hasPermission('Manage Offenses')" class="bg-gray-300 rounded-lg mt-4">
           <summary class="p-2 text-gray-800 text-xs cursor-pointer">Add Offense</summary>
