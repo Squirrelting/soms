@@ -68,6 +68,8 @@ const updateSignatory = () => {
         </div>
 
         <div class="mt-4 mx-4">
+            <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
+
             <div class="flex justify-between">
                 <h5 class="m-4">Edit Signatory</h5>
                 <Link
@@ -85,7 +87,7 @@ const updateSignatory = () => {
                             <input
                                 type="text"
                                 v-model="form.name"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.name" class="text-red-500">
                                 {{ errors.name }}
@@ -97,7 +99,7 @@ const updateSignatory = () => {
                             <input
                                 type="text"
                                 v-model="form.position"
-                                class="py-1 w-full"
+                                class="py-1 w-full bg-gray-200 border border-gray-500 rounded"
                             />
                             <div v-if="errors.position" class="text-red-500">
                                 {{ errors.position }}
@@ -117,6 +119,7 @@ const updateSignatory = () => {
                     </div>
                 </div>
             </form>
+        </div>
         </div>
     </AuthenticatedLayout>
 </template>

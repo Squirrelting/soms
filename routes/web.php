@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ViewController;
@@ -65,8 +66,6 @@ Route::prefix('print')->middleware(['auth', 'verified', 'can:Manage Good Moral']
     Route::delete('/{print}', [PrintController::class, 'destroy'])->name('print.destroy');
     Route::get('/print/{lrn}', [PrintController::class, 'view'])->name('print.view');
     Route::delete('/print/{id}', [PrintController::class, 'destroy'])->name('print.destroy');
-
-
 });
 Route::get("/print/print-certificate/{signatory}/{firstname}/{middlename}/{lastname}", [PrintController::class, 'printcgm'])->name('print.cgm');
 
@@ -139,6 +138,15 @@ Route::prefix('major')->middleware(['auth', 'verified', 'can:Student Offenses'])
     Route::get('/{student}/major', [MajorOffensesController::class, 'major'])->name('major.offenses');
     Route::post('/', [MajorOffensesController::class, 'store'])->name('major.store');
     Route::post('/{offense}/sanction', [MajorOffensesController::class, 'sanction'])->name('major.sanction');
+
+});
+
+//Backup
+Route::prefix('backup')->middleware(['auth', 'verified', 'can:Student Offenses'])->group(function () {
+    Route::get('/', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/db', [BackupController::class, 'backup'])->name('backup.db');
+    Route::get('/files', [BackupController::class, 'listFiles']);
+    Route::get('/backup/download/{fileName}', [BackupController::class, 'download'])->name('backup.download');
 
 });
 
