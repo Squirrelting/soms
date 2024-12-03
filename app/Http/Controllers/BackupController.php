@@ -13,6 +13,10 @@ class BackupController extends Controller
     {
         return Inertia::render('Backup/Index');
     }
+    public function manual(Request $request)
+    {
+        return Inertia::render('Backup/Manual');
+    }
 
     public function backup()
     {
