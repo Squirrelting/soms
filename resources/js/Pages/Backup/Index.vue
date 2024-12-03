@@ -129,13 +129,25 @@ onMounted(() => {
 });
 </script>
 
-
-
-
 <template>
   <Head title="Backup" />
   <AuthenticatedLayout>
     <div class="mt-4 mx-4">
+
+      <!-- Top Right Button -->
+      <div class="flex justify-end mb-4">
+        <Link
+          :href="route('backup.manual')"
+          :class="[ 
+              'text-s font-medium py-1 px-2 rounded-lg transition ease-in-out duration-150',
+              'bg-green-500 hover:bg-green-600 text-white'
+          ]"
+        >
+          Backup/Restore Manual
+        </Link>
+      </div>
+
+
       <div class="bg-white p-4 rounded-lg shadow-lg space-y-4">
 
 
@@ -176,14 +188,10 @@ onMounted(() => {
   </div>
 </div>
 
-
-
-
-
-        <div>
-          <strong>Server file Path Location:</strong>
-          <span>{{ filePath || 'No backups yet' }}</span>
-        </div>
+<div v-if="filePath" class="mt-4">
+            <strong>Server File Path Location:</strong>
+            <span>{{ filePath }}</span>
+          </div>
 
 
         <div v-if="loading" class="text-center my-4">
