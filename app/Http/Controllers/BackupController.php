@@ -21,7 +21,7 @@ class BackupController extends Controller
             BackupDatabase::dispatch();
 
             return response()->json([
-                'message' => 'Backup process started. Check back for results.',
+                'message' => 'Backup process started. Check back Later for results.',
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
@@ -65,6 +65,29 @@ class BackupController extends Controller
     }
 }
 
-    
+public function restore(Request $request)
+{
+    $request->validate([
+        'sql_file' => 'required|file|mimes:sql,txt',
+    ]);
+
+    try {
+        // Store the uploaded SQL file temporarily
+        $path = $request->file('sql_file')->store('temp');
+        $filePath = storage_path("app/{$path}");
+
+        // Run the SQL file using the database connection
+        $sql = file_get_contents($filePath);
+        \DB::unprepared($sql);
+
+        // Delete the temporary file
+        unlink($filePath);
+
+        return response()->json(['message' => 'Database restored successfully.']);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+    }
+}
+
 }
 
