@@ -18,6 +18,5 @@ class BackupDatabase implements ShouldQueue
     {
         // Run the backup command
         Artisan::call('backup:run', ['--only-db' => true]);
-
     }
 }

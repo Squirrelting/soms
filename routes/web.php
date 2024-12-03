@@ -146,8 +146,8 @@ Route::prefix('backup')->middleware(['auth', 'verified', 'can:Student Offenses']
     Route::get('/', [BackupController::class, 'index'])->name('backup.index');
     Route::post('/db', [BackupController::class, 'backup'])->name('backup.db');
     Route::get('/files', [BackupController::class, 'listFiles']);
-    Route::get('/backup/download/{fileName}', [BackupController::class, 'download'])->name('backup.download');
-
+    Route::get('/download/{fileName}', [BackupController::class, 'download'])->name('backup.download');
+    Route::post('/restore', [BackupController::class, 'restore'])->name('backup.restore');
 });
 
 Route::middleware('auth')->group(function () {
