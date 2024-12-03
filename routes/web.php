@@ -148,6 +148,8 @@ Route::prefix('backup')->middleware(['auth', 'verified', 'can:Student Offenses']
     Route::get('/files', [BackupController::class, 'listFiles']);
     Route::get('/download/{fileName}', [BackupController::class, 'download'])->name('backup.download');
     Route::post('/restore', [BackupController::class, 'restore'])->name('backup.restore');
+    Route::get('/manual', [BackupController::class, 'manual'])->name('backup.manual');
+
 });
 
 Route::middleware('auth')->group(function () {
