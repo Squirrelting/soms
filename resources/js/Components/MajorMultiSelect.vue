@@ -81,7 +81,7 @@ onMounted(() => {
         class="w-full flex flex-col items-center bg-white shadow-md p-4 rounded-lg"
     >
         <label class="block text-gray-700 font-semibold mb-1"
-            >Add Minor Offenses</label
+            >Add Major Offenses</label
         >
 
         <div class="w-full">
