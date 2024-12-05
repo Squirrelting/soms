@@ -14,7 +14,7 @@
     <p>LRN: {{ $student->lrn }}</p>
     <p>Student Name: {{ $student->firstname }} {{ $student->middlename }} {{ $student->lastname }}</p>
     <p>Grade: {{ $student->grade->grade??'N/A' }}</p>
-    <p>Grade: {{ $student->section->section??'N/A' }}</p>
+    <p>Section: {{ $student->section->section??'N/A' }}</p>
 
     @if ($submittedminorOffenses->isNotEmpty())
     <h5>Minor Offenses:</h5>

@@ -13,13 +13,20 @@ use Illuminate\Validation\Rules\Password;
 
 class RegisteredUserController extends Controller
 {
-    public function index() {
-        
-        $users = User::with('roles', 'permissions')->get(); // Fetch all users
+    public function index(Request $request) {
+        // Correct way to assign default values for sorting
+        $sortColumn = $request->get('sortColumn', 'updated_at'); // default to 'updated_at'
+        $sortOrder = $request->get('sortOrder', 'desc'); // default to 'desc'
+    
+        $users = User::with('roles', 'permissions')
+            ->orderBy($sortColumn, $sortOrder) // Apply ordering based on parameters
+            ->get();
+            
         return Inertia::render('User/Index', [
             'User' => $users, // Pass to Vue component
         ]);
     }
+    
 
     public function edit(User $user) {
 
