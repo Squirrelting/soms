@@ -300,7 +300,7 @@ const checkDataAndProceed = (action) => {
                         class="select text-gray-700 h-8 select-xs text-xs py-1 px-1 w-[6rem] focus:outline-none focus:ring focus:border-blue-200 focus:ring-blue-200"
                     >
                         <option value="">Status</option>
-                        <option value="0">Unresolve</option>
+                        <option value="0">Unresolved</option>
                         <option value="1">Resolved</option>
                     </select>
                     </div>
