@@ -83,8 +83,8 @@ public function printRecord(Student $student)
         });
 
     // Prepare date formats
-    $imagePath = public_path('Images/SCNHS-Logo.png');
-    $date = Carbon::now()->format('F j, Y');
+    $imagePath1 = public_path('Images/SCNHS-Logo.png');
+    $imagePath2 = public_path('Images/bagongpilipinas.png');    $date = Carbon::now()->format('F j, Y');
 
     // Fetch the currently logged-in user and their role
     $user = auth()->user();
@@ -95,8 +95,8 @@ public function printRecord(Student $student)
         'student' => $studentWithGradeAndSection,
         'submittedminorOffenses' => $submittedminorOffenses,
         'submittedmajorOffenses' => $submittedmajorOffenses,
-        'imagePath' => $imagePath,
-        'date' => $date,
+        'imagePath1' => $imagePath1,
+        'imagePath2' => $imagePath2,        'date' => $date,
         'userName' => $userName,
         'userRole' => $userRole,
     ])->setPaper('legal', 'landscape');

@@ -140,8 +140,9 @@ const toggleUserStatus = (id, currentStatus) => {
                         <td class="py-2 px-4 border">{{ user.name }}</td>
                         <td class="py-2 px-4 border">{{ user.roles[0].name }}</td>
                         <td class="py-2 px-4 border flex justify-center items-center">
+    <!-- Button for non-ADMIN and non-SUPER-ADMIN roles -->
     <button
-    v-if="!['ADMIN', 'SUPER-ADMIN'].includes(user.roles[0].name)"
+        v-if="!['ADMIN', 'SUPER-ADMIN'].includes(user.roles[0].name)"
         :class="{
             'bg-green-500 text-white': user.status === 'Active',
             'bg-red-600 text-white': user.status === 'Deactivated'
@@ -151,7 +152,16 @@ const toggleUserStatus = (id, currentStatus) => {
     >
         {{ user.status === 'Active' ? 'Active' : 'Deactivated' }}
     </button>
+
+    <!-- Text for ADMIN and SUPER-ADMIN roles -->
+    <span
+        v-else
+        class="w-24 px-3 py-1.5 text-sm rounded me-2 inline-block bg-green-700 text-white text-center"
+    >
+        Active
+    </span>
 </td>
+
 
 <td class="py-2 px-4 border">
     <div v-if="!['ADMIN', 'SUPER-ADMIN'].includes(user.roles[0].name)">

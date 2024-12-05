@@ -12,8 +12,33 @@
             padding: 0;
         }
         .header {
+            width: 100%;
             text-align: center;
-            margin-top: -30px;
+        }
+
+        .header img {
+            width: 80px;
+            height: 80px;
+            vertical-align: middle;
+        }
+
+        .header .left, .header .right {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            padding: 3rem;
+        }
+
+        .header .center-text {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .header p {
+            margin: 0;
+            font-weight: bold;
         }
         h1 {
             text-align: center;
@@ -54,8 +79,25 @@
     </style>
 </head>
 <body>
+    <!-- Header Section with inline-block for compatibility with Dompdf -->
     <div class="header">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath)) }}" alt="Logo" width="100" height="100">
+        <!-- Left Image -->
+        <div class="left">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath1)) }}" alt="Left Logo">
+        </div>
+
+        <!-- Center Text -->
+        <div class="center-text">
+            <p>Santiago City National High School</p>
+            <p>Department Of Education</p>
+            <p>Narra St., Calaocan, Santiago City</p>
+            <p>Philippines, 3311</p>
+        </div>
+
+        <!-- Right Image -->
+        <div class="right">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath2)) }}" alt="Right Logo">
+        </div>
     </div>
 
     <h1>List of Offenders</h1>
