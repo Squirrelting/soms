@@ -63,7 +63,6 @@ Route::prefix('students')->middleware(['auth', 'verified'])->group(function () {
 Route::prefix('print')->middleware(['auth', 'verified', 'can:Manage Good Moral'])->group(function () {
     Route::get('/', [PrintController::class, 'index'])->name('print.index');
     Route::post('/', [PrintController::class, 'store'])->name('print.store');
-    Route::delete('/{print}', [PrintController::class, 'destroy'])->name('print.destroy');
     Route::get('/print/{lrn}', [PrintController::class, 'view'])->name('print.view');
     Route::delete('/print/{id}', [PrintController::class, 'destroy'])->name('print.destroy');
 });
