@@ -16,10 +16,34 @@
             font-size: 24px;
             margin: 10px 0 20px;
         }
-        .logo {
+        .header {
+            width: 100%;
             text-align: center;
-            margin-top: -30px;
-            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 80px;
+            height: 80px;
+            vertical-align: middle;
+        }
+
+        .header .left, .header .right {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            padding: 3rem;
+        }
+
+        .header .center-text {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .header p {
+            margin: 0;
+            font-weight: bold;
         }
         .student {
             display: flex;
@@ -54,8 +78,25 @@
 </head>
 <body>
 
-    <div class="logo">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath)) }}" alt="Logo" width="100" height="100">
+    <!-- Header Section with inline-block for compatibility with Dompdf -->
+    <div class="header">
+        <!-- Left Image -->
+        <div class="left">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath1)) }}" alt="Left Logo">
+        </div>
+
+        <!-- Center Text -->
+        <div class="center-text">
+            <p>Santiago City National High School</p>
+            <p>Department Of Education</p>
+            <p>Narra St., Calaocan, Santiago City</p>
+            <p>Philippines, 3311</p>
+        </div>
+
+        <!-- Right Image -->
+        <div class="right">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath2)) }}" alt="Right Logo">
+        </div>
     </div>
 
     <h1>Student Record</h1>
@@ -93,6 +134,7 @@
                     <tr>
                         <td>{{ $offense->minor_offense }}</td>
                         <td>{{ $offense->minor_penalty }}</td>
+                        <td>{{ $offense->sanction == 1 ? 'Resolved' : 'Unresolved' }}</td>
                         <td>{{ $offense->student_schoolyear }}, {{ $offense->student_quarter }}</td>
                         <td>{{ $offense->student_grade }}, {{ $offense->student_section }}</td>
                         <td>{{ $offense->committed_date }}</td>

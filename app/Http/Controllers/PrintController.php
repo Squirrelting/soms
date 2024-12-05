@@ -86,7 +86,8 @@ class PrintController extends Controller
     
     public function printcgm($signatory, $firstname, $middlename = null, $lastname) {
         $getsignatory = Signatory::findOrFail($signatory);
-        $imagePath = public_path('Images/SCNHS-Logo.png');
+        $imagePath1 = public_path('Images/SCNHS-Logo.png');
+        $imagePath2 = public_path('Images/bagongpilipinas.png');
         $date = Carbon::now()->format('F j, Y'); 
     
         // Pass the student's name to the view
@@ -95,7 +96,8 @@ class PrintController extends Controller
             'firstname' => $firstname,
             'middlename' => $middlename,
             'lastname' => $lastname,
-            'imagePath' => $imagePath,
+            'imagePath1' => $imagePath1,
+            'imagePath2' => $imagePath2,
             'date' => $date,
         ]);
     
