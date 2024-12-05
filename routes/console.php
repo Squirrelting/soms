@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('backup:clean')->daily()->at('01:00');
 // Schedule::command('backup:run --db-only')->daily()->at('20:13');
-Schedule::command('backup:run --only-db')->everyMinute();
+Schedule::command('backup:run --only-db')->weekly();
 
 
 Artisan::command('inspire', function () {
