@@ -88,12 +88,14 @@ watch(selectedYear, (newYear) => {
     const selectedSchoolYear = props.schoolYears.find(
         (year) => year.student_schoolyear === newYear
     );
-    selectedQuarter.value = selectedSchoolYear
-        ? selectedSchoolYear.quarters[selectedSchoolYear.quarters.length - 1]
-        : null;
+
+    // Set to "All Quarters" or null when changing the school year
+    selectedQuarter.value = selectedSchoolYear ? "All Quarters" : null;
+
     getGradesData();  // Trigger data fetch whenever the year changes
     filter();  // Trigger filtering whenever the selected year changes
 });
+
 
 const filterQuarters = () => {
     selectedQuarter.value = "";
