@@ -6,45 +6,17 @@
     <title>Student Record</title>
     <style>
         body {
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.5;
-            margin: 0;
-            padding: 0;
+            position: relative;
+            margin-left: 40px;
+            margin-right: 40px;
+            padding-bottom: auto;  /* Space for the footer */
         }
         h1 {
             text-align: center;
             font-size: 24px;
             margin: 10px 0 20px;
         }
-        .header {
-            width: 100%;
-            text-align: center;
-        }
 
-        .header img {
-            width: 80px;
-            height: 80px;
-            vertical-align: middle;
-        }
-
-        .header .left, .header .right {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            vertical-align: middle;
-            padding: 3rem;
-        }
-
-        .header .center-text {
-            display: inline-block;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        .header p {
-            margin: 0;
-            font-weight: bold;
-        }
         .student {
             display: flex;
             justify-content: space-between;
@@ -52,9 +24,15 @@
             margin: 10px 0;
             width: 100%;
         }
-        .footer{
+        .footer1 {
             margin-top: 20px;
-            margin-left: 1000px;
+            margin-left: 900px;
+        }
+        .footer2 {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100;
         }
         .printby {
             font-size: 14px;
@@ -77,27 +55,7 @@
     </style>
 </head>
 <body>
-
-    <!-- Header Section with inline-block for compatibility with Dompdf -->
-    <div class="header">
-        <!-- Left Image -->
-        <div class="left">
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath1)) }}" alt="Left Logo">
-        </div>
-
-        <!-- Center Text -->
-        <div class="center-text">
-            <p>Santiago City National High School</p>
-            <p>Department Of Education</p>
-            <p>Narra St., Calaocan, Santiago City</p>
-            <p>Philippines, 3311</p>
-        </div>
-
-        <!-- Right Image -->
-        <div class="right">
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($imagePath2)) }}" alt="Right Logo">
-        </div>
-    </div>
+    <?php include 'header-footer/header2.php'; ?>  <!-- Header Included at the top -->
 
     <h1>Student Record</h1>
     
@@ -188,7 +146,7 @@
     </div>
     @endif
 
-    <div class="footer">
+    <div class="footer1">
         <div class="printby">
             Printed by: <strong>{{ $userName }}</strong> <br>
             Designation/Position: <strong>{{ $userRole }}</strong>
@@ -198,5 +156,8 @@
         </div>
     </div>
 
+    <div class="footer2">
+        <?php include 'header-footer/footer.php'; ?>  <!-- Footer Included at the bottom -->
+    </div>
 </body>
 </html>
