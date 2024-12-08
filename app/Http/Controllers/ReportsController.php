@@ -265,12 +265,21 @@ class ReportsController extends Controller
             $userRole = $user->getRoleNames()->first();
             
             $imagePath1 = public_path('Images/SCNHS-Logo.png');
-            $imagePath2 = public_path('Images/bagongpilipinas.png');            $date = Carbon::now()->format('F j, Y');
+            $imagePath2 = public_path('Images/bagongpilipinas.png');
+            $imagePath3 = public_path('Images/deped.png');
+            $imagePath4 = public_path('Images/footer.png');
+            $imagePath5 = public_path('Images/header.png');
+
+
+            $date = Carbon::now()->format('F j, Y');
 
             $pdf = Pdf::loadView('print-template.print-offenders', [
                 'offendersData'    => $offendersData,
                 'imagePath1' => $imagePath1,
                 'imagePath2' => $imagePath2,
+                'imagePath3' => $imagePath3,
+                'imagePath4' => $imagePath4,
+                'imagePath5' => $imagePath5,
                 'date'             => $date,
                 'sanction'         => $sanction,
                 'offenseFilter'    => $offenseFilter,
